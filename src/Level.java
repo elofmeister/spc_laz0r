@@ -23,18 +23,6 @@ public class Level {
 
 	private TileSet tileset = null;
 	
-	private int[][] base_level = {
-			{31, 60, 51, 71, 71, 31, 63, 71, 71, 96, 63, 43, 71, 52, 71, 71,},
-			{31, 42, 94, 71, 43, 71, 97, 71, 71, 71, 51, 71, 71, 40, 63, 51,},
-			{63, 71, 00, 02, 02, 02, 02, 02, 02, 02, 01, 71, 42, 71, 63, 71,},
-			{30, 33, 03, 20, 21, 20, 22, 20, 23, 20, 13, 94, 71, 71, 71, 40,},
-			{71, 71, 03, 20, 20, 20, 20, 20, 20, 20, 13, 31, 71, 73, 71, 42,}, 
-			{61, 33, 03, 20, 20, 20, 20, 20, 20, 20, 13, 63, 71, 71, 71, 30,},
-			{51, 71, 03, 20, 20, 20, 20, 20, 20, 20, 13, 95, 52, 71, 42, 71,},
-			{71, 71, 10, 12, 12, 12, 12, 12, 12, 12, 11, 60, 41, 71, 71, 61,},
-			{52, 71, 60, 98, 43, 97, 71, 63, 62, 98, 71, 43, 33, 71, 60, 71,}
-	};
-	
 	public boolean moveRight() {
 		boolean bretval = false;
 		if ( viewPos < TileSet.TILE_WIDTH * levelWdt - Game.WINDOW_WIDTH ) {
@@ -54,32 +42,15 @@ public class Level {
 	}
 	
 	private int[][] createNewLevel() {
-		int[] bgTiles = {
-				94, 95, 96, 97, 98, 99,															// 
-				30, 31, 32, 33, 40, 41, 42, 43, 50, 51, 52, 53, 60, 61, 62, 63, 70,				// variation of stars
-				30, 31, 32, 33, 40, 41, 42, 43, 50, 51, 52, 53, 60, 61, 62, 63, 70,				// variation of stars
-				71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71,	// black tile
-				71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71, 71	// black tile
-		};
-		int[][] planets = {
-				// 1. parameter .. starting index
-				// 2. parameter .. length
-				// 3. parameter .. height
-				{ 4,  3,  3},
-				{ 7,  3,  3},
-				{34,  3,  3},
-				{37,  3,  3},
-				{64,  3,  3},
-				{67,  3,  3},
-				{80,  4,  2}
-		};
+		int[][] bgTiles = new CSV("src/csv/background.csv").getIntegerArray();
+		int[][] planets = new CSV("src/csv/planets.csv").getIntegerArray();
 		int[][] retval = new int[this.levelHgt][this.levelWdt]; 
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());
 		// fill array with background tiles
 		for (int h = 0; h < this.levelHgt; h++) {
 			for (int w = 0; w < this.levelWdt; w++) {
-				retval[h][w] = bgTiles[Math.abs(rnd.nextInt()%bgTiles.length)];		
+				retval[h][w] = bgTiles[Math.abs(rnd.nextInt()%bgTiles.length)][0];		
 			}
 		}
 		// generating planets
@@ -106,7 +77,7 @@ public class Level {
 		this.levelNxt = levelCnt * CONTINUE_OFFSET;
 		this.tileset = tileset;
 		if ( this.levelCnt == 0 ) {
-			this.levelArray = this.base_level;
+			this.levelArray = new CSV("src/csv/base_level.csv").getIntegerArray();
 			this.levelWdt = this.levelArray[0].length;
 		} else {
 			this.levelArray = createNewLevel();
