@@ -15,7 +15,7 @@ public class Game implements Runnable, KeyListener {
 	private static final String GAME_TITLE 				= "spc_laz0r";
 	
 	private int levelCnt = 0;	// number of generated levels
-	private int activeLvl = 3;
+	private int activeLvl = 0;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
 	private Window window;
 	private BufferStrategy bufferstrategy;
@@ -27,9 +27,10 @@ public class Game implements Runnable, KeyListener {
 	}
 
 	public void run() {
-		long timestamp;
+		long timestamp = System.currentTimeMillis();
 	    long oldTimestamp;
-		window = new Window(GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
+		gui.LoadingScreen ls = new gui.LoadingScreen();
+		new init.FileManager();
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating first (base) level
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating lvl 1
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));	// generating lvl 2
@@ -38,8 +39,11 @@ public class Game implements Runnable, KeyListener {
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset4.png",10,10)));	// generating lvl 5
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset5.png",10,10)));	// generating lvl 6
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset6.png",10,10)));	// generating lvl 7
+		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset7.png",10,10)));	// generating lvl 8
+		while((timestamp + 3000) > System.currentTimeMillis());
+		ls.exit();
+		window = new Window(GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 		window.getFrame().addKeyListener(this);
-		
 		long teststamp1 = System.currentTimeMillis() , teststamp2 = teststamp1;
 		
 		while(true) {
@@ -55,7 +59,7 @@ public class Game implements Runnable, KeyListener {
 		        try {
 		        	Thread.sleep(LOOP_TIME - (timestamp-oldTimestamp) );
 		        } catch (InterruptedException e) {
-		        	e.printStackTrace();
+		        	System.err.println(e.getMessage());
 		        }
 		    }
 		    
@@ -78,7 +82,7 @@ public class Game implements Runnable, KeyListener {
 		try {
 			Thread.sleep(15);
 		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
 		}
 	}
 	
