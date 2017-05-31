@@ -16,11 +16,7 @@ public class LoadingScreen {
 		frame.setUndecorated(true);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.add(new Component() {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+			private static final long serialVersionUID = 2513633783220324477L;
 			Image img = new ImageIcon(this.getClass().getResource("images/loading.png")).getImage();
 		    @Override
 		    public void paint(Graphics g) {
