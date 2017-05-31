@@ -13,7 +13,8 @@ public class LoadingScreen {
 	JFrame frame = new JFrame("Loading");
 	
 	public LoadingScreen() {
-		frame.setUndecorated(true);
+		util.ConfigReader config = new util.ConfigReader("config.json");
+		frame.setUndecorated(config.isFullscreen());
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.add(new Component() {
 			private static final long serialVersionUID = 2513633783220324477L;
@@ -29,6 +30,11 @@ public class LoadingScreen {
 	    GraphicsDevice gs = ge.getDefaultScreenDevice();
 	    gs.setFullScreenWindow(frame);
 	    frame.validate();
+	    if (!config.isFullscreen()) {
+	    	frame.setResizable(false);
+		    frame.setSize((int)config.getWidth(), (int)config.getHeight());
+			frame.setLocationRelativeTo(null);
+		}
 	}
 	
 	public void exit() {
