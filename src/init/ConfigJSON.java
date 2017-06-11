@@ -9,11 +9,13 @@ public class ConfigJSON {
 	// DEFAULT RESOLUTION
 	private final int DEFAULT_WIDTH = 1024;
 	private final int DEFAULT_HEIGHT = 576;
+	private final boolean DEFAULT_FULLSCREEN = true;
 	
 	@SuppressWarnings("unchecked")
 	public ConfigJSON() {
 		 JSONObject obj = new JSONObject();
 		 JSONObject resolution = new JSONObject();
+		 resolution.put("fullscreen", DEFAULT_FULLSCREEN);
 		 resolution.put("width", DEFAULT_WIDTH);
 		 resolution.put("height", DEFAULT_HEIGHT);
 	     obj.put("resolution", resolution);

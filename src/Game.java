@@ -1,5 +1,6 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 public class Game implements Runnable, KeyListener {
@@ -12,10 +13,11 @@ public class Game implements Runnable, KeyListener {
 	private static final String GAME_TITLE 				= "spc_laz0r";
 	
 	private int levelCnt = 0;	// number of generated levels
-	private int activeLvl = 1;
+	private int activeLvl = 0;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
 	private gui.Window mainWindow;
 	private String bgDir = "right";
+	private Ships shp = new Ships(Ships.GLASSKANONE, 0, 1, 0, 0, 0, 0, 0);
 	
 	public static void main(String[] arg) {
 	    new Thread(new Game()).start();	// calling run method 
@@ -59,7 +61,6 @@ public class Game implements Runnable, KeyListener {
 		long teststamp1 = System.currentTimeMillis() , teststamp2 = teststamp1;
 		mainWindow.changeTitle(GAME_TITLE);
 		
-		
 		while(true) {
 			oldTimestamp = System.currentTimeMillis();
 		    update();
@@ -101,17 +102,57 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	private void render() {
-		mainWindow.changeImage(levels.get(activeLvl).getSubimage());
+		/*
+		 * get sub-image
+		 * add character ship
+		 * add enemies
+		 * add all existing bullets
+		 * display image
+		 */
+		int[] rgbArray = new int[16*64*9*64];
+		levels.get(activeLvl).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbArray, 0, 16*64);
+		BufferedImage subimg = new BufferedImage(16*64, 9*64, BufferedImage.TYPE_INT_ARGB);
+		subimg.setRGB(0, 0, 16*64, 9*64, rgbArray, 0, 16*64);
+		rgbArray = new int[64*64];
+		shp.getImage().getRGB(0, 0, 64, 64, rgbArray, 0, 64);
+		subimg.setRGB(shp.getCoordinates().getX(), shp.getCoordinates().getY(), 64, 64, rgbArray, 0, 64);
+		mainWindow.changeImage(subimg);
 	}
 
 
 	public void keyPressed(KeyEvent e) {
-		if( e.getKeyCode() == 65) {
-			bgDir = "left";
-		} else if( e.getKeyCode() == 68) {
-			bgDir = "right";
-		}
-		
+		/*
+		 * check, if coordinates out of level range
+		 */
+		switch (e.getKeyChar()) {
+		case 'w':
+			shp.getCoordinates().setY(shp.getCoordinates().getY()-1);
+			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
+				shp.setAnimation(Ships.MOVE_LEFT_UP);
+			} else {
+				shp.setAnimation(Ships.MOVE_RIGHT_UP);
+			}
+			break;
+		case 'a':
+			shp.getCoordinates().setX(shp.getCoordinates().getX()-1);
+			shp.setAnimation(Ships.MOVE_LEFT);
+			break;
+		case 's':
+			shp.getCoordinates().setY(shp.getCoordinates().getY()+1);
+			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
+				shp.setAnimation(Ships.MOVE_LEFT_DOWN);
+			} else {
+				shp.setAnimation(Ships.MOVE_RIGHT_DOWN);
+			}
+			break;
+		case 'd':
+			shp.getCoordinates().setX(shp.getCoordinates().getX()+1);
+			shp.setAnimation(Ships.MOVE_RIGHT);
+			break;
+
+		default:
+			break;
+		}		
 	}
 
 	public void keyReleased(KeyEvent e) {
