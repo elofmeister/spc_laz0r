@@ -1,6 +1,6 @@
-import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.util.Random;
-
 
 public class Level {
 	private static final int CONTINUE_OFFSET 		= 10;
@@ -8,12 +8,9 @@ public class Level {
 	private static final int DEFAULT_HEIGHT 		= 9;
 	private static final int PLANET_DICE 			= 16;
 	private static final int PLANET_DICE_PERCENTAGE = 30;
-	private static final int TILESET_WIDTH 			= 10;
-	@SuppressWarnings("unused")
-	private static final int TILESET_HEIGHT 		= 10;
 	
+
 	private int levelCnt;
-	@SuppressWarnings("unused")
 	private int levelNxt;					// level needed to continue
 	private int[][] levelArray;				// defines the positioning of tiles
 	private int levelWdt = DEFAULT_WIDTH;	// default width of standard level
@@ -22,6 +19,7 @@ public class Level {
 	private int viewPos = 0;					// level position (in pixel)
 
 	private TileSet tileset = null;
+	private BufferedImage image;
 	
 	public boolean moveRight() {
 		boolean bretval = false;
@@ -62,7 +60,7 @@ public class Level {
 				int y = Math.abs(rnd.nextInt()%(DEFAULT_HEIGHT-planets[num][2])); // y index of array
 				for ( int h = 0; h < planets[num][2]; h++ ) {
 					for ( int w = 0; w < planets[num][1]; w++ ) {
-						retval[y+h][x+w] = planets[num][0] + h*TILESET_WIDTH + w;
+						retval[y+h][x+w] = planets[num][0] + h*(tileset.getWidth()/TileSet.TILE_WIDTH) + w;
 					}
 				}
 			}
@@ -74,16 +72,28 @@ public class Level {
 	
 	public Level( int levelCnt, TileSet tileset ) {
 		this.levelCnt = levelCnt;
-		this.levelNxt = levelCnt * CONTINUE_OFFSET;
+		levelNxt = levelCnt * CONTINUE_OFFSET;
 		this.tileset = tileset;
-		if ( this.levelCnt == 0 ) {
-			this.levelArray = new CSV("src/csv/base_level.csv").getIntegerArray();
-			this.levelWdt = this.levelArray[0].length;
+		if ( levelCnt == 0 ) {
+			levelArray = new CSV("src/csv/base_level.csv").getIntegerArray();
+			levelWdt = levelArray[0].length;
 		} else {
-			this.levelArray = createNewLevel();
+			levelArray = createNewLevel();
+		}
+		image = new BufferedImage(TileSet.TILE_WIDTH * levelArray[0].length, TileSet.TILE_HEIGHT * levelArray.length, BufferedImage.TYPE_INT_ARGB);
+		for (int i = 0; i < levelArray.length; i++) {
+			for (int j = 0; j < levelArray[0].length; j++) {
+				int[] rgbArray = new int[64*64];
+				tileset.getTileset().getSubimage(levelArray[i][j]%10*64, (int)(levelArray[i][j]/10)*64, 64, 64).getRGB(0, 0, 64, 64, rgbArray, 0, 64);
+				image.setRGB(j*64, i*64, 64, 64, rgbArray, 0, 64);
+			}
 		}
 	}
 
+	public Image getImage() {
+		return image;
+	}
+	
 	public int getWidth() {
 		return levelWdt;
 	}
@@ -92,12 +102,23 @@ public class Level {
 		return levelHgt;
 	}
 	
-	public void renderMap(Graphics g) {
-		int startTile = viewPos/TileSet.TILE_WIDTH;
-	    for(int tileY = 0; tileY < levelHgt; tileY++){
-	    	for(int tileX = startTile; tileX < levelWdt; tileX++){
-	    		tileset.renderTile(g, levelArray[tileY][tileX], tileX * TileSet.TILE_WIDTH - viewPos, tileY * TileSet.TILE_HEIGHT);
-	    	}
-	    }
+	public TileSet getTileSet() {
+		return tileset;		
+	}
+	
+	public int[][] getLevelArray() {
+		return levelArray;		
+	}
+	
+	public int getLevelCnt() {
+		return levelCnt;
+	}
+	
+	public int getLevelNxt() {
+		return levelNxt;
+	}
+
+	public BufferedImage getSubimage() {
+		return image.getSubimage(viewPos, 0, 16 * TileSet.TILE_WIDTH, 9 * TileSet.TILE_HEIGHT);
 	}
 }

@@ -1,25 +1,20 @@
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferStrategy;
 import java.util.*;
 
 public class Game implements Runnable, KeyListener {
 	private static final int 	FPS 					= 60;
 	private static final long 	LOOP_TIME 				= 1000 / FPS;
-	public static final int 	WINDOW_WIDTH_TILE_NUM 	= 16;
-	public static final int 	WINDOW_HEIGHT_TILE_NUM 	= 9;
-	public static final int 	WINDOW_WIDTH 			= WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH;
-	public static final int 	WINDOW_HEIGHT 			= WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT;
+	public  static final int 	WINDOW_WIDTH_TILE_NUM 	= 16;
+	public  static final int 	WINDOW_HEIGHT_TILE_NUM 	= 9;
+	public  static final int 	WINDOW_WIDTH 			= WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH;
+	public  static final int 	WINDOW_HEIGHT 			= WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT;
 	private static final String GAME_TITLE 				= "spc_laz0r";
 	
 	private int levelCnt = 0;	// number of generated levels
-	private int activeLvl = 0;
+	private int activeLvl = 1;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
-	private Window window;
-	private BufferStrategy bufferstrategy;
-	private Graphics graphics;
+	private gui.Window mainWindow;
 	private String bgDir = "right";
 	
 	public static void main(String[] arg) {
@@ -27,24 +22,43 @@ public class Game implements Runnable, KeyListener {
 	}
 
 	public void run() {
-		long timestamp = System.currentTimeMillis();
+		long timestamp;
 	    long oldTimestamp;
-		gui.LoadingScreen ls = new gui.LoadingScreen();
+	    int loadingPercentage = 0;
+		mainWindow = new gui.Window("Loading " + (loadingPercentage+=5) + "%");
+		mainWindow.getFrame().addKeyListener(this);
 		new init.FileManager();
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating first (base) level
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating lvl 1
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));	// generating lvl 2
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset2.png",10,10)));	// generating lvl 3
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset3.png",10,10)));	// generating lvl 4
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset4.png",10,10)));	// generating lvl 5
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset5.png",10,10)));	// generating lvl 6
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset6.png",10,10)));	// generating lvl 7
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset7.png",10,10)));	// generating lvl 8
-		while((timestamp + 3000) > System.currentTimeMillis());
-		ls.exit();
-		window = new Window(GAME_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
-		window.getFrame().addKeyListener(this);
+		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
+		int speed = 100;
+		while(loadingPercentage <= 100) {
+			timestamp = System.currentTimeMillis();
+			while (timestamp + speed > System.currentTimeMillis());
+				mainWindow.changeTitle("Loading " + loadingPercentage++ + "%");
+				speed--;
+		}
+		timestamp = System.currentTimeMillis();
+		while (timestamp + 1000 > System.currentTimeMillis());
+
 		long teststamp1 = System.currentTimeMillis() , teststamp2 = teststamp1;
+		mainWindow.changeTitle(GAME_TITLE);
+		
 		
 		while(true) {
 			oldTimestamp = System.currentTimeMillis();
@@ -87,17 +101,7 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	private void render() {
-		Canvas canvas = window.getCanvas();
-		bufferstrategy = canvas.getBufferStrategy();
-	    if (bufferstrategy == null) {
-	        window.getCanvas().createBufferStrategy(3);
-	        return;
-	    }
-	    graphics = bufferstrategy.getDrawGraphics();
-	    graphics.clearRect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-	    levels.get(activeLvl).renderMap(graphics);
-	    bufferstrategy.show();
-	    graphics.dispose();
+		mainWindow.changeImage(levels.get(activeLvl).getSubimage());
 	}
 
 
