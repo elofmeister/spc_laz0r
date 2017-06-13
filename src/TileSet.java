@@ -14,8 +14,8 @@ public class TileSet {
 
 	public TileSet(String path, int width, int height) {
 		this.path = path;
-		this.width = width;
-		this.height = height;
+		this.width = width * TILE_WIDTH;
+		this.height = height * TILE_HEIGHT;
 		try {
 			tileset = ImageIO.read(TileSet.class.getResource(path));
 		} catch (IOException e) {
