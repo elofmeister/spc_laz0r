@@ -12,11 +12,16 @@ public class Game implements Runnable, KeyListener {
 	public  static final int 	WINDOW_HEIGHT 			= WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT;
 	private static final String GAME_TITLE 				= "spc_laz0r";
 	
+	private static final String	CAMERA_DIRECTION_RIGHT	= "right";
+	private static final String	CAMERA_DIRECTION_LEFT	= "left";
+	
 	private int levelCnt = 0;	// number of generated levels
-	private int activeLvl = 0;
+	private int activeLvl = 1;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
 	private gui.Window mainWindow;
-	private String bgDir = "right";
+	private String direction = CAMERA_DIRECTION_RIGHT;
+	@SuppressWarnings("unused")
+	private Character player = new Character("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	private Ships shp = new Ships(Ships.GLASSKANONE, 0, 1, 0, 0, 0, 0, 0);
 	
 	public static void main(String[] arg) {
@@ -24,6 +29,7 @@ public class Game implements Runnable, KeyListener {
 	}
 
 	public void run() {
+		//new init.SaveJSON("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0).save("save");
 		long timestamp;
 	    long oldTimestamp;
 	    int loadingPercentage = 0;
@@ -81,7 +87,7 @@ public class Game implements Runnable, KeyListener {
 		    teststamp2 = System.currentTimeMillis();
 		    
 		    if ( teststamp2 - teststamp1 >= 1 ) {
-		    	if ( bgDir == "right" ) {
+		    	if ( direction == CAMERA_DIRECTION_RIGHT ) {
 		    		levels.get(activeLvl).moveRight();
 		    	} else {
 		    		levels.get(activeLvl).moveLeft();
@@ -102,57 +108,95 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	private void render() {
-		/*
-		 * get sub-image
-		 * add character ship
-		 * add enemies
-		 * add all existing bullets
-		 * display image
-		 */
-		int[] rgbArray = new int[16*64*9*64];
-		levels.get(activeLvl).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbArray, 0, 16*64);
+		int[] rgbBackground = new int[16*64*9*64];
+		levels.get(activeLvl).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
+		int[] rgbShip = new int[64*64];
+		shp.getImage().getRGB(0, 0, 64, 64, rgbShip, 0, 64);
+
+		final int TRANSPARANCY = 16777215;
+		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+			for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+				if (rgbShip[i*TileSet.TILE_WIDTH+j]!=TRANSPARANCY) {
+					rgbBackground[(shp.getCoordinates().getY()+i)*16*64 + shp.getCoordinates().getX() + j] = rgbShip[i*TileSet.TILE_WIDTH+j];
+				}
+			}
+		}
+		
 		BufferedImage subimg = new BufferedImage(16*64, 9*64, BufferedImage.TYPE_INT_ARGB);
-		subimg.setRGB(0, 0, 16*64, 9*64, rgbArray, 0, 16*64);
-		rgbArray = new int[64*64];
-		shp.getImage().getRGB(0, 0, 64, 64, rgbArray, 0, 64);
-		subimg.setRGB(shp.getCoordinates().getX(), shp.getCoordinates().getY(), 64, 64, rgbArray, 0, 64);
+		subimg.setRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
 		mainWindow.changeImage(subimg);
 	}
 
 
 	public void keyPressed(KeyEvent e) {
-		/*
-		 * check, if coordinates out of level range
-		 */
-		switch (e.getKeyChar()) {
-		case 'w':
-			shp.getCoordinates().setY(shp.getCoordinates().getY()-1);
+		final int KEY_W 	= 87;
+		final int KEY_A 	= 65;
+		final int KEY_S 	= 83;
+		final int KEY_D 	= 68;
+		final int KEY_LEFT 	= 37;
+		final int KEY_UP 	= 38;
+		final int KEY_RIGHT = 39;
+		final int KEY_DOWN 	= 40;
+		
+		switch (e.getKeyCode()) {
+		case KEY_W:
+			if (!(shp.getCoordinates().getY()-5<0)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()-5);
+			} else {
+				shp.getCoordinates().setY(0);
+			}			
 			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
 				shp.setAnimation(Ships.MOVE_LEFT_UP);
 			} else {
 				shp.setAnimation(Ships.MOVE_RIGHT_UP);
 			}
 			break;
-		case 'a':
-			shp.getCoordinates().setX(shp.getCoordinates().getX()-1);
+		case KEY_A:
+			if (!(shp.getCoordinates().getX()-5<0)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()-5);
+			} else {
+				shp.getCoordinates().setX(0);
+				direction = CAMERA_DIRECTION_LEFT;
+			}			
 			shp.setAnimation(Ships.MOVE_LEFT);
 			break;
-		case 's':
-			shp.getCoordinates().setY(shp.getCoordinates().getY()+1);
+		case KEY_S:
+			if (!(shp.getCoordinates().getY()+5>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()+5);
+			} else {
+				shp.getCoordinates().setY(WINDOW_HEIGHT-TileSet.TILE_HEIGHT);
+			}
 			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
 				shp.setAnimation(Ships.MOVE_LEFT_DOWN);
 			} else {
 				shp.setAnimation(Ships.MOVE_RIGHT_DOWN);
 			}
 			break;
-		case 'd':
-			shp.getCoordinates().setX(shp.getCoordinates().getX()+1);
+		case KEY_D:
+			if (!(shp.getCoordinates().getX()+5>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()+5);
+			} else {
+				shp.getCoordinates().setX(WINDOW_WIDTH-TileSet.TILE_WIDTH);
+				direction = CAMERA_DIRECTION_RIGHT;
+			}
 			shp.setAnimation(Ships.MOVE_RIGHT);
+			break;
+		case KEY_LEFT:
+			
+			break;
+		case KEY_UP:
+			
+			break;
+		case KEY_RIGHT:
+			
+			break;
+		case KEY_DOWN:
+			
 			break;
 
 		default:
 			break;
-		}		
+		}
 	}
 
 	public void keyReleased(KeyEvent e) {

@@ -25,14 +25,16 @@ public class Ships{
 	public static final int MOVE_LEFT_UP = 8;
 	public static final int MOVE_LEFT = 9;
 
-	public static final int GLASSKANONE = 1;
+	public static final int STANDARDO = 1;
 	public static final int RUMPLER = 2;
-	public static final int STANDARDO = 3;
+	public static final int GLASSKANONE = 3;
 	
 	private BufferedImage[] image = new BufferedImage[10];		// all ship tiles
 	private boolean spawned = false;
-	private int spawnCnt = 0;
-	private int animation = SPAWN_0;
+	private int spawnCnt = SPAWN_0;
+	private int animation = MOVE_RIGHT;
+	
+	private long spawnTimer = System.currentTimeMillis();
 	
 	private Coordinates coor = new Coordinates(256, 256);
 		
@@ -61,9 +63,9 @@ public class Ships{
 		TileSet tileset = new TileSet("tiles/ships.png", 10, 10);
 		for (int i = 0; i <= MOVE_LEFT; i++) {
 			if (i <= SPAWN_3) {
-				image[i] = tileset.getTileset().getSubimage(i * 64 + 64, (this.shipclass-GLASSKANONE) * 64 + 64, 64, 64);
+				image[i] = tileset.getTileset().getSubimage(i * 64 + 64, (this.shipclass-STANDARDO) * 128 + 64, 64, 64);
 			} else {
-				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT) * 64, (this.shipclass-GLASSKANONE) * 64, 64, 64);
+				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT) * 64, (this.shipclass-STANDARDO) * 128, 64, 64);
 			}
 		}
 	}  
@@ -179,9 +181,17 @@ public class Ships{
 			}
 		}
 		else {
-			retval = image[spawnCnt++];
-			if (spawnCnt > SPAWN_3) {
-				spawned = true;
+			/*
+			 * not working correctly + too fast
+			 */
+			if (spawnTimer+1000<System.currentTimeMillis()) {
+				spawnTimer = System.currentTimeMillis();
+				retval = image[spawnCnt++];
+				if (spawnCnt > SPAWN_3) {
+					spawned = true;
+				}
+			} else {
+				retval = image[spawnCnt];
 			}
 		}
 		return retval;

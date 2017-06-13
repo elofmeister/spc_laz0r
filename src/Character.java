@@ -1,156 +1,160 @@
-import java.util.*;
-import java.math.*;
 
-// z.B. Character plr = new Character("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0); aufruf aus main mit übergabewerten
+// z.B. Character player1  =  new Character("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0); call from main with values
 
-public class Character{
+public class Character {
 
-	private String NAME;
-	private int XP;
-	private int OLDXP;
-	private int LVL;
-	private int SKILLPTS;
-	private double AGL;
-	private double CRITPRB;
-	private double CRITDMG;
-	private int LASER;
-	private int ACID;
-	private int ICE;
-	private int EMP;
-	private int CASH;
+	private String name;
+	private int xp;
+	private int oldxp;
+	private int lvl;
+	private int skillpts;
+	private double agl;
+	private double critprb;
+	private double critdmg;
+	private int laser;
+	private int acid;
+	private int ice;
+	private int emp;
+	private int cash;
 	
+	/*
+	 * some space for final modifiers
+	 * 
+	 * 
+	 * 
+	 */
 	
-	Character(String meNAME,int meXP, int meLVL, int meSKILLPTS, double meAGL, double meCRITPRB, double meCRITDMG, int meLASER, int meACID , int meICE, int meEMP, int meCASH){
+	public Character(String name,int xp, int lvl, int skillpts, double agl, double critprb, double critdmg, int laser, int acid , int ice, int emp, int cash) {
 		
-		 NAME = meNAME;
-		 XP = meXP;
-		 OLDXP = meXP;
-		 LVL = meLVL;
-		 SKILLPTS = meSKILLPTS;
-		 AGL = meAGL;
-	     CRITPRB = meCRITPRB;
-		 CRITDMG = meCRITDMG;
-		 LASER = meLASER;
-		 ACID = meACID;
-		 ICE = meICE;
-		 EMP = meEMP;
-		 CASH = meCASH;
+		this.name  =  name;
+		this.xp  =  xp;
+		this.oldxp  =  xp;
+		this.lvl  =  lvl;
+		this.skillpts  =  skillpts;
+		this.agl  =  agl;
+		this.critprb  =  critprb;
+		this.critdmg  =  critdmg;
+		this.laser  =  laser;
+		this.acid  =  acid;
+		this.ice  =  ice;
+		this.emp  =  emp;
+		this.cash  =  cash;
 	}  
 	
 	
 	//all needed get constructors
-	public String getNAME(){
-		return NAME;
+	public String getName(){
+		return name;
 	}
-	public int getXP(){
-		return XP;
-	}
-	 
-	public int getLVL(){
-		return LVL;
-	}
-	
-	public int getSKILLPTS(){
-		return SKILLPTS;
-	}
-	
-	public double getAGL(){
-		return AGL;
-	}
-	
-	public double getCRITPRB(){
-		return CRITPRB;
-	}
-	
-	public double getCRITDMG(){
-		return CRITDMG;
+	public int getXp(){
+		return xp;
 	}
 	 
-	public int getLASER(){
-		return LASER;
+	public int getLvl(){
+		return lvl;
 	}
 	
-	public int getACID(){
-		return ACID;
+	public int getSkillpts(){
+		return skillpts;
 	}
 	
-	public int getICE(){
-		return ICE;
-	}
-	public int getEMP(){
-		return EMP;
+	public double getAgl(){
+		return agl;
 	}
 	
-	public int getCASH(){
-		return CASH;
+	public double getCritprb(){
+		return critprb;
+	}
+	
+	public double getCritdmg(){
+		return critdmg;
+	}
+	 
+	public int getLaser(){
+		return laser;
+	}
+	
+	public int getAcid(){
+		return acid;
+	}
+	
+	public int getIce(){
+		return ice;
+	}
+	public int getEmp(){
+		return emp;
+	}
+	
+	public int getCash(){
+		return cash;
 	}
 	
 	//all needed set constructors
-	public void setNAME(String Val){
-		 NAME=Val;
+	public void setName(String val){
+		 name = val;
 	}
-	public void setXP(int Val){  //Level Calculating formula
-	     XP=XP+Val;
+	public void setXp(int val){  //Level Calculating formula
+	     xp += val;
 	     
-	    if(LVL<=10){				//low Level formula
-	    	while(XP>=LVL*LVL*2){
-	    		setLVL(1);
-		    	OLDXP=XP;
+	    if(lvl <= 10){				//low Level formula
+	    	while(xp >= lvl*lvl*2){
+	    		setLvl(1);
+		    	oldxp = xp;
+	    		}
 	    	}
-	    }
-	    if(XP>=200){				//mid level formula
-	    if(LVL>=11 && LVL<=50 ){	
-	     while(XP>=OLDXP*1.1){
-	    	 setLVL(1);
-	    	 OLDXP=XP;
-	     }
-	    }
-	    if(LVL>=51 && LVL<=100 ){ 	//high level formula
-	    	while(XP>=OLDXP*1.05){
-		    	 setLVL(1);
-		    	 OLDXP=XP;
-		     }
-	     }
-	    }
+		    if(xp >= 200){				//mid level formula
+		    if(lvl >= 11 && lvl <= 50 ){	
+		     while(xp >= oldxp*1.1){
+		    	 setLvl(1);
+		    	 oldxp = xp;
+		     	}
+		    }
+			    if(lvl >= 51 && lvl <= 100 ){ 	//high level formula
+			    	while(xp >= oldxp*1.05){
+				    	 setLvl(1);
+				    	 oldxp = xp;
+				    }
+		     	}
+		    }
 	 }
 	 
-	public void setLVL(int Val){		//per 1 level = 4 skillpoints 
-		 LVL=LVL+Val;
-		 setSKILLPTS(4);
+	public void setLvl(int val){		//per 1 level  =  4 skillpoints 
+		 lvl += val;
+		 setSkillpts(4);
 	}
 	
-	public void setSKILLPTS(int Val){  //max=400
-		SKILLPTS=SKILLPTS+Val;
+	public void setSkillpts(int val){  //max = 400
+		skillpts += val;
 	}
 	
-	public void setAGL(double Val){		//start=1 max=3.5 step=0.025  
-		 AGL=AGL+Val;
+	public void setAgl(double val){		//start = 1 max = 3.5 step = 0.025  
+		 agl += val;
 	}
 	
-	public void setCRITPRB(double Val){ //max=0.2 step=0.002
-		 CRITPRB=CRITPRB+Val;
+	public void setCritprb(double val){ //max = 0.2 step = 0.002
+		 critprb += val;
 	}
 	
-	public void setCRITDMG(double Val){	//max=5x step=0.05
-		 CRITDMG=CRITDMG+Val;
+	public void setCritdmg(double val){	//max = 5x step = 0.05
+		 critdmg += val;
 	}
 	 
-	public void setLASER(int Val){	//Max=100
-		 LASER=LASER+Val;
+	public void setLaser(int val){	//Max = 100
+		 laser += val;
 	}
 	
-	public void setACID(int Val){	//Max=100
-		 ACID=ACID+Val;
+	public void setAcid(int val){	//Max = 100
+		 acid += val;
 	}
 	
-	public void setICE(int Val){	//Max=100
-		 ICE=ICE+Val;
+	public void setIce(int val){	//Max = 100
+		 ice += val;
 	}
-	public void setEMP(int Val){	//Max=100
-		 EMP=EMP+Val;
+	public void setEmp(int val){	//Max = 100
+		 emp += val;
 	}
-	public void setCASH(int Val){	//Max= 1 000 000
-		 CASH=CASH+Val;
+	public void setCash(int val){	//Max =  1 000 000
+		 cash += val;
 	}
 	
 }

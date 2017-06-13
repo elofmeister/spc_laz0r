@@ -83,7 +83,7 @@ public class Level {
 		image = new BufferedImage(TileSet.TILE_WIDTH * levelArray[0].length, TileSet.TILE_HEIGHT * levelArray.length, BufferedImage.TYPE_INT_ARGB);
 		for (int i = 0; i < levelArray.length; i++) {
 			for (int j = 0; j < levelArray[0].length; j++) {
-				int[] rgbArray = new int[64*64];
+				int[] rgbArray = new int[64 * 64];
 				tileset.getTileset().getSubimage(levelArray[i][j]%10*64, (int)(levelArray[i][j]/10)*64, 64, 64).getRGB(0, 0, 64, 64, rgbArray, 0, 64);
 				image.setRGB(j*64, i*64, 64, 64, rgbArray, 0, 64);
 			}
