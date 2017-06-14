@@ -40,20 +40,20 @@ public class SaveJSON {
 	@SuppressWarnings("unchecked")
 	public void save(String filename) {
 		JSONObject obj = new JSONObject();
-		JSONObject character = new JSONObject();
-		character.put("name", name);
-		character.put("xp", xp);
-		character.put("lvl", lvl);
-		character.put("skillpts", skillpts);
-		character.put("agl", agl);
-		character.put("critprb", critprb);
-		character.put("critdmg", critdmg);
-		character.put("laser", laser);
-		character.put("acid", acid);
-		character.put("ice", ice);
-		character.put("emp", emp);
-		character.put("cash", cash);
-		obj.put("character", character);
+		JSONObject player = new JSONObject();
+		player.put("name", name);
+		player.put("xp", xp);
+		player.put("lvl", lvl);
+		player.put("skillpts", skillpts);
+		player.put("agl", agl);
+		player.put("critprb", critprb);
+		player.put("critdmg", critdmg);
+		player.put("laser", laser);
+		player.put("acid", acid);
+		player.put("ice", ice);
+		player.put("emp", emp);
+		player.put("cash", cash);
+		obj.put("player", player);
 		try (FileWriter file = new FileWriter(FileManager.getSavePath() + "/"+filename+".json")) {
 		      file.write(obj.toJSONString());
 		      file.flush();

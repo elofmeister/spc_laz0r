@@ -21,8 +21,184 @@ public class Game implements Runnable, KeyListener {
 	private gui.Window mainWindow;
 	private String direction = CAMERA_DIRECTION_RIGHT;
 	@SuppressWarnings("unused")
-	private Character player = new Character("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	private Player player = new Player("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	private Ships shp = new Ships(Ships.GLASSKANONE, 0, 1, 0, 0, 0, 0, 0);
+	private BufferedImage bulletTileset = new TileSet("tiles/bulletsitems.png", 10, 10).getTileset();
+	private List<Bullet> bullets = new List<Bullet>() {
+		int size = 0;
+		long timestamp = System.currentTimeMillis();
+		Bullet[] array = null;
+		
+		@Override
+		public <T> T[] toArray(T[] a) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public Object[] toArray() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public List<Bullet> subList(int fromIndex, int toIndex) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public int size() {
+			return size;
+		}
+		
+		@Override
+		public Bullet set(int index, Bullet element) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public Bullet remove(int index) {
+			if (!isEmpty() && index < size && index >= 0) {
+				array[index].dispose();
+				array[index] = null;
+				Bullet[] tmp = array;
+				System.out.println("Bullet "+size+" removed.");
+				array = new Bullet[--size];
+				for (int i = 0, j = 0; i < tmp.length; i++) {
+					if (tmp[i] != null) {
+						array[j++] = tmp[i];
+					}
+				}
+			}
+			return null;
+		}
+		
+		@Override
+		public boolean remove(Object o) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public ListIterator<Bullet> listIterator(int index) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public ListIterator<Bullet> listIterator() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public int lastIndexOf(Object o) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public Iterator<Bullet> iterator() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+		@Override
+		public boolean isEmpty() {
+			boolean bretval = false;
+			if (size == 0) {
+				bretval = true;
+			}
+			return bretval;
+		}
+		
+		@Override
+		public int indexOf(Object o) {
+			// TODO Auto-generated method stub
+			return 0;
+		}
+		
+		@Override
+		public Bullet get(int index) {
+			Bullet retval = null;
+			if (!isEmpty() && index < size && index >= 0) {
+				retval = array[index];
+			}
+			return retval;
+		}
+		
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean contains(Object o) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public void clear() {
+			array = null;
+			size = 0;			
+		}
+		
+		@Override
+		public boolean addAll(int index, Collection<? extends Bullet> c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public boolean addAll(Collection<? extends Bullet> c) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+		
+		@Override
+		public void add(int index, Bullet element) {
+			// TODO Auto-generated method stub
+			
+		}
+		
+		@Override
+		public boolean add(Bullet e) {
+			boolean bretval = false;
+			if (timestamp+200<System.currentTimeMillis()) {
+				Bullet[] tmp = null;
+				if (!isEmpty()) {
+					tmp = array;
+				}
+				array = new Bullet[size+1];
+				if (!isEmpty()) {
+					for (int i = 0; i < tmp.length; i++) {
+						array[i] = tmp[i];
+					}
+				}
+				array[size++] = e;
+				System.out.println("Bullet "+size+" added.");
+				timestamp = System.currentTimeMillis();
+				bretval = true;
+			}
+			return bretval;
+		}
+	};
 	
 	public static void main(String[] arg) {
 	    new Thread(new Game()).start();	// calling run method 
@@ -74,7 +250,7 @@ public class Game implements Runnable, KeyListener {
 		    if ( timestamp - oldTimestamp > LOOP_TIME ) {
 		        continue;
 		    }
-		    render();
+		    render();	
 		    timestamp = System.currentTimeMillis();
 		    if ( timestamp - oldTimestamp <= LOOP_TIME ) {
 		        try {
@@ -110,10 +286,31 @@ public class Game implements Runnable, KeyListener {
 	private void render() {
 		int[] rgbBackground = new int[16*64*9*64];
 		levels.get(activeLvl).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
+
+		final int TRANSPARANCY 	= 16777215;
+		final int BLACK			= -16777216;
+		
+		if (!bullets.isEmpty()) {
+			for (int n = 0; n < bullets.size(); n++) {
+				int[] rgbBullet = new int[64*64];
+				bullets.get(n).getImage().getRGB(0, 0, 64, 64, rgbBullet, 0, 64);
+				if (bullets.get(n).move(20)) {
+					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+							if (rgbBullet[i*TileSet.TILE_WIDTH+j]!=BLACK && bullets.size()>n) {
+								rgbBackground[(bullets.get(n).getCoordinates().getY()+i)*16*64 + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i*TileSet.TILE_WIDTH+j];
+							}
+						}
+					}
+				} else {
+					bullets.remove(n--);
+				}				
+			}
+		}
+		
+		
 		int[] rgbShip = new int[64*64];
 		shp.getImage().getRGB(0, 0, 64, 64, rgbShip, 0, 64);
-
-		final int TRANSPARANCY = 16777215;
 		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 			for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
 				if (rgbShip[i*TileSet.TILE_WIDTH+j]!=TRANSPARANCY) {
@@ -128,6 +325,7 @@ public class Game implements Runnable, KeyListener {
 	}
 
 
+	
 	public void keyPressed(KeyEvent e) {
 		final int KEY_W 	= 87;
 		final int KEY_A 	= 65;
@@ -182,16 +380,16 @@ public class Game implements Runnable, KeyListener {
 			shp.setAnimation(Ships.MOVE_RIGHT);
 			break;
 		case KEY_LEFT:
-			
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Bullet.RED, bulletTileset));
 			break;
 		case KEY_UP:
-			
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Bullet.RED, bulletTileset));
 			break;
-		case KEY_RIGHT:
-			
+		case KEY_RIGHT:	
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Bullet.RED, bulletTileset));
 			break;
 		case KEY_DOWN:
-			
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Bullet.RED, bulletTileset));
 			break;
 
 		default:
@@ -200,7 +398,28 @@ public class Game implements Runnable, KeyListener {
 	}
 
 	public void keyReleased(KeyEvent e) {
+		final int KEY_W 	= 87;
+		final int KEY_S 	= 83;
 		
+		switch (e.getKeyCode()) {
+		case KEY_W:		
+			if (shp.getAnimation() == Ships.MOVE_LEFT_UP) {
+				shp.setAnimation(Ships.MOVE_LEFT);
+			} else if (shp.getAnimation() == Ships.MOVE_RIGHT_UP) {
+				shp.setAnimation(Ships.MOVE_RIGHT);
+			}
+			break;
+		case KEY_S:
+			if (shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
+				shp.setAnimation(Ships.MOVE_LEFT);
+			} else if (shp.getAnimation() == Ships.MOVE_RIGHT_DOWN) {
+				shp.setAnimation(Ships.MOVE_RIGHT);
+			}
+			break;
+
+		default:
+			break;
+		}
 	}
 
 	public void keyTyped(KeyEvent e) {
