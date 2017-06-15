@@ -250,7 +250,8 @@ public class Game implements Runnable, KeyListener {
 		    if ( timestamp - oldTimestamp > LOOP_TIME ) {
 		        continue;
 		    }
-		    render();	
+		    handleKeys();
+		    render();
 		    timestamp = System.currentTimeMillis();
 		    if ( timestamp - oldTimestamp <= LOOP_TIME ) {
 		        try {
@@ -280,6 +281,77 @@ public class Game implements Runnable, KeyListener {
 			Thread.sleep(15);
 		} catch (InterruptedException e) {
 			System.err.println(e.getMessage());
+		}
+	}
+	
+	private void handleKeys() {
+		if (key_a) {
+			if (!(shp.getCoordinates().getX()-5<0)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()-5);
+			} else {
+				shp.getCoordinates().setX(0);
+				direction = CAMERA_DIRECTION_LEFT;
+			}			
+			shp.setAnimation(Ships.MOVE_LEFT);
+		}
+		if (key_d) {
+			if (!(shp.getCoordinates().getX()+5>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()+5);
+			} else {
+				shp.getCoordinates().setX(WINDOW_WIDTH-TileSet.TILE_WIDTH);
+				direction = CAMERA_DIRECTION_RIGHT;
+			}
+			shp.setAnimation(Ships.MOVE_RIGHT);
+		}
+		if (key_w) {
+			if (!(shp.getCoordinates().getY()-5<0)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()-5);
+			} else {
+				shp.getCoordinates().setY(0);
+			}			
+			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
+				shp.setAnimation(Ships.MOVE_LEFT_UP);
+			} else {
+				shp.setAnimation(Ships.MOVE_RIGHT_UP);
+			}
+		}
+		if (key_s) {
+			if (!(shp.getCoordinates().getY()+5>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()+5);
+			} else {
+				shp.getCoordinates().setY(WINDOW_HEIGHT-TileSet.TILE_HEIGHT);
+			}
+			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
+				shp.setAnimation(Ships.MOVE_LEFT_DOWN);
+			} else {
+				shp.setAnimation(Ships.MOVE_RIGHT_DOWN);
+			}
+		}
+		if (key_right) {
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Bullet.RED, bulletTileset));
+		}
+		if (key_left) {
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Bullet.RED, bulletTileset));
+		}
+		if (key_up) {
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Bullet.RED, bulletTileset));
+		}
+		if (key_down) {
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Bullet.RED, bulletTileset));
+		}
+		if (!key_w) {
+			if (shp.getAnimation() == Ships.MOVE_LEFT_UP) {
+				shp.setAnimation(Ships.MOVE_LEFT);
+			} else if (shp.getAnimation() == Ships.MOVE_RIGHT_UP) {
+				shp.setAnimation(Ships.MOVE_RIGHT);
+			}
+		}
+		if (!key_s) {
+			if (shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
+				shp.setAnimation(Ships.MOVE_LEFT);
+			} else if (shp.getAnimation() == Ships.MOVE_RIGHT_DOWN) {
+				shp.setAnimation(Ships.MOVE_RIGHT);
+			}
 		}
 	}
 	
@@ -324,99 +396,80 @@ public class Game implements Runnable, KeyListener {
 		mainWindow.changeImage(subimg);
 	}
 
-
+	boolean key_w 		= false;
+	boolean key_a 		= false;
+	boolean key_s 		= false;
+	boolean key_d 		= false;
+	boolean key_left 	= false;
+	boolean key_up 		= false;
+	boolean key_right 	= false;
+	boolean key_down 	= false;
+	final int KEY_W 	= 87;
+	final int KEY_A 	= 65;
+	final int KEY_S 	= 83;
+	final int KEY_D 	= 68;
+	final int KEY_LEFT 	= 37;
+	final int KEY_UP 	= 38;
+	final int KEY_RIGHT = 39;
+	final int KEY_DOWN 	= 40;
 	
 	public void keyPressed(KeyEvent e) {
-		final int KEY_W 	= 87;
-		final int KEY_A 	= 65;
-		final int KEY_S 	= 83;
-		final int KEY_D 	= 68;
-		final int KEY_LEFT 	= 37;
-		final int KEY_UP 	= 38;
-		final int KEY_RIGHT = 39;
-		final int KEY_DOWN 	= 40;
-		
 		switch (e.getKeyCode()) {
 		case KEY_W:
-			if (!(shp.getCoordinates().getY()-5<0)) {
-				shp.getCoordinates().setY(shp.getCoordinates().getY()-5);
-			} else {
-				shp.getCoordinates().setY(0);
-			}			
-			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
-				shp.setAnimation(Ships.MOVE_LEFT_UP);
-			} else {
-				shp.setAnimation(Ships.MOVE_RIGHT_UP);
-			}
+			key_w = true;
 			break;
 		case KEY_A:
-			if (!(shp.getCoordinates().getX()-5<0)) {
-				shp.getCoordinates().setX(shp.getCoordinates().getX()-5);
-			} else {
-				shp.getCoordinates().setX(0);
-				direction = CAMERA_DIRECTION_LEFT;
-			}			
-			shp.setAnimation(Ships.MOVE_LEFT);
+			key_a = true;
 			break;
 		case KEY_S:
-			if (!(shp.getCoordinates().getY()+5>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
-				shp.getCoordinates().setY(shp.getCoordinates().getY()+5);
-			} else {
-				shp.getCoordinates().setY(WINDOW_HEIGHT-TileSet.TILE_HEIGHT);
-			}
-			if (shp.getAnimation() == Ships.MOVE_LEFT || shp.getAnimation() == Ships.MOVE_LEFT_UP || shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
-				shp.setAnimation(Ships.MOVE_LEFT_DOWN);
-			} else {
-				shp.setAnimation(Ships.MOVE_RIGHT_DOWN);
-			}
+			key_s = true;
 			break;
 		case KEY_D:
-			if (!(shp.getCoordinates().getX()+5>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
-				shp.getCoordinates().setX(shp.getCoordinates().getX()+5);
-			} else {
-				shp.getCoordinates().setX(WINDOW_WIDTH-TileSet.TILE_WIDTH);
-				direction = CAMERA_DIRECTION_RIGHT;
-			}
-			shp.setAnimation(Ships.MOVE_RIGHT);
+			key_d = true;
 			break;
 		case KEY_LEFT:
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Bullet.RED, bulletTileset));
+			key_left = true;
 			break;
 		case KEY_UP:
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Bullet.RED, bulletTileset));
+			key_up = true;
 			break;
 		case KEY_RIGHT:	
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Bullet.RED, bulletTileset));
+			key_right = true;
 			break;
 		case KEY_DOWN:
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Bullet.RED, bulletTileset));
+			key_down = true;
 			break;
-
 		default:
 			break;
 		}
 	}
 
-	public void keyReleased(KeyEvent e) {
-		final int KEY_W 	= 87;
-		final int KEY_S 	= 83;
-		
+	public void keyReleased(KeyEvent e) {	
 		switch (e.getKeyCode()) {
-		case KEY_W:		
-			if (shp.getAnimation() == Ships.MOVE_LEFT_UP) {
-				shp.setAnimation(Ships.MOVE_LEFT);
-			} else if (shp.getAnimation() == Ships.MOVE_RIGHT_UP) {
-				shp.setAnimation(Ships.MOVE_RIGHT);
-			}
+		case KEY_W:
+			key_w = false;
+			break;
+		case KEY_A:
+			key_a = false;
 			break;
 		case KEY_S:
-			if (shp.getAnimation() == Ships.MOVE_LEFT_DOWN) {
-				shp.setAnimation(Ships.MOVE_LEFT);
-			} else if (shp.getAnimation() == Ships.MOVE_RIGHT_DOWN) {
-				shp.setAnimation(Ships.MOVE_RIGHT);
-			}
+			key_s = false;
 			break;
-
+		case KEY_D:
+			key_d = false;
+			break;
+		case KEY_LEFT:
+			key_left = false;
+			break;
+		case KEY_UP:
+			key_up = false;
+			break;
+		case KEY_RIGHT:	
+			key_right = false;
+			break;
+		case KEY_DOWN:
+			key_down = false;
+			break;
 		default:
 			break;
 		}
