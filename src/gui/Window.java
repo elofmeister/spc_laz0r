@@ -1,10 +1,12 @@
 package gui;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
+import java.util.Random;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -17,7 +19,7 @@ public class Window {
 	// Background-Image
 	private Component comp = new Component() {
 		private static final long serialVersionUID = 2513633783220324477L;
-		Image img = new ImageIcon(this.getClass().getResource("images/loading.png")).getImage();
+		Image img = new ImageIcon(this.getClass().getResource("images/loading1.png")).getImage();
 	    @Override
 	    public void paint(Graphics g) {
 	        super.paint(g);
@@ -40,7 +42,11 @@ public class Window {
 		    frame.setSize((int)config.getWidth(), (int)config.getHeight());
 			frame.setLocationRelativeTo(null);
 		}
-		frame.getContentPane().setCursor(new gui.BlankCursor().getCursor());
+	    setBlankCursor();
+	    Random rnd = new Random();
+	    rnd.setSeed(System.currentTimeMillis());
+	    int num = Math.abs(rnd.nextInt()%3)+1;
+	    changeImage(new ImageIcon(this.getClass().getResource("images/loading"+num+".png")).getImage());
 	}
 
 	public Image PathToImage(String path) {
@@ -77,5 +83,13 @@ public class Window {
 	
 	public JFrame getFrame() {
 		return frame;
+	}
+	
+	public void setBlankCursor() {
+		frame.setCursor(new gui.BlankCursor().getCursor());
+	}
+	
+	public void setMenuCursor() {
+		frame.setCursor(new gui.MenuCursor().getCursor());
 	}
 }

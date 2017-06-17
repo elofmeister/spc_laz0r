@@ -3,8 +3,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import gui.Window;
 
@@ -20,6 +22,7 @@ public class MenuManager {
 	private List<Bullet> bullets;
 	private List<Level> levels;
 	private int activeLvl;
+	private int loading;
 	
 	private int activeMenu = LOADING;
 	
@@ -34,7 +37,7 @@ public class MenuManager {
 	private BufferedImage getLoading() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/loading.png"));
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/loading"+loading+".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -101,6 +104,9 @@ public class MenuManager {
 		switch (activeMenu) {
 		case LOADING:
 			window.setBlankCursor();
+			Random rnd = new Random();
+		    rnd.setSeed(System.currentTimeMillis());
+		    loading = Math.abs(rnd.nextInt()%3)+1;
 			break;
 		case MENU:
 			window.setMenuCursor();

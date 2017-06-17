@@ -372,15 +372,6 @@ public class Game implements Runnable, KeyListener {
 			case KEY_DOWN:
 				key_down = true;
 				break;
-			case 77:
-				int menu = menuManager.getActiveMenu();
-				if (menu < MenuManager.LEVEL) {
-					menu++;
-				} else {
-					menu = MenuManager.LOADING;
-				}
-				menuManager.setActiveMenu(menu);
-				break;
 			default:
 				break;
 			}
