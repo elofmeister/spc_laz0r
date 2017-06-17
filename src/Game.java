@@ -18,7 +18,7 @@ public class Game implements Runnable, KeyListener {
 	private int levelCnt = 0;	// number of generated levels
 	private int activeLvl = 1;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
-	private gui.Window mainWindow;
+	private gui.Window mainWindow = new gui.Window(GAME_TITLE);
 	private String direction = CAMERA_DIRECTION_RIGHT;
 	@SuppressWarnings("unused")
 	private Player player = new Player("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
@@ -199,6 +199,7 @@ public class Game implements Runnable, KeyListener {
 			return bretval;
 		}
 	};
+	private MenuManager menuManager = new MenuManager(mainWindow, shp, bullets, levels, activeLvl);
 	
 	public static void main(String[] arg) {
 	    new Thread(new Game()).start();	// calling run method 
@@ -208,42 +209,20 @@ public class Game implements Runnable, KeyListener {
 		//new init.SaveJSON("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0).save("save");
 		long timestamp;
 	    long oldTimestamp;
-	    int loadingPercentage = 0;
-		mainWindow = new gui.Window("Loading " + (loadingPercentage+=5) + "%");
-		mainWindow.getFrame().addKeyListener(this);
+		menuManager.setActiveMenu(MenuManager.LOADING);
 		new init.FileManager();
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating first (base) level
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating lvl 1
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));	// generating lvl 2
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset2.png",10,10)));	// generating lvl 3
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset3.png",10,10)));	// generating lvl 4
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset4.png",10,10)));	// generating lvl 5
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset5.png",10,10)));	// generating lvl 6
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset6.png",10,10)));	// generating lvl 7
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset7.png",10,10)));	// generating lvl 8
-		mainWindow.changeTitle("Loading " + (loadingPercentage++) + "%");
-		int speed = 100;
-		while(loadingPercentage <= 100) {
-			timestamp = System.currentTimeMillis();
-			while (timestamp + speed > System.currentTimeMillis());
-				mainWindow.changeTitle("Loading " + loadingPercentage++ + "%");
-				speed--;
-		}
-		timestamp = System.currentTimeMillis();
-		while (timestamp + 1000 > System.currentTimeMillis());
-
-		long teststamp1 = System.currentTimeMillis() , teststamp2 = teststamp1;
-		mainWindow.changeTitle(GAME_TITLE);
-		
-		while(true) {
+		menuManager.setActiveMenu(MenuManager.MENU);
+		mainWindow.getFrame().addKeyListener(this);
+		while(true) {	
 			oldTimestamp = System.currentTimeMillis();
 		    update();
 		    timestamp = System.currentTimeMillis();
@@ -251,7 +230,7 @@ public class Game implements Runnable, KeyListener {
 		        continue;
 		    }
 		    handleKeys();
-		    render();
+		    mainWindow.changeImage(menuManager.get());
 		    timestamp = System.currentTimeMillis();
 		    if ( timestamp - oldTimestamp <= LOOP_TIME ) {
 		        try {
@@ -260,19 +239,11 @@ public class Game implements Runnable, KeyListener {
 		        	System.err.println(e.getMessage());
 		        }
 		    }
-		    
-		    teststamp2 = System.currentTimeMillis();
-		    
-		    if ( teststamp2 - teststamp1 >= 1 ) {
-		    	if ( direction == CAMERA_DIRECTION_RIGHT ) {
-		    		levels.get(activeLvl).moveRight();
-		    	} else {
-		    		levels.get(activeLvl).moveLeft();
-		    	}
-		    	teststamp1 = teststamp2;
-		    	
-		    }
-		    
+	    	if ( direction == CAMERA_DIRECTION_RIGHT ) {
+	    		levels.get(activeLvl).moveRight();
+	    	} else {
+	    		levels.get(activeLvl).moveLeft();
+	    	}
 		}
 	}
 	
@@ -327,17 +298,19 @@ public class Game implements Runnable, KeyListener {
 				shp.setAnimation(Ships.MOVE_RIGHT_DOWN);
 			}
 		}
+		Random rnd = new Random();
+		rnd.setSeed(System.currentTimeMillis());
 		if (key_right) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Bullet.RED, bulletTileset));
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
 		}
 		if (key_left) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Bullet.RED, bulletTileset));
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
 		}
 		if (key_up) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Bullet.RED, bulletTileset));
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
 		}
 		if (key_down) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Bullet.RED, bulletTileset));
+			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
 		}
 		if (!key_w) {
 			if (shp.getAnimation() == Ships.MOVE_LEFT_UP) {
@@ -353,47 +326,6 @@ public class Game implements Runnable, KeyListener {
 				shp.setAnimation(Ships.MOVE_RIGHT);
 			}
 		}
-	}
-	
-	private void render() {
-		int[] rgbBackground = new int[16*64*9*64];
-		levels.get(activeLvl).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
-
-		final int TRANSPARANCY 	= 16777215;
-		final int BLACK			= -16777216;
-		
-		if (!bullets.isEmpty()) {
-			for (int n = 0; n < bullets.size(); n++) {
-				int[] rgbBullet = new int[64*64];
-				bullets.get(n).getImage().getRGB(0, 0, 64, 64, rgbBullet, 0, 64);
-				if (bullets.get(n).move(20)) {
-					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbBullet[i*TileSet.TILE_WIDTH+j]!=BLACK && bullets.size()>n) {
-								rgbBackground[(bullets.get(n).getCoordinates().getY()+i)*16*64 + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i*TileSet.TILE_WIDTH+j];
-							}
-						}
-					}
-				} else {
-					bullets.remove(n--);
-				}				
-			}
-		}
-		
-		
-		int[] rgbShip = new int[64*64];
-		shp.getImage().getRGB(0, 0, 64, 64, rgbShip, 0, 64);
-		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-			for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-				if (rgbShip[i*TileSet.TILE_WIDTH+j]!=TRANSPARANCY) {
-					rgbBackground[(shp.getCoordinates().getY()+i)*16*64 + shp.getCoordinates().getX() + j] = rgbShip[i*TileSet.TILE_WIDTH+j];
-				}
-			}
-		}
-		
-		BufferedImage subimg = new BufferedImage(16*64, 9*64, BufferedImage.TYPE_INT_ARGB);
-		subimg.setRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
-		mainWindow.changeImage(subimg);
 	}
 
 	boolean key_w 		= false;
@@ -414,30 +346,54 @@ public class Game implements Runnable, KeyListener {
 	final int KEY_DOWN 	= 40;
 	
 	public void keyPressed(KeyEvent e) {
+		if (menuManager.getActiveMenu()==MenuManager.LEVEL) {
+			switch (e.getKeyCode()) {
+			case KEY_W:
+				key_w = true;
+				break;
+			case KEY_A:
+				key_a = true;
+				break;
+			case KEY_S:
+				key_s = true;
+				break;
+			case KEY_D:
+				key_d = true;
+				break;
+			case KEY_LEFT:
+				key_left = true;
+				break;
+			case KEY_UP:
+				key_up = true;
+				break;
+			case KEY_RIGHT:	
+				key_right = true;
+				break;
+			case KEY_DOWN:
+				key_down = true;
+				break;
+			case 77:
+				int menu = menuManager.getActiveMenu();
+				if (menu < MenuManager.LEVEL) {
+					menu++;
+				} else {
+					menu = MenuManager.LOADING;
+				}
+				menuManager.setActiveMenu(menu);
+				break;
+			default:
+				break;
+			}
+		}
 		switch (e.getKeyCode()) {
-		case KEY_W:
-			key_w = true;
-			break;
-		case KEY_A:
-			key_a = true;
-			break;
-		case KEY_S:
-			key_s = true;
-			break;
-		case KEY_D:
-			key_d = true;
-			break;
-		case KEY_LEFT:
-			key_left = true;
-			break;
-		case KEY_UP:
-			key_up = true;
-			break;
-		case KEY_RIGHT:	
-			key_right = true;
-			break;
-		case KEY_DOWN:
-			key_down = true;
+		case 77:
+			int menu = menuManager.getActiveMenu();
+			if (menu < MenuManager.LEVEL) {
+				menu++;
+			} else {
+				menu = MenuManager.LOADING;
+			}
+			menuManager.setActiveMenu(menu);
 			break;
 		default:
 			break;
