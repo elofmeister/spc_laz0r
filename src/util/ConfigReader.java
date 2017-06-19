@@ -12,6 +12,8 @@ import init.FileManager;
 public class ConfigReader {
 
 	private boolean fullscreen;
+	private boolean sound;
+	private long background;
 	private long height;
 	private long width;
 	
@@ -27,6 +29,8 @@ public class ConfigReader {
             fullscreen = (Boolean) resolution.get("fullscreen");
             height = (Long) resolution.get("height");
             width = (Long) resolution.get("width");
+            background = (Long) jsonObject.get("background");
+            sound = (Boolean) jsonObject.get("sound");
 
         } catch (FileNotFoundException e) {
             System.err.println(e.getMessage());
@@ -43,6 +47,14 @@ public class ConfigReader {
 
 	public long getWidth() {
 		return width;
+	}
+	
+	public long getBackground() {
+		return background;
+	}
+	
+	public boolean isSound() {
+		return sound;
 	}
 
 	public boolean isFullscreen() {
