@@ -22,7 +22,7 @@ public class Game implements Runnable, KeyListener {
 	private String direction = CAMERA_DIRECTION_RIGHT;
 	@SuppressWarnings("unused")
 	private Player player = new Player("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	private Ships shp = new Ships(Ships.GLASSKANONE, 0, 1, 0, 0, 0, 0, 0);
+	private Ships shp = new Ships(Ships.STANDARDO);
 	private BufferedImage bulletTileset = new TileSet("tiles/bulletsitems.png", 10, 10).getTileset();
 	private List<Bullet> bullets = new List<Bullet>() {
 		int size = 0;
@@ -180,7 +180,7 @@ public class Game implements Runnable, KeyListener {
 		@Override
 		public boolean add(Bullet e) {
 			boolean bretval = false;
-			if (timestamp+200<System.currentTimeMillis()) {
+			if ((timestamp+200*shp.getfirespeed())<System.currentTimeMillis()) {
 				Bullet[] tmp = null;
 				if (!isEmpty()) {
 					tmp = array;
@@ -209,7 +209,6 @@ public class Game implements Runnable, KeyListener {
 		//new init.SaveJSON("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0).save("save");
 		long timestamp;
 	    long oldTimestamp;
-		menuManager.setActiveMenu(MenuManager.LOADING);
 		new init.FileManager();
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating first (base) level
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating lvl 1
@@ -257,8 +256,8 @@ public class Game implements Runnable, KeyListener {
 	
 	private void handleKeys() {
 		if (key_a) {
-			if (!(shp.getCoordinates().getX()-5<0)) {
-				shp.getCoordinates().setX(shp.getCoordinates().getX()-5);
+			if (!(shp.getCoordinates().getX()-Ships.SHIPSPEED<0)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()-Ships.SHIPSPEED);
 			} else {
 				shp.getCoordinates().setX(0);
 				direction = CAMERA_DIRECTION_LEFT;
@@ -266,8 +265,8 @@ public class Game implements Runnable, KeyListener {
 			shp.setAnimation(Ships.MOVE_LEFT);
 		}
 		if (key_d) {
-			if (!(shp.getCoordinates().getX()+5>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
-				shp.getCoordinates().setX(shp.getCoordinates().getX()+5);
+			if (!(shp.getCoordinates().getX()+Ships.SHIPSPEED>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()+Ships.SHIPSPEED);
 			} else {
 				shp.getCoordinates().setX(WINDOW_WIDTH-TileSet.TILE_WIDTH);
 				direction = CAMERA_DIRECTION_RIGHT;
@@ -275,8 +274,8 @@ public class Game implements Runnable, KeyListener {
 			shp.setAnimation(Ships.MOVE_RIGHT);
 		}
 		if (key_w) {
-			if (!(shp.getCoordinates().getY()-5<0)) {
-				shp.getCoordinates().setY(shp.getCoordinates().getY()-5);
+			if (!(shp.getCoordinates().getY()-Ships.SHIPSPEED<0)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()-Ships.SHIPSPEED);
 			} else {
 				shp.getCoordinates().setY(0);
 			}			
@@ -287,8 +286,8 @@ public class Game implements Runnable, KeyListener {
 			}
 		}
 		if (key_s) {
-			if (!(shp.getCoordinates().getY()+5>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
-				shp.getCoordinates().setY(shp.getCoordinates().getY()+5);
+			if (!(shp.getCoordinates().getY()+Ships.SHIPSPEED>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()+Ships.SHIPSPEED);
 			} else {
 				shp.getCoordinates().setY(WINDOW_HEIGHT-TileSet.TILE_HEIGHT);
 			}
@@ -375,19 +374,6 @@ public class Game implements Runnable, KeyListener {
 			default:
 				break;
 			}
-		}
-		switch (e.getKeyCode()) {
-		case 77:
-			int menu = menuManager.getActiveMenu();
-			if (menu < MenuManager.LEVEL) {
-				menu++;
-			} else {
-				menu = MenuManager.LOADING;
-			}
-			menuManager.setActiveMenu(menu);
-			break;
-		default:
-			break;
 		}
 	}
 

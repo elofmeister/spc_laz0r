@@ -6,10 +6,8 @@ public class Ships{
 
 	private String shipname;
 	private int shipclass;
-	private int shieldslots[];
-	private int gunslots[];
-	private int inventory[];
-	private int bonusslots[];
+	private int gunslots[] = new int[8];
+	private int bonusslots[] = new int[4];
 	private int life;
 	private int dmg;	
 	private double firespeed;
@@ -27,7 +25,9 @@ public class Ships{
 
 	public static final int STANDARDO = 1;
 	public static final int RUMPLER = 2;
-	public static final int GLASSKANONE = 3;
+	public static final int GLASSCANNON = 3;
+	
+	public static final int SHIPSPEED = 12; //in pixel per move
 	
 	private BufferedImage[] image = new BufferedImage[10];		// all ship tiles
 	private boolean spawned = false;
@@ -38,28 +38,34 @@ public class Ships{
 	
 	private Coordinates coor = new Coordinates(256, 256);
 		
-	public Ships(int shipclass,int shieldslots, int gunslots, int inventory, int bonusslots, int life, int dmg, double firespeed) {
+	public Ships(int shipclass) {
+		setshipclass(shipclass);
+	}  
+		
+	public void setshipclass(int shipclass) {
 		this.shipclass = shipclass;
 		switch (this.shipclass) {
-		case GLASSKANONE: 
-			shipname = "Glasskanone";
+		case GLASSCANNON: 
+			setlife(60);
+			setdmg(10);
+			setfirespeed(1.00);
+			shipname = "GLASSCANNON";
 			break;
 		case RUMPLER: 
+			setlife(100);
+			setdmg(6);
+			setfirespeed(1.40);
 			shipname = "Rumpler";
 			break;
 		case STANDARDO: 
+			setlife(80);
+			setdmg(8);
+			setfirespeed(1.20);
 			shipname = "Standardo";
 			break;
 		default: 
 			break;
 		}
-		this.shieldslots = new int[shieldslots];
-		this.gunslots = new int[gunslots];
-		this.inventory = new int[inventory];
-		this.bonusslots = new int[bonusslots];
-		this.life = life;
-		this.dmg = dmg;	
-		this.firespeed= firespeed;
 		TileSet tileset = new TileSet("tiles/ships.png", 10, 10);
 		for (int i = 0; i <= MOVE_LEFT; i++) {
 			if (i <= SPAWN_3) {
@@ -68,10 +74,7 @@ public class Ships{
 				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT) * 64, (this.shipclass-STANDARDO) * 128, 64, 64);
 			}
 		}
-	}  
-	
-	
-	//all needed get constructors
+	}
 	
 	public String getshipname(){
 		return shipname;
@@ -80,17 +83,9 @@ public class Ships{
 	public int getshipclass(){
 		return shipclass;
 	}
-	
-	public int getshieldslots(int i){
-		return shieldslots[i];
-	}
 	 
 	public int gunslots(int i){
 		return gunslots[i];
-	}
-	
-	public int getinventory(int i){
-		return inventory[i];
 	}
 	
 	public int getbonusslots(int i){
@@ -114,53 +109,25 @@ public class Ships{
 	public void setshipname(String sVal){
 		shipname=sVal;
 	}
-	
-	public void setshipclass(int sVal){
-		shipclass=sVal;
-		
-		switch (shipclass){
-		case 1: setlife(60);
-				setdmg(10);
-				setfirespeed(1.00);
-				break;
-				
-		case 2: setlife(100);
-				setdmg(6);
-				setfirespeed(1.40);
-				break;
-				
-		case 3: setlife(80);
-				setdmg(8);
-				setfirespeed(1.20);
-				break;
-		}
-	}
-	
-	public void setshieldslots(int i, int sVal){
-		shieldslots[i]=sVal;
-	}
-	 
+		 
 	public void setgunslots(int i, int sVal){
 		gunslots[i]=sVal;
 	}
 	
-	public void setinventory(int i, int sVal){
-		inventory[i]=sVal;
-	}
 	public void setbonusslots(int i, int sVal){
 		bonusslots[i]=sVal;
 	}
 	 
 	public void setlife(int sVal){
-		life=life+sVal;
+		life=sVal;
 	}
 	
 	public void setdmg(int sVal){
-		dmg=dmg+sVal;
+		dmg=sVal;
 	}
 	
 	public void setfirespeed(double sVal){
-		firespeed=firespeed+sVal;
+		firespeed=+sVal;
 	}
 
 
@@ -181,9 +148,6 @@ public class Ships{
 			}
 		}
 		else {
-			/*
-			 * not working correctly + too fast
-			 */
 			if (spawnTimer+1000<System.currentTimeMillis()) {
 				spawnTimer = System.currentTimeMillis();
 				retval = image[spawnCnt++];
