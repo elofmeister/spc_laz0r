@@ -26,13 +26,13 @@ public class CSV {
 				items[lineCnt++] = line.split(delimiter);				
 			}
 		} catch (Exception e) {
-			System.err.println(e);
+			System.err.println(e.getMessage());
 		} finally {
 			if (br != null) {
 				try {
 					br.close();
 				} catch (Exception e) {
-					System.err.println(e);
+					System.err.println(e.getMessage());
 				}
 			}
 		}

@@ -1,110 +1,120 @@
 
 public class Item {
 	
-	private String ITEMNAME;
-	private boolean ISCASH;
-	private boolean CONSUMEABLE;
-	private int ITEMVALUE;
-	private int ITEMLVL;
-	private int QUALITY;
-	private int RARITY;
-	private int CATEGORY;
-	private int NUMBERBUFFS;	
-	private int FIRETYPE;
+// e.g.	Item x = new Item("C@$H", 0, 1, 0, 50, 0, 0, 0, 0, 0, 0, 0 ,0); called from dropcalculator
+	
+	private String itemname;
+	private int iscash;
+	private int isconsumeable;
+	private int itemvalue;
+	private int itemlvl;
+	private int quality;
+	private int rarity;
+	private int category;
+	private int numberbuffs;	
+	private int firetype;
 
+	/*
+	 * some space for final modifiers
+	 * 
+	 * 
+	 * 
+	 */
 	
 	
-	Item(String thisITEMNAME, boolean thisISCASH, boolean thisCONSUMEABLE, int thisITEMVALUE, int thisITEMLVL, int thisQUALITY, int thisRARITY, int thisCATEGORY, int thisNUMBERBUFFS, int thisFIRETYPE){
+	Item(String this.itemname, int this.iscash, int this.isconsumeable, int this.itemvalue, int this.itemlvl, int this.quality, int this.rarity, int this.category, int this.numberbuffs, int this.firetype){
 		
-		ITEMNAME = thisITEMNAME;
-		ISCASH = thisISCASH;
-		CONSUMEABLE = thisCONSUMEABLE;
-		ITEMVALUE = thisITEMVALUE;
-		ITEMLVL = thisITEMLVL;
-		QUALITY = thisQUALITY;
-		RARITY = thisRARITY;
-		CATEGORY = thisCATEGORY;
-		NUMBERBUFFS = thisNUMBERBUFFS;	
-		FIRETYPE = thisFIRETYPE;
+		itemname  =  this.itemname;
+		iscash  =  this.iscash;
+		isconsumeable  =  this.isconsumeable;
+		itemvalue  =  this.itemvalue;
+		itemlvl  =  this.itemlvl;
+		quality  =  this.quality;
+		rarity  =  this.rarity;
+		category  =  this.category;
+		numberbuffs  =  this.numberbuffs;	
+		firetype  =  this.firetype;
 	} 
 	
 	//all needed get constructors
-	public String getITEMNAME(){
-		return ITEMNAME;
+	public String getItemname(){
+		return itemname;
 	}	
-	public boolean getISCASH(){
-		return ISCASH;
+	public int getIscash(){
+		return iscash;
 	}
-	public boolean getCONSUMEABLE(){
-		return CONSUMEABLE;
-	}
-	
-	public int getITEMVALUE(){
-		return ITEMVALUE;
+	public int getIsconsumeable(){
+		return isconsumeable;
 	}
 	
-	public int getITEMLVL(){
-		return ITEMLVL;
+	public int getItemvalue(){
+		return itemvalue;
 	}
 	
-	public int getQUALITY(){
-		return QUALITY;
+	public int getItemlvl(){
+		return itemlvl;
 	}
 	
-	public int getRARITY(){
-		return RARITY;
+	public int getQuality(){
+		return quality;
+	}
+	
+	public int getRarity(){
+		return rarity;
 	}
 		 
-	public int getCATEGORY(){
-		return CATEGORY;
+	public int getCategory(){
+		return category;
 	}
 	
-	public int getNUMBERBUFFS(){
-		return NUMBERBUFFS;
+	public int getNumberbuffs(){
+		return numberbuffs;
 	}
 	
-	public int getFIRETYPE(){
-		return FIRETYPE;
+	public int getFiretype(){
+		return firetype;
 	}
 	
 	//all needed set constructors
-	public void setITEMNAME(String iVal){
-		ITEMNAME=iVal;
-	}
-	public void setISCASH(boolean iVal){
-		ISCASH=iVal;
+	public void setItemname(String iVal){
+		itemname = iVal;
 	}
 	
-	public void setCONSUMEABLE(boolean iVal){
-		CONSUMEABLE=iVal;
+	public void setIscash(int iVal){
+		iscash = iVal;
+//		if (iscash){
+//			setItemvalue(getEnemcash);
+//		}
+//		
 	}
 	
-	public void setITEMVALUE(int iVal){
-		ITEMVALUE=iVal;
+	public void setIsconsumeable(int iVal){
+		isconsumeable = iVal;
+	}
+	
+	public void setItemvalue(int iVal){
+		itemvalue = iVal;
 	} 
 	
-	public void setITEMLVL(int iVal){
-		ITEMLVL=iVal;
+	public void setItemlvl(int iVal){
+		itemlvl = iVal;
 	}
 	
-	public void setAGL(int iVal){
-		QUALITY=iVal;
+	
+	public void setRarity(int iVal){
+		rarity = iVal;
 	}
 	
-	public void setRARITY(int iVal){
-		RARITY=iVal;
-	}
-	
-	public void setCATEGORY(int iVal){
-		CATEGORY=iVal;
+	public void setCategory(int iVal){
+		category = iVal; //3 = heal; 4=tp , 5=bomb, 6=consumeshield  1 = weapon 2=shield
 	}
 	 
-	public void setNUMBERBUFFS(int iVal){
-		NUMBERBUFFS=iVal;
+	public void setNumberbuffs(int iVal){
+		numberbuffs = iVal;
 	}
 	
-	public void setFIRETYPE(int iVal){
-		FIRETYPE=iVal;
+	public void setFiretype(int iVal){
+		firetype = iVal;
 	}
 		
 }

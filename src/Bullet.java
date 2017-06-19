@@ -1,4 +1,5 @@
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Bullet {
 
@@ -13,11 +14,10 @@ public class Bullet {
 	public final static int BLUE	= 3;
 	public final static int YELLOW	= 4;
 	
-	
 	private Coordinates coordinates;
 	private int direction;
 	private BufferedImage image;
-	
+		
 	public Bullet(Coordinates start, int direction, int color, BufferedImage image) {
 		coordinates = new Coordinates(start.getX(), start.getY());
 		this.direction = direction;
