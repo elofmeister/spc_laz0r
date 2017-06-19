@@ -46,26 +46,26 @@ public class Movement {
 
 	// MOVE FUNCTIONS FOR SPECIFIC DIRECTIONS
 	private void moveNorth() {
-		if (coordinates.y > BORDER_MAX_Y * 0.1) {
-			coordinates.y--;
+		if (coordinates.getY() > BORDER_MAX_Y * 0.1) {
+			coordinates.setY(coordinates.getY() - 1);
 		}
 	}
 	
 	private void moveSouth() {
-		if (coordinates.y < BORDER_MAX_Y * 0.9) {
-			coordinates.y++;
+		if (coordinates.getY() < BORDER_MAX_Y * 0.9) {
+			coordinates.setY(coordinates.getY() + 1);
 		}
 	}
 	
 	private void moveWest() {
-		if (coordinates.x > BORDER_MAX_X * 0.1) {
-			coordinates.x--;
+		if (coordinates.getX() > BORDER_MAX_X * 0.1) {
+			coordinates.setX(coordinates.getX() - 1);
 		}
 	}
 	
 	private void moveEast() {
-		if (coordinates.x < BORDER_MAX_X * 0.9) {
-			coordinates.x++;
+		if (coordinates.getX() < BORDER_MAX_X * 0.9) {
+			coordinates.setX(coordinates.getX() + 1);
 		}
 	}
 	
@@ -76,7 +76,7 @@ public class Movement {
 	 */
 	private boolean checkEast() {
 		boolean bretval = false;
-		if (coordinates.x < BORDER_MAX_X * 2 / 3) {
+		if (coordinates.getX() < BORDER_MAX_X * 2 / 3) {
 			bretval = true;
 		}
 		return bretval;
@@ -88,7 +88,7 @@ public class Movement {
 	 */
 	private boolean checkSouth() {
 		boolean bretval = false;
-		if (coordinates.y < BORDER_MAX_X * 2 / 3) {
+		if (coordinates.getY() < BORDER_MAX_X * 2 / 3) {
 			bretval = true;
 		}
 		return bretval;
@@ -100,7 +100,7 @@ public class Movement {
 	 */
 	private boolean checkWest() {
 		boolean bretval = false;
-		if (coordinates.x > BORDER_MAX_X / 3) {
+		if (coordinates.getX() > BORDER_MAX_X / 3) {
 			bretval = true;
 		}
 		return bretval;
@@ -112,7 +112,7 @@ public class Movement {
 	 */
 	private boolean checkNorth() {
 		boolean bretval = false;
-		if (coordinates.y > BORDER_MAX_X / 3) {
+		if (coordinates.getY() > BORDER_MAX_X / 3) {
 			bretval = true;
 		}
 		return bretval;
@@ -236,13 +236,13 @@ public class Movement {
 	private void zigzagMove() {
 		final int NUMBER_OF_CHANGES = 6;
 		if ((int)(moveCnt / BORDER_MAX_X)%2 == 0) {
-			if ((int)(coordinates.x/(int)(BORDER_MAX_X / NUMBER_OF_CHANGES)) % 2 == 0) {
+			if ((int)(coordinates.getX()/(int)(BORDER_MAX_X / NUMBER_OF_CHANGES)) % 2 == 0) {
 				direction = DIRECTION_SE;
 			} else {
 				direction = DIRECTION_NE;
 			}
 		} else {
-			if ((int)(coordinates.x/(int)(BORDER_MAX_X / NUMBER_OF_CHANGES)) % 2 == 0) {
+			if ((int)(coordinates.getX()/(int)(BORDER_MAX_X / NUMBER_OF_CHANGES)) % 2 == 0) {
 				direction = DIRECTION_NW;
 			} else {
 				direction = DIRECTION_SW;
@@ -293,23 +293,23 @@ public class Movement {
 	}
 	
 	private void testPrint() {
-		for (int i = 0; i < coordinates.y / TileSet.TILE_HEIGHT; i++) {
+		for (int i = 0; i < coordinates.getY() / TileSet.TILE_HEIGHT; i++) {
 			for (int j = 0; j < BORDER_MAX_X / TileSet.TILE_WIDTH; j++) {
 				System.out.print('.');
 			}
 			System.out.println();
 		}
-		for (int i = 0; i < coordinates.x / TileSet.TILE_WIDTH; i++) {
+		for (int i = 0; i < coordinates.getX() / TileSet.TILE_WIDTH; i++) {
 			System.out.print('.');
 		}
-		if (coordinates.x >= 0 && coordinates.y >= 0) {
+		if (coordinates.getX() >= 0 && coordinates.getY() >= 0) {
 			System.out.print('x');
 		}
-		for (int i = coordinates.x / TileSet.TILE_WIDTH + 1; i < BORDER_MAX_X / TileSet.TILE_WIDTH; i++) {
+		for (int i = coordinates.getX() / TileSet.TILE_WIDTH + 1; i < BORDER_MAX_X / TileSet.TILE_WIDTH; i++) {
 			System.out.print('.');
 		}
 		System.out.println();
-		for (int i = coordinates.y / TileSet.TILE_HEIGHT + 1; i < BORDER_MAX_Y / TileSet.TILE_HEIGHT; i++) {
+		for (int i = coordinates.getY() / TileSet.TILE_HEIGHT + 1; i < BORDER_MAX_Y / TileSet.TILE_HEIGHT; i++) {
 			for (int j = 0; j < BORDER_MAX_X / TileSet.TILE_WIDTH; j++) {
 				System.out.print('.');
 			}
@@ -320,7 +320,7 @@ public class Movement {
 	
 	public void move() {
 		testPrint();
-		if (checkBorder(coordinates.x, coordinates.y)) {
+		if (checkBorder(coordinates.getX(), coordinates.getY())) {
 			switch (movementDef) {
 			case RANDOM_MOVE:
 				randomMove();
@@ -340,15 +340,15 @@ public class Movement {
 			moveDirection();
 			moveCnt++;
 		} else {
-			if (coordinates.x < BORDER_MIN_X) {
-				coordinates.x++;
-			} else if (coordinates.x > BORDER_MAX_X) {
-				coordinates.x--;
+			if (coordinates.getX() < BORDER_MIN_X) {
+				coordinates.setX(coordinates.getX() + 1);
+			} else if (coordinates.getX() > BORDER_MAX_X) {
+				coordinates.setX(coordinates.getX() - 1);
 			}
-			if (coordinates.y < BORDER_MIN_Y) {
-				coordinates.y++;
-			} else if (coordinates.y > BORDER_MAX_Y) {
-				coordinates.y--;
+			if (coordinates.getY() < BORDER_MIN_Y) {
+				coordinates.setY(coordinates.getY() + 1);
+			} else if (coordinates.getY() > BORDER_MAX_Y) {
+				coordinates.setY(coordinates.getY() - 1);
 			}
 		}
 	}
