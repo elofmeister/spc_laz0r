@@ -12,6 +12,10 @@ public class FileManager {
 		return getFile(CONFIG).getPath();
 	}
 	
+	public static String getSavePath() {
+		return getFile(SAVES).getPath();
+	}
+	
 	private static File getFile(String path) {
 		String FileFolder = null;
 		String os = System.getProperty("os.name").toUpperCase();
