@@ -10,6 +10,8 @@ public class ConfigJSON {
 	private final int DEFAULT_WIDTH = 1024;
 	private final int DEFAULT_HEIGHT = 576;
 	private final boolean DEFAULT_FULLSCREEN = true;
+	private final boolean DEFAULT_SOUND = true;
+	private final int DEFAULT_BACKGROUND = 1;
 	
 	@SuppressWarnings("unchecked")
 	public ConfigJSON() {
@@ -19,6 +21,9 @@ public class ConfigJSON {
 		 resolution.put("width", DEFAULT_WIDTH);
 		 resolution.put("height", DEFAULT_HEIGHT);
 	     obj.put("resolution", resolution);
+	     obj.put("sound", DEFAULT_SOUND);
+	     obj.put("background", DEFAULT_BACKGROUND);
+	     
 	     try (FileWriter file = new FileWriter(FileManager.getConfigPath() + "/config.json")) {
             file.write(obj.toJSONString());
             file.flush();

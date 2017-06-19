@@ -16,6 +16,8 @@ import javax.swing.ImageIcon;
 
 import gui.MenuCursor;
 import gui.Window;
+import util.ConfigReader;
+import util.ConfigWriter;
 
 public class MenuManager implements KeyListener {
 
@@ -33,6 +35,10 @@ public class MenuManager implements KeyListener {
 	private int activeLvl;
 	private int loading;
 
+	private boolean fullscreen = true;
+	private boolean sound = false;
+	private int background = 1;
+	
 	private int menuPos = 1;
 	private int menuPos2 = 0;
 	
@@ -57,6 +63,10 @@ public class MenuManager implements KeyListener {
 		this.levels = levels;
 		this.activeLvl = activeLvl;
 		this.window.getFrame().addKeyListener(this);
+		ConfigReader cr = new ConfigReader("config.json");
+		fullscreen = cr.isFullscreen();
+		sound = cr.isSound();
+		background = (int) cr.getBackground();
 	}
 	
 	private BufferedImage getLoading() {
@@ -107,7 +117,15 @@ public class MenuManager implements KeyListener {
 	private BufferedImage getExtra() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/extra1.png"));
+			int fs = 0;
+			if (fullscreen) {
+				fs = 1;
+			}
+			int s = 0;
+			if (sound) {
+				s = 1;
+			}
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/extra"+fs+s+menuPos+".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -307,6 +325,52 @@ public class MenuManager implements KeyListener {
 					break;
 				}
 			}
+			else if (getActiveMenu() == EXTRA) {
+				switch (e.getKeyCode()) {
+				case KEY_UP:
+				case KEY_LEFT:
+					if (menuPos > 1) {
+						menuPos--;
+					}
+					break;
+				case KEY_DOWN:
+				case KEY_RIGHT:
+					if (menuPos < 9) {
+						menuPos++;
+					}
+					break;
+				case KEY_ENTER:
+					switch (menuPos) {
+					case 1:
+						if (fullscreen) {
+							fullscreen = false;
+						} else {
+							fullscreen = true;
+						}
+						new ConfigWriter(fullscreen, sound, background);
+						break;
+					case 2:
+						if (sound) {
+							sound = false;
+						} else {
+							sound = true;
+						}
+						new ConfigWriter(fullscreen, sound, background);
+						break;
+
+					default:
+						if (menuPos >= 3 && menuPos <= 9) {
+							background = menuPos-2;
+						}
+						new ConfigWriter(fullscreen, sound, background);
+						break;
+					}
+					break;
+
+				default:
+					break;
+				}
+			}
 			keyPressed = true;
 		}	
 	}
@@ -328,7 +392,7 @@ public class MenuManager implements KeyListener {
 						break;
 					case 7:
 						activeMenu = EXTRA;
-						menuPos = 1;
+						menuPos = 0;
 						break;
 
 					default:
@@ -415,6 +479,17 @@ public class MenuManager implements KeyListener {
 				case KEY_ESC:
 				case KEY_BACKSPACE:
 					activeMenu = MENU;
+					break;
+
+				default:
+					break;
+				}
+			}
+			else if (getActiveMenu() == EXTRA) {
+				switch (e.getKeyCode()) {
+				case KEY_ESC:
+					activeMenu = MENU;
+					menuPos = 1;
 					break;
 
 				default:
