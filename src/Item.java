@@ -1,121 +1,114 @@
 
+//e.g new Item("Horst", 20, 10, 2);
+
 public class Item {
 	
-// e.g.	Item x = new Item("C@$H", 0, 1, 0, 50, 0, 0, 0, 0, 0, 0, 0 ,0); called from dropcalculator
-	
 	private String itemname;
-	private int iscash;
-	private int isconsumeable;
+	private boolean iscash;
+	private boolean consumeable;
 	private int itemvalue;
-	private int itemlvl;
-	private int quality;
-	private int rarity;
+	private int itemtimer;
+	private int itemstat;
 	private int category;
-	private int numberbuffs;	
-	private int firetype;
 
-	/*
-	 * some space for final modifiers
-	 * 
-	 * 
-	 * 
-	 */
+
 	
 	
-	Item(String this.itemname, int this.iscash, int this.isconsumeable, int this.itemvalue, int this.itemlvl, int this.quality, int this.rarity, int this.category, int this.numberbuffs, int this.firetype){
+	Item(String thisitemname, int thisitemtimer, int thisitemstat, int thiscategory){
 		
-		itemname  =  this.itemname;
-		iscash  =  this.iscash;
-		isconsumeable  =  this.isconsumeable;
-		itemvalue  =  this.itemvalue;
-		itemlvl  =  this.itemlvl;
-		quality  =  this.quality;
-		rarity  =  this.rarity;
-		category  =  this.category;
-		numberbuffs  =  this.numberbuffs;	
-		firetype  =  this.firetype;
+
+		this.category = thiscategory;
+		switch(category){
+		case 1: setItemname(thisitemname);
+				setItemvalue(0);	
+				setItemtimer(thisitemtimer);
+				setItemstat(thisitemstat);
+				break;
+		case 2: setItemname(thisitemname);
+				setItemvalue(0);	
+				setItemtimer(thisitemtimer);
+				setItemstat(thisitemstat);
+				break;
+		case 3: setItemname("Healthpotion");
+				setItemvalue(100);	
+				setItemtimer(0);
+				break;
+		case 4: setItemname("Invincible Shield");
+				setItemvalue(100);
+				setItemtimer(5);
+				break;
+		case 5: setItemname("Bomb");
+				setItemvalue(100);
+				setItemtimer(0);
+				break;
+		case 6: setItemname("Townportal");
+				setItemvalue(100);
+				setItemtimer(0);
+				System.out.println("HTownportal");
+				break;			
+		default:setItemname("C@SH");
+				setItemvalue(category);
+				System.out.println("casdsd ");
+				break;
+		}
 	} 
 	
 	//all needed get constructors
 	public String getItemname(){
 		return itemname;
 	}	
-	public int getIscash(){
+	public boolean getIscash(){
 		return iscash;
 	}
-	public int getIsconsumeable(){
-		return isconsumeable;
+	public boolean getConsumeable(){
+		return consumeable;
 	}
 	
 	public int getItemvalue(){
 		return itemvalue;
 	}
 	
-	public int getItemlvl(){
-		return itemlvl;
+	public int getItemtimer(){
+		return itemtimer;
 	}
 	
-	public int getQuality(){
-		return quality;
-	}
-	
-	public int getRarity(){
-		return rarity;
+	public int getItemstat(){
+		return itemstat;
 	}
 		 
 	public int getCategory(){
 		return category;
 	}
 	
-	public int getNumberbuffs(){
-		return numberbuffs;
-	}
 	
-	public int getFiretype(){
-		return firetype;
-	}
 	
 	//all needed set constructors
 	public void setItemname(String iVal){
-		itemname = iVal;
+		itemname=iVal;
+	}
+	public void setIscash(boolean iVal){
+		iscash=iVal;
 	}
 	
-	public void setIscash(int iVal){
-		iscash = iVal;
-//		if (iscash){
-//			setItemvalue(getEnemcash);
-//		}
-//		
-	}
-	
-	public void setIsconsumeable(int iVal){
-		isconsumeable = iVal;
+	public void setConsumeable(boolean iVal){
+		consumeable=iVal;
 	}
 	
 	public void setItemvalue(int iVal){
-		itemvalue = iVal;
+		itemvalue=iVal;
 	} 
 	
-	public void setItemlvl(int iVal){
-		itemlvl = iVal;
-	}
+	public void setItemtimer(int iVal){
+		itemtimer=iVal;
+	}	
 	
-	
-	public void setRarity(int iVal){
-		rarity = iVal;
-	}
+	public void setItemstat(int iVal){
+		itemstat=iVal;
+	}	
 	
 	public void setCategory(int iVal){
-		category = iVal; //3 = heal; 4=tp , 5=bomb, 6=consumeshield  1 = weapon 2=shield
-	}
-	 
-	public void setNumberbuffs(int iVal){
-		numberbuffs = iVal;
-	}
-	
-	public void setFiretype(int iVal){
-		firetype = iVal;
-	}
+		category=iVal;
+	}	 
 		
 }
 

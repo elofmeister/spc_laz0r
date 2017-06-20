@@ -1,5 +1,5 @@
 
-// z.B. Character player1  =  new Character("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0); call from main with values
+// e.g. Player player1  =  new Player("Horst"); call from main with values
 
 public class Player {
 
@@ -24,21 +24,21 @@ public class Player {
 	 * 
 	 */
 	
-	public Player(String name,int xp, int lvl, int skillpts, double agl, double critprb, double critdmg, int laser, int acid , int ice, int emp, int cash) {
+	public Player(String name) {
 		
 		this.name  =  name;
-		this.xp  =  xp;
-		this.oldxp  =  xp;
-		this.lvl  =  lvl;
-		this.skillpts  =  skillpts;
-		this.agl  =  agl;
-		this.critprb  =  critprb;
-		this.critdmg  =  critdmg;
-		this.laser  =  laser;
-		this.acid  =  acid;
-		this.ice  =  ice;
-		this.emp  =  emp;
-		this.cash  =  cash;
+		this.xp  =  0;
+		this.oldxp  =  0;
+		this.lvl  =  1;
+		this.skillpts  =  0;
+		this.agl  =  0;
+		this.critprb  =  0;
+		this.critdmg  =  0;
+		this.laser  =  0;
+		this.acid  =  0;
+		this.ice  =  0;
+		this.emp  =  0;
+		this.cash  =  0;
 	}  
 	
 	
@@ -93,8 +93,8 @@ public class Player {
 	public void setName(String val){
 		 name = val;
 	}
-	public void setXp(int val){  //Level Calculating formula
-	     xp += val;
+	public void setXp(int val){  //Level Calculating formula 
+	    xp += val;
 	     
 	    if(lvl <= 10){				//low Level formula
 	    	while(xp >= lvl*lvl*2){
@@ -119,42 +119,76 @@ public class Player {
 	 }
 	 
 	public void setLvl(int val){		//per 1 level  =  4 skillpoints 
-		 lvl += val;
-		 setSkillpts(4);
+		 if (lvl < 100){
+			 lvl += val;
+			 setSkillpts(4);
+		 }
+		
 	}
 	
 	public void setSkillpts(int val){  //max = 400
 		skillpts += val;
 	}
 	
-	public void setAgl(double val){		//start = 1 max = 3.5 step = 0.025  
-		 agl += val;
+	public void setAgl(){		//start = 1 max = 3.5 step = 0.025  --> glasscannon can max 0,65*200 ~ 15pixels/frame
+		if (agl < 3.5){
+			agl += 0.025;
+			setSkillpts(-1);
+			}
+		else setSkillpts(1);
+		
 	}
 	
-	public void setCritprb(double val){ //max = 0.2 step = 0.002
-		 critprb += val;
+	public void setCritprb(){ //max = 0.2 step = 0.002
+		 if (critprb < 0.2){
+			 critprb += 0.002;
+			 setSkillpts(-1);
+		 }
+		 else setSkillpts(1);
 	}
 	
-	public void setCritdmg(double val){	//max = 5x step = 0.05
-		 critdmg += val;
+	public void setCritdmg(){	//max = 5x step = 0.05
+		 if (critdmg < 5){
+			 critdmg += 0.05;
+			 setSkillpts(-1);
+		 }
+		 else setSkillpts(1);
 	}
 	 
-	public void setLaser(int val){	//Max = 100
-		 laser += val;
+	public void setLaser(){	//Max = 100 step = 1
+		 if (laser < 100){
+			 laser += 1;
+			 setSkillpts(-1);
+		 }
+		 else setSkillpts(1);
 	}
 	
-	public void setAcid(int val){	//Max = 100
-		 acid += val;
+	public void setAcid(){	//Max = 100 step = 1
+		if (acid < 100){
+			 acid += 1;
+			 setSkillpts(-1);
+		 }
+		 else setSkillpts(1);
 	}
 	
-	public void setIce(int val){	//Max = 100
-		 ice += val;
+	public void setIce(){	//Max = 100 step = 1
+		if (ice < 100){
+			 ice += 1;
+			 setSkillpts(-1);
+		 }
+		 else setSkillpts(1);
 	}
-	public void setEmp(int val){	//Max = 100
-		 emp += val;
+	public void setEmp(){	//Max = 100 step = 1
+		if (emp < 100){
+			 emp += 1;
+			 setSkillpts(-1);
+		 }
+		 else setSkillpts(1);
 	}
 	public void setCash(int val){	//Max =  1 000 000
-		 cash += val;
+		 if (cash < 1000000){
+			 cash += val;
+		 }
 	}
 	
 }
