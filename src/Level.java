@@ -1,5 +1,6 @@
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+
 import java.util.Random;
 
 public class Level {
@@ -9,7 +10,6 @@ public class Level {
 	private static final int PLANET_DICE 			= 16;
 	private static final int PLANET_DICE_PERCENTAGE = 30;
 	
-
 	private int levelCnt;
 	private int levelNxt;					// level needed to continue
 	private int[][] levelArray;				// defines the positioning of tiles
@@ -21,22 +21,24 @@ public class Level {
 	private TileSet tileset = null;
 	private BufferedImage image;
 	
-	public boolean moveRight() {
+	public boolean isEndReached() {
 		boolean bretval = false;
-		if ( viewPos < TileSet.TILE_WIDTH * levelWdt - Game.WINDOW_WIDTH ) {
-			viewPos++;
+		if (viewPos >= TileSet.TILE_WIDTH * levelWdt - Game.WINDOW_WIDTH) {
 			bretval = true;
 		}
 		return bretval;
 	}
 	
-	public boolean moveLeft() {
-		boolean bretval = false;
-		if ( viewPos > 0 ) {
-			viewPos--;
-			bretval = true;
+	public void moveRight() {
+		if (!isEndReached()) {
+			viewPos++;
 		}
-		return bretval;
+	}
+	
+	public void moveLeft() {
+		if (!isEndReached()) {
+			viewPos--;
+		}
 	}
 	
 	private int[][] createNewLevel() {
@@ -51,13 +53,12 @@ public class Level {
 				retval[h][w] = bgTiles[Math.abs(rnd.nextInt()%bgTiles.length)][0];		
 			}
 		}
-		// generating planets
-		// number of dice
+		// generate planets
 		for (int i = 0; i < (int) (DEFAULT_WIDTH/PLANET_DICE); i++) {
 			if ( Math.abs(rnd.nextInt()%100) < PLANET_DICE_PERCENTAGE  ) {
-				int num = Math.abs(rnd.nextInt()%planets.length);									// choose planet
-				int x = i*PLANET_DICE + Math.abs(rnd.nextInt()%(PLANET_DICE - planets[num][1]));	// x index of array
-				int y = Math.abs(rnd.nextInt()%(DEFAULT_HEIGHT-planets[num][2])); // y index of array
+				int num = Math.abs(rnd.nextInt()%planets.length);
+				int x = i*PLANET_DICE + Math.abs(rnd.nextInt()%(PLANET_DICE - planets[num][1]));
+				int y = Math.abs(rnd.nextInt()%(DEFAULT_HEIGHT-planets[num][2]));
 				for ( int h = 0; h < planets[num][2]; h++ ) {
 					for ( int w = 0; w < planets[num][1]; w++ ) {
 						retval[y+h][x+w] = planets[num][0] + h*(tileset.getWidth()/TileSet.TILE_WIDTH) + w;
@@ -65,7 +66,7 @@ public class Level {
 				}
 			}
 		}
-		// generating portal
+		// generate portal
 		retval[(int) (DEFAULT_HEIGHT/2)][DEFAULT_WIDTH-2] = 73;
 		return retval;			
 	}

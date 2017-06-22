@@ -6,16 +6,19 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+
 import java.io.File;
 import java.io.IOException;
+
 import java.util.List;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
+
 import javax.swing.ImageIcon;
 
-import gui.MenuCursor;
 import gui.Window;
+
 import util.ConfigReader;
 import util.ConfigWriter;
 
@@ -28,11 +31,11 @@ public class MenuManager implements KeyListener {
 	public final static int EXTRA		= 4;
 	public final static int LEVEL		= 5;
 		
+	private Game game;
 	private Window window;
 	private Ships shp;
 	private List<Bullet> bullets;
 	private List<Level> levels;
-	private int activeLvl;
 	private int loading;
 
 	private boolean fullscreen = true;
@@ -56,12 +59,12 @@ public class MenuManager implements KeyListener {
 	private final int KEY_ESC		= 27;
 	private final int KEY_BACKSPACE	= 8;
 	
-	public MenuManager(Window window, Ships shp, List<Bullet> bullets, List<Level> levels, int activeLvl) {
+	public MenuManager(Game game, Window window, Ships shp, List<Bullet> bullets, List<Level> levels) {
+		this.game = game;
 		this.window = window;
 		this.shp = shp;
 		this.bullets = bullets;
 		this.levels = levels;
-		this.activeLvl = activeLvl;
 		this.window.getFrame().addKeyListener(this);
 		ConfigReader cr = new ConfigReader("config.json");
 		fullscreen = cr.isFullscreen();
@@ -133,7 +136,7 @@ public class MenuManager implements KeyListener {
 	
 	private BufferedImage getLevel() {
 		int[] rgbBackground = new int[16*64*9*64];
-		levels.get(activeLvl).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
+		levels.get(game.getActiveLevel()).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
 
 		final int TRANSPARANCY 	= 16777215;
 		final int BLACK			= -16777216;
@@ -237,13 +240,10 @@ public class MenuManager implements KeyListener {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case 2:
-						menuPos = 5;
-						break;
 					case 3:
-						menuPos = 6;
-						break;
 					case 4:
-						menuPos = 7;
+						menuPos+=3;
+						game.menuSound.play();
 						break;
 
 					default:
@@ -272,13 +272,10 @@ public class MenuManager implements KeyListener {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case Ships.STANDARDO:
-						menuPos2 = 3;
-						break;
 					case Ships.RUMPLER:
-						menuPos2 = 3;
-						break;
 					case Ships.GLASSCANNON:
 						menuPos2 = 3;
+						game.menuSound.play();
 						break;
 
 					default:
@@ -307,13 +304,10 @@ public class MenuManager implements KeyListener {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case 2:
-						menuPos = 5;
-						break;
 					case 3:
-						menuPos = 6;
-						break;
 					case 4:
-						menuPos = 7;
+						menuPos+=3;
+						game.menuSound.play();
 						break;
 
 					default:
@@ -348,6 +342,7 @@ public class MenuManager implements KeyListener {
 							fullscreen = true;
 						}
 						new ConfigWriter(fullscreen, sound, background);
+						game.menuSound.play();
 						break;
 					case 2:
 						if (sound) {
@@ -356,6 +351,8 @@ public class MenuManager implements KeyListener {
 							sound = true;
 						}
 						new ConfigWriter(fullscreen, sound, background);
+						game.readSoundConfig();
+						game.menuSound.play();
 						break;
 
 					default:
@@ -366,6 +363,7 @@ public class MenuManager implements KeyListener {
 						for (int i = 1; i < levels.size(); i++) {
 							levels.get(i).updateImage(new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10));
 						}
+						game.menuSound.play();
 						break;
 					}
 					break;
@@ -402,10 +400,6 @@ public class MenuManager implements KeyListener {
 						break;
 					}
 					break;
-				case KEY_ESC:
-				case KEY_BACKSPACE:
-					activeMenu = MENU;
-					break;
 
 				default:
 					break;
@@ -430,25 +424,12 @@ public class MenuManager implements KeyListener {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case Ships.STANDARDO:
-						shp.setshipclass(Ships.STANDARDO);
-						activeMenu = LEVEL;
-						menuPos = 1;
-						levels.get(activeLvl).restart();
-						shp.respawn();
-						break;
 					case Ships.RUMPLER:
-						shp.setshipclass(Ships.RUMPLER);
-						activeMenu = LEVEL;
-						menuPos = 1;
-						levels.get(activeLvl).restart();
-						shp.respawn();
-						break;
 					case Ships.GLASSCANNON:
-						shp.setshipclass(Ships.GLASSCANNON);
+						shp.setshipclass(menuPos);
 						activeMenu = LEVEL;
 						menuPos = 1;
-						levels.get(activeLvl).restart();
-						shp.respawn();
+						game.newGame();
 						break;
 
 					default:
@@ -458,6 +439,7 @@ public class MenuManager implements KeyListener {
 				case KEY_ESC:
 				case KEY_BACKSPACE:
 					activeMenu = MENU;
+					game.escSound.play();
 					break;
 				
 				default:
@@ -469,22 +451,11 @@ public class MenuManager implements KeyListener {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case 5:
-						activeMenu = LEVEL;
-						menuPos = 1;
-						levels.get(activeLvl).restart();
-						shp.respawn();
-						break;
 					case 6:
-						activeMenu = LEVEL;
-						menuPos = 1;
-						levels.get(activeLvl).restart();
-						shp.respawn();
-						break;
 					case 7:
 						activeMenu = LEVEL;
 						menuPos = 1;
-						levels.get(activeLvl).restart();
-						shp.respawn();
+						game.newGame();
 						break;
 
 					default:
@@ -494,6 +465,7 @@ public class MenuManager implements KeyListener {
 				case KEY_ESC:
 				case KEY_BACKSPACE:
 					activeMenu = MENU;
+					game.escSound.play();
 					break;
 
 				default:
@@ -503,8 +475,10 @@ public class MenuManager implements KeyListener {
 			else if (getActiveMenu() == EXTRA) {
 				switch (e.getKeyCode()) {
 				case KEY_ESC:
+				case KEY_BACKSPACE:
 					activeMenu = MENU;
 					menuPos = 1;
+					game.escSound.play();
 					break;
 
 				default:
@@ -515,6 +489,7 @@ public class MenuManager implements KeyListener {
 				switch (e.getKeyCode()) {
 				case KEY_ESC:
 					activeMenu = MENU;
+					game.escSound.play();
 					break;
 
 				default:
@@ -528,7 +503,6 @@ public class MenuManager implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 }

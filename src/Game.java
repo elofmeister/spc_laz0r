@@ -1,6 +1,7 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+
 import java.util.*;
 
 import util.ConfigReader;
@@ -17,8 +18,19 @@ public class Game implements Runnable, KeyListener {
 	private static final String	CAMERA_DIRECTION_RIGHT	= "right";
 	private static final String	CAMERA_DIRECTION_LEFT	= "left";
 	
+	public SoundPlayer bombSound = new SoundPlayer("sounds/bomb.wav");
+	public SoundPlayer dmgSound = new SoundPlayer("sounds/dmg.wav");
+	public SoundPlayer escSound = new SoundPlayer("sounds/esc.wav");
+	public SoundPlayer explosionSound = new SoundPlayer("sounds/explosion.wav");
+	public SoundPlayer fireSound = new SoundPlayer("sounds/fire.wav");
+	public SoundPlayer healSound = new SoundPlayer("sounds/heal.wav");
+	public SoundPlayer menuSound = new SoundPlayer("sounds/menu.wav");
+	public SoundPlayer newSound = new SoundPlayer("sounds/new.wav");
+	public SoundPlayer pewSound = new SoundPlayer("sounds/pew.wav");
+	public SoundPlayer tpSound = new SoundPlayer("sounds/tp.wav");
+	
 	private int levelCnt = 0;	// number of generated levels
-	private int activeLvl = 1;
+	private int activeLvl = 0;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
 	private gui.Window mainWindow = new gui.Window(GAME_TITLE);
 	private String direction = CAMERA_DIRECTION_RIGHT;
@@ -26,189 +38,18 @@ public class Game implements Runnable, KeyListener {
 	private Player player = new Player("Horst");
 	private Ships shp = new Ships(Ships.STANDARDO);
 	private BufferedImage bulletTileset = new TileSet("tiles/bulletsitems.png", 10, 10).getTileset();
-	private List<Bullet> bullets = new List<Bullet>() {
-		int size = 0;
-		long timestamp = System.currentTimeMillis();
-		Bullet[] array = null;
-		
-		@Override
-		public <T> T[] toArray(T[] a) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public Object[] toArray() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public List<Bullet> subList(int fromIndex, int toIndex) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public int size() {
-			return size;
-		}
-		
-		@Override
-		public Bullet set(int index, Bullet element) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public boolean retainAll(Collection<?> c) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public boolean removeAll(Collection<?> c) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public Bullet remove(int index) {
-			if (!isEmpty() && index < size && index >= 0) {
-				array[index].dispose();
-				array[index] = null;
-				Bullet[] tmp = array;
-				System.out.println("Bullet "+size+" removed.");
-				array = new Bullet[--size];
-				for (int i = 0, j = 0; i < tmp.length; i++) {
-					if (tmp[i] != null) {
-						array[j++] = tmp[i];
-					}
-				}
-			}
-			return null;
-		}
-		
-		@Override
-		public boolean remove(Object o) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public ListIterator<Bullet> listIterator(int index) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public ListIterator<Bullet> listIterator() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public int lastIndexOf(Object o) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-		
-		@Override
-		public Iterator<Bullet> iterator() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		
-		@Override
-		public boolean isEmpty() {
-			boolean bretval = false;
-			if (size == 0) {
-				bretval = true;
-			}
-			return bretval;
-		}
-		
-		@Override
-		public int indexOf(Object o) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-		
-		@Override
-		public Bullet get(int index) {
-			Bullet retval = null;
-			if (!isEmpty() && index < size && index >= 0) {
-				retval = array[index];
-			}
-			return retval;
-		}
-		
-		@Override
-		public boolean containsAll(Collection<?> c) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public boolean contains(Object o) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public void clear() {
-			array = null;
-			size = 0;			
-		}
-		
-		@Override
-		public boolean addAll(int index, Collection<? extends Bullet> c) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public boolean addAll(Collection<? extends Bullet> c) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-		
-		@Override
-		public void add(int index, Bullet element) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-		@Override
-		public boolean add(Bullet e) {
-			boolean bretval = false;
-			if ((timestamp+200*shp.getfirespeed())<System.currentTimeMillis()) {
-				Bullet[] tmp = null;
-				if (!isEmpty()) {
-					tmp = array;
-				}
-				array = new Bullet[size+1];
-				if (!isEmpty()) {
-					for (int i = 0; i < tmp.length; i++) {
-						array[i] = tmp[i];
-					}
-				}
-				array[size++] = e;
-				System.out.println("Bullet "+size+" added.");
-				timestamp = System.currentTimeMillis();
-				bretval = true;
-			}
-			return bretval;
-		}
-	};
-	private MenuManager menuManager = new MenuManager(mainWindow, shp, bullets, levels, activeLvl);
+	private List<Bullet> bullets = new ArrayList<Bullet>();
+	private long bulletTimer = System.currentTimeMillis();
+	
+	private MenuManager menuManager = new MenuManager(this, mainWindow, shp, bullets, levels);
 	
 	public static void main(String[] arg) {
 	    new Thread(new Game()).start();	// calling run method 
 	}
-
+		
 	public void run() {
 		//new init.SaveJSON("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0).save("save");
+		readSoundConfig();
 		long timestamp;
 	    long oldTimestamp;
 		new init.FileManager();
@@ -240,7 +81,31 @@ public class Game implements Runnable, KeyListener {
 	    	} else {
 	    		levels.get(activeLvl).moveLeft();
 	    	}
+	    	if ( levels.get(activeLvl).isEndReached() && 
+    				shp.getCoordinates().getX()>=12.5*TileSet.TILE_WIDTH && 
+    				shp.getCoordinates().getX()<=13.5*TileSet.TILE_WIDTH && 
+    				shp.getCoordinates().getY()>=3.5*TileSet.TILE_HEIGHT && 
+    				shp.getCoordinates().getY()<=4.5*TileSet.TILE_HEIGHT
+    			) {
+    			nextLevel();
+    		}
 		}
+	}
+	
+	public void nextLevel() {
+		levels.get(activeLvl).restart();
+		tpSound.play();
+		shp.respawn();
+		bullets.clear();
+		activeLvl++;
+	}
+	
+	public void newGame() {
+		levels.get(activeLvl).restart();
+		shp.respawn();
+		newSound.play();
+		bullets.clear();
+		activeLvl = 0;
 	}
 	
 	private void update() {
@@ -249,6 +114,20 @@ public class Game implements Runnable, KeyListener {
 		} catch (InterruptedException e) {
 			System.err.println(e.getMessage());
 		}
+	}
+	
+	public void readSoundConfig() {
+		boolean isEnabled = new ConfigReader("config.json").isSound();
+		bombSound.setEnabled(isEnabled);
+		dmgSound.setEnabled(isEnabled);
+		escSound.setEnabled(isEnabled);
+		explosionSound.setEnabled(isEnabled);
+		fireSound.setEnabled(isEnabled);
+		healSound.setEnabled(isEnabled);
+		menuSound.setEnabled(isEnabled);
+		newSound.setEnabled(isEnabled);
+		pewSound.setEnabled(isEnabled);
+		tpSound.setEnabled(isEnabled);
 	}
 	
 	private void handleKeys() {
@@ -297,16 +176,32 @@ public class Game implements Runnable, KeyListener {
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());
 		if (key_right) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
+			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
+				bulletTimer = System.currentTimeMillis();
+				pewSound.play();
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+			}
 		}
 		if (key_left) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
+			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
+				bulletTimer = System.currentTimeMillis();
+				pewSound.play();
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+			}
 		}
 		if (key_up) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
+			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
+				bulletTimer = System.currentTimeMillis();
+				pewSound.play();
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+			}
 		}
 		if (key_down) {
-			bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));
+			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
+				bulletTimer = System.currentTimeMillis();
+				pewSound.play();
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+			}
 		}
 		if (!key_w) {
 			if (shp.getAnimation() == Ships.MOVE_LEFT_UP) {
@@ -407,5 +302,9 @@ public class Game implements Runnable, KeyListener {
 
 	public void keyTyped(KeyEvent e) {
 		
+	}
+
+	public int getActiveLevel() {
+		return activeLvl;
 	}
 }

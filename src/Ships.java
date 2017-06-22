@@ -1,8 +1,6 @@
 import java.awt.image.BufferedImage;
 
-//z.B. Ships shp = new Ships(1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0); aufruf aus main mit übergabewerten
-
-public class Ships{
+public class Ships {
 
 	private String shipname;
 	private int shipclass;
@@ -27,7 +25,7 @@ public class Ships{
 	public static final int RUMPLER = 2;
 	public static final int GLASSCANNON = 3;
 	
-	public static final int SHIPSPEED = 12; //in pixel per move
+	public static final int SHIPSPEED = 15; //in pixel per move
 	
 	private BufferedImage[] image = new BufferedImage[10];		// all ship tiles
 	private boolean spawned = false;
