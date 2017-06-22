@@ -1,11 +1,8 @@
 import java.awt.image.BufferedImage;
-
 import java.util.Random;
 
 public class Bullet {
 
-	public final static int DEFAULT_FIRESPEED = 200;
-	
 	public final static int MOVE_NORTH 	= 0;
 	public final static int MOVE_EAST 	= 1;
 	public final static int MOVE_SOUTH 	= 2;
@@ -13,8 +10,8 @@ public class Bullet {
 	
 	public final static int PURPLE	= 0;
 	public final static int RED		= 1;
-	public final static int GREEN	= 2;
-	public final static int BLUE	= 3;
+	public final static int BLUE	= 2;
+	public final static int GREEN	= 3;
 	public final static int YELLOW	= 4;
 	
 	private Coordinates coordinates;

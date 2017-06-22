@@ -71,6 +71,8 @@ public class ItemCalculator {
 		}
 		
 		new Item(name, timer, stat, itemtype);
+		
+//		System.out.println(""+ name);
 	}
 
 }

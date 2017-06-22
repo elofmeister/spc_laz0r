@@ -1,5 +1,5 @@
 
-//e.g new Item("Horst", 20, 10, 2);
+//e.g new Item("GUN", 20, 10, 2);
 
 public class Item {
 	
@@ -44,11 +44,10 @@ public class Item {
 		case 6: setItemname("Townportal");
 				setItemvalue(100);
 				setItemtimer(0);
-				System.out.println("HTownportal");
 				break;			
 		default:setItemname("C@SH");
 				setItemvalue(category);
-				System.out.println("casdsd ");
+				setItemtimer(0);
 				break;
 		}
 	} 
@@ -80,6 +79,13 @@ public class Item {
 		return category;
 	}
 	
+	public boolean isDead() {
+		boolean bretval = false;
+		if(itemtimer == 0) {
+			bretval = true;
+		}
+		return bretval;
+	}
 	
 	
 	//all needed set constructors
