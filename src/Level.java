@@ -67,7 +67,7 @@ public class Level {
 			}
 		}
 		// generate portal
-		retval[(int) (DEFAULT_HEIGHT/2)][DEFAULT_WIDTH-2] = 73;
+		retval[(int) (DEFAULT_HEIGHT/2)][DEFAULT_WIDTH-3] = 73;
 		return retval;			
 	}
 	

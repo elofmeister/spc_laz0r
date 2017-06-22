@@ -93,11 +93,15 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	public void nextLevel() {
-		levels.get(activeLvl).restart();
-		tpSound.play();
-		shp.respawn();
-		bullets.clear();
-		activeLvl++;
+		if (activeLvl<levels.size()-1) {
+			levels.get(activeLvl).restart();
+			tpSound.play();
+			shp.respawn();
+			bullets.clear();
+			activeLvl++;
+		} else {
+			newGame();
+		}
 	}
 	
 	public void newGame() {
