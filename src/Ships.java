@@ -76,6 +76,14 @@ public class Ships{
 		}
 	}
 	
+	public void respawn() {
+		coor.setX(256);
+		coor.setY(256);
+		spawned = false;
+		spawnCnt = SPAWN_0;
+		animation = MOVE_RIGHT;
+	}
+	
 	public String getshipname(){
 		return shipname;
 	}

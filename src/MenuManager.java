@@ -363,6 +363,9 @@ public class MenuManager implements KeyListener {
 							background = menuPos-2;
 						}
 						new ConfigWriter(fullscreen, sound, background);
+						for (int i = 1; i < levels.size(); i++) {
+							levels.get(i).updateImage(new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10));
+						}
 						break;
 					}
 					break;
@@ -430,16 +433,22 @@ public class MenuManager implements KeyListener {
 						shp.setshipclass(Ships.STANDARDO);
 						activeMenu = LEVEL;
 						menuPos = 1;
+						levels.get(activeLvl).restart();
+						shp.respawn();
 						break;
 					case Ships.RUMPLER:
 						shp.setshipclass(Ships.RUMPLER);
 						activeMenu = LEVEL;
 						menuPos = 1;
+						levels.get(activeLvl).restart();
+						shp.respawn();
 						break;
 					case Ships.GLASSCANNON:
 						shp.setshipclass(Ships.GLASSCANNON);
 						activeMenu = LEVEL;
 						menuPos = 1;
+						levels.get(activeLvl).restart();
+						shp.respawn();
 						break;
 
 					default:
@@ -462,14 +471,20 @@ public class MenuManager implements KeyListener {
 					case 5:
 						activeMenu = LEVEL;
 						menuPos = 1;
+						levels.get(activeLvl).restart();
+						shp.respawn();
 						break;
 					case 6:
 						activeMenu = LEVEL;
 						menuPos = 1;
+						levels.get(activeLvl).restart();
+						shp.respawn();
 						break;
 					case 7:
 						activeMenu = LEVEL;
 						menuPos = 1;
+						levels.get(activeLvl).restart();
+						shp.respawn();
 						break;
 
 					default:

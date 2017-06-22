@@ -3,6 +3,8 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.util.*;
 
+import util.ConfigReader;
+
 public class Game implements Runnable, KeyListener {
 	private static final int 	FPS 					= 60;
 	private static final long 	LOOP_TIME 				= 1000 / FPS;
@@ -21,7 +23,7 @@ public class Game implements Runnable, KeyListener {
 	private gui.Window mainWindow = new gui.Window(GAME_TITLE);
 	private String direction = CAMERA_DIRECTION_RIGHT;
 	@SuppressWarnings("unused")
-	private Player player = new Player("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+	private Player player = new Player("Horst");
 	private Ships shp = new Ships(Ships.STANDARDO);
 	private BufferedImage bulletTileset = new TileSet("tiles/bulletsitems.png", 10, 10).getTileset();
 	private List<Bullet> bullets = new List<Bullet>() {
@@ -210,15 +212,10 @@ public class Game implements Runnable, KeyListener {
 		long timestamp;
 	    long oldTimestamp;
 		new init.FileManager();
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating first (base) level
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset.png",10,10)));	// generating lvl 1
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));	// generating lvl 2
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset2.png",10,10)));	// generating lvl 3
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset3.png",10,10)));	// generating lvl 4
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset4.png",10,10)));	// generating lvl 5
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset5.png",10,10)));	// generating lvl 6
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset6.png",10,10)));	// generating lvl 7
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset7.png",10,10)));	// generating lvl 8
+		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));
+		for (int i = 0; i < 10; i++) {
+			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
+		}
 		menuManager.setActiveMenu(MenuManager.MENU);
 		mainWindow.getFrame().addKeyListener(this);
 		while(true) {	

@@ -80,6 +80,11 @@ public class Level {
 		} else {
 			levelArray = createNewLevel();
 		}
+		updateImage(tileset);
+	}
+
+	public void updateImage(TileSet newTileSet) {
+		tileset = newTileSet;
 		image = new BufferedImage(TileSet.TILE_WIDTH * levelArray[0].length, TileSet.TILE_HEIGHT * levelArray.length, BufferedImage.TYPE_INT_ARGB);
 		for (int i = 0; i < levelArray.length; i++) {
 			for (int j = 0; j < levelArray[0].length; j++) {
@@ -89,7 +94,11 @@ public class Level {
 			}
 		}
 	}
-
+	
+	public void restart() {
+		viewPos = 0;
+	}
+	
 	public Image getImage() {
 		return image;
 	}
