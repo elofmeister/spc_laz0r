@@ -1,5 +1,7 @@
 import java.util.Random;
 
+// e.g. Enemy badguy = new Enemy (enemylvl, category);
+
 public class Enemy {
 	
 	private int enemylvl;
@@ -12,10 +14,20 @@ public class Enemy {
 	private int enemyxp;
 	private int enemycash;
 	
+	
+	public static final int BOMBER_CLASS = 1;
+	public static final int FIRE_CLASS = 2;
+	public static final int SPECIAL_CLASS = 3;
+	public static final int BOZZ_CLASS = 4;
+	public static final int lASER_RESISTANCE = 1;
+	public static final int ICE_RESISTANCE = 2;
+	public static final int ACID_RESISTANCE = 3;
+	public static final int EMP_RESISTANCE = 4;
+
 	/*
 	 * some space for final modifiers
 	 * 
-	 * Enemy 123 = new Enemy (enemylvl, category);
+	 * 
 	 * 
 	 */ 
 
@@ -25,8 +37,9 @@ public class Enemy {
 		
 		this.enemylvl = enemylvl;
 		switch(enemycategory){
-		case 1: setEnemydmg(15);    	//bomber class
-				setEnemyelement(0);
+		case BOMBER_CLASS: 
+				setEnemydmg(15);    	
+				setEnemyelement();
 				setEnemylife(12);
 				setNumberguns(0);
 				setDropchance(60);  //can drop consumables
@@ -34,8 +47,9 @@ public class Enemy {
 				setEnemycash(10);									
 				break;
 				
-		case 2: setEnemydmg(10);			// fire class
-				setEnemyelement(0);
+		case FIRE_CLASS: 
+				setEnemydmg(10);			
+				setEnemyelement();
 				setEnemylife(20);
 				setNumberguns(1);
 				setDropchance(50);  //can drop items
@@ -43,8 +57,9 @@ public class Enemy {
 				setEnemycash(20);					
 				break;	
 				
-		case 3: setEnemydmg(20);			//special class 
-				setEnemyelement(1);
+		case SPECIAL_CLASS: 
+				setEnemydmg(20);			
+				setEnemyelement();
 				setEnemylife(50);
 				setNumberguns(4);
 				setDropchance(30);  // always drop items
@@ -52,8 +67,9 @@ public class Enemy {
 				setEnemycash(30);					
 				break;	
 				
-		case 4: setEnemydmg(30);			//bozz class
-				setEnemyelement(2);
+		case BOZZ_CLASS: 
+				setEnemydmg(30);			//bozz class
+				setEnemyelement();
 				setEnemylife(100);
 				setNumberguns(10);
 				setDropchance(25);  // always drop items
@@ -119,23 +135,11 @@ public class Enemy {
 			
 		}
 		
-		public void setEnemyelement(int eVal){  //type of enemy resistances 1=laser 2=ice 3=acid 4=emp , e.g. bozz = 14 or 41 acid laser  
+		public void setEnemyelement(){  //type of enemy resistances 1=laser 2=ice 3=acid 4=emp , e.g. bozz = 14 or 41 acid laser  
 			Random rnd = new Random();
 			rnd.setSeed(System.currentTimeMillis());
-				
-			switch (eVal){
-			case 1: eVal = Math.abs(rnd.nextInt())%4+1;
-					enemyelement = eVal;
-					break;
-			case 2: eVal = Math.abs(rnd.nextInt())%4+1;
-					enemyelement = eVal;
-					if (eVal == 4){
-						eVal = 0;
-					}
-					enemyelement = enemyelement+(eVal+1)*10;
-					break;
-			default: break;		
-			}
+			int eVal = Math.abs(rnd.nextInt())%4+1;  
+					enemyelement = eVal;		
 		}
 		
 		public void setEnemylife(int eVal){

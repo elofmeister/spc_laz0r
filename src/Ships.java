@@ -1,14 +1,17 @@
 import java.awt.image.BufferedImage;
+import java.util.*;
 
 public class Ships {
 
 	private String shipname;
 	private int shipclass;
-	private int gunslots[] = new int[8];
+	
 	private int bonusslots[] = new int[4];
 	private int life;
+	private int curse; //curse (1-4=Element)
 	private int dmg;	
 	private double firespeed;
+	private List<Item> currentitems = new ArrayList<Item>();
 
 	public static final int SPAWN_0 = 0;
 	public static final int SPAWN_1 = 1;
@@ -31,6 +34,7 @@ public class Ships {
 	private boolean spawned = false;
 	private int spawnCnt = SPAWN_0;
 	private int animation = MOVE_RIGHT;
+	private int cursedspeed;
 	
 	private long spawnTimer = System.currentTimeMillis();
 	
@@ -90,9 +94,18 @@ public class Ships {
 		return shipclass;
 	}
 	 
-	public int gunslots(int i){
-		return gunslots[i];
-	}
+//	private void test() {
+//	currentitems.add(new Item(x,y,z,a));
+//	currentitems.remove(int i);
+//	currentitems.size();
+//	
+//		for (int j = 0; j < currentitems.size(); j++) {
+//			if(currentitems.get(j).isDead()) {
+//				currentitems.remove(j);
+//			}
+//		}
+//	}
+//	
 	
 	public int getbonusslots(int i){
 		return bonusslots[i];
@@ -102,6 +115,10 @@ public class Ships {
 		return life;
 	}
 	 
+	public int getcurse(){
+		return curse;
+	}
+	
 	public int getdmg(){
 		return dmg;
 	}
@@ -110,22 +127,27 @@ public class Ships {
 		return firespeed;
 	}
 	
+	public int getshipspeed(){
+		return SHIPSPEED+cursedspeed;
+	}
 	
 	//all needed set constructors
 	public void setshipname(String sVal){
 		shipname=sVal;
 	}
 		 
-	public void setgunslots(int i, int sVal){
-		gunslots[i]=sVal;
-	}
-	
 	public void setbonusslots(int i, int sVal){
-		bonusslots[i]=sVal;
+		if (sVal<4) {
+			bonusslots[i]=sVal;
+		}
 	}
 	 
 	public void setlife(int sVal){
-		life=sVal;
+		if (sVal>=0) {
+			life=sVal;
+		} else {
+			life+=sVal;
+		}
 	}
 	
 	public void setdmg(int sVal){
@@ -136,6 +158,9 @@ public class Ships {
 		firespeed=+sVal;
 	}
 
+	public void setshipspeed(int sVal){
+		cursedspeed=sVal;
+	}
 
 	public boolean isSpawned() {
 		return spawned;
@@ -179,7 +204,6 @@ public class Ships {
 	public void setAnimation(int animation) {
 		this.animation = animation;
 	}
-	
 	
 }
 	

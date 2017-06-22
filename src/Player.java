@@ -1,3 +1,8 @@
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.OptionalInt;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 
 // e.g. Player player1  =  new Player("Horst"); call from main with values
 
@@ -27,6 +32,26 @@ public class Player {
 	public Player(String name) {
 		
 		this.name  =  name;
+		reset();
+	}  
+	
+	public void load(String name, int xp, int oldxp, int lvl, int skillpts, double agl, double critprb, double critdmg, int laser, int acid, int ice, int emp, int cash){
+		this.name  =  name;
+		this.xp  =  xp;
+		this.oldxp  = oldxp;
+		this.lvl  =  lvl;
+		this.skillpts  =  skillpts;
+		this.agl  =  agl;
+		this.critprb  =  critprb;
+		this.critdmg  =  critdmg;
+		this.laser  =  laser;
+		this.acid  =  acid;
+		this.ice  =  ice;
+		this.emp  =  emp;
+		this.cash  =  cash;
+	}
+	
+	public void reset(){
 		this.xp  =  0;
 		this.oldxp  =  0;
 		this.lvl  =  1;
@@ -39,8 +64,7 @@ public class Player {
 		this.ice  =  0;
 		this.emp  =  0;
 		this.cash  =  0;
-	}  
-	
+	}
 	
 	//all needed get constructors
 	public String getName(){
@@ -89,6 +113,26 @@ public class Player {
 		return cash;
 	}
 	
+	public int getColor(){
+		int retval = Bullet.PURPLE;
+		int maxval = Math.max( getLaser(), Math.max( getIce(), Math.max( getAcid(), getEmp() ) ) );
+		if (maxval!=0) {
+			if(maxval==getLaser()){
+				retval = Bullet.RED;
+			}
+			if(maxval==getIce()){
+				retval = Bullet.BLUE;
+			}
+			if(maxval==getAcid()){
+				retval = Bullet.GREEN;
+			}
+			if(maxval==getEmp()){
+				retval = Bullet.YELLOW;
+			}
+		}
+		return retval;
+	}
+	
 	//all needed set constructors
 	public void setName(String val){
 		 name = val;
@@ -130,12 +174,12 @@ public class Player {
 		skillpts += val;
 	}
 	
-	public void setAgl(){		//start = 1 max = 3.5 step = 0.025  --> glasscannon can max 0,65*200 ~ 15pixels/frame
-		if (agl < 3.5){
-			agl += 0.025;
-			setSkillpts(-1);
+	public void setAgl(){		//start = 1 max =4 step = 1 --> glasscannon can max  ~ 16pixels/frame
+		if (agl < 4 && skillpts >= 10){
+			agl += 1;
+			setSkillpts(-10);
 			}
-		else setSkillpts(1);
+		else setSkillpts(10);
 		
 	}
 	

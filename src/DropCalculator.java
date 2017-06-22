@@ -3,7 +3,21 @@ import java.util.Random;
 // drop event call --> new DropCalculator(enemydropchance, activelvl, enemycash),
 
 public class DropCalculator {
+	
 	private int boxrarity = 0;
+	
+	public static final int WEAPON = 1;
+	public static final int SHIELD = 2;
+	public static final int HEAL = 3;
+	public static final int CONSUMESHIELD = 4;
+	public static final int BOMB = 5;
+	public static final int TOWNPORTAL = 6;
+	
+	public static final int NORMAL_RARITY = 1;
+	public static final int ENCHANTED_RARITY = 2;
+	public static final int GOLD_RARITY = 3;
+	public static final int UNIQUE_RARITY = 4;
+	
 	
 	DropCalculator(int thisdropchance, int thisactivelevel, int thiscash){
 		
@@ -26,14 +40,14 @@ public class DropCalculator {
 				if (retval >= dropchance){					//drop consumables
 					retval -= dropchance;
 					consumetype = Math.abs(rnd.nextInt())%4;
-					switch (consumetype){					//3=heal, 4=consumeshield, 5=bomb, 6=tp ,
-					case 0: new Item("",0,0,3); 
+					switch (consumetype){					
+					case 0: new Item("",0,0,HEAL); 
 							break;
-					case 1: new Item("",0,0,4); 
+					case 1: new Item("",0,0,CONSUMESHIELD); 
 							break;
-					case 2: new Item("",0,0,5); 
+					case 2: new Item("",0,0,BOMB); 
 							break;
-					case 3:	new Item("",0,0,6); 
+					case 3:	new Item("",0,0,TOWNPORTAL); 
 							break;					
 					}
 				
@@ -53,15 +67,15 @@ public class DropCalculator {
 				
 					switch (boxrarity){
 					case 1: 							
-						new ItemCalculator(1,category);	 		// normal	
+						new ItemCalculator(NORMAL_RARITY,category);	 		
 				
 // set box 1
 							break;
-					case 2: new ItemCalculator(2, category);    // enchanted
+					case 2: new ItemCalculator(ENCHANTED_RARITY, category);   
 				
 // set box 2
 							break;
-					case 3:	new ItemCalculator(3,category);    	//gold		
+					case 3:	new ItemCalculator(GOLD_RARITY,category);    		
 // set box 3
 							break;	
 					default: 	
@@ -72,17 +86,17 @@ public class DropCalculator {
 							category	= Math.abs(rnd.nextInt())%2+1;
 							
 						switch (additem){
-							case 0: new ItemCalculator(1, category); // 1 = normal 
+							case 0: new ItemCalculator(NORMAL_RARITY, category); 
 									boxrarity--;
 								  	break;
-							case 1: new ItemCalculator(2, category); // 2 = enchanted
-									boxrarity -= 2;
+							case 1: new ItemCalculator(ENCHANTED_RARITY, category); 
+									boxrarity -= ENCHANTED_RARITY;
 									break;
-							case 2: new ItemCalculator(3, category); // 3 = gold
-									boxrarity -= 3;
+							case 2: new ItemCalculator(GOLD_RARITY, category); // 
+									boxrarity -= GOLD_RARITY;
 									break;
-							case 3:	new ItemCalculator(4, category);  //4 = unique
-									boxrarity -= 4;
+							case 3:	new ItemCalculator(UNIQUE_RARITY, category);  //
+									boxrarity -= UNIQUE_RARITY;
 									break;
 							
 					}
@@ -93,9 +107,6 @@ public class DropCalculator {
 		}
 				
 	}	
-//	public static void main(String[] arg) {
-//	    new DropCalculator(15,5);	// calling run method 
-//	}
 				
 }
 
