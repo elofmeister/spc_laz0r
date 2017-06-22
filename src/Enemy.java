@@ -1,3 +1,4 @@
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 // e.g. Enemy badguy = new Enemy (enemylvl, category, currentlvl);
@@ -14,11 +15,18 @@ public class Enemy {
 	private int enemyxp;
 	private int enemycash;
 	private Level level;
+	private Coordinates coordinates;
+	private Movement movement;
+	private BufferedImage[] image = new BufferedImage[4];
+	
+	public static final int ENEMYSPEED = 12;
+	public static final int SPAWN_DISTANCE = -200;
 	
 	public static final int BOMBER_CLASS = 1;
 	public static final int FIRE_CLASS = 2;
 	public static final int SPECIAL_CLASS = 3;
 	public static final int BOZZ_CLASS = 4;
+	
 	public static final int lASER_RESISTANCE = 1;
 	public static final int ICE_RESISTANCE = 2;
 	public static final int ACID_RESISTANCE = 3;
@@ -33,10 +41,20 @@ public class Enemy {
 
 	
 	
-	Enemy(int enemycategory, Level level){   //enemylvl = current lvl , category = 1,2,3,4
+	public Enemy(int enemycategory, Level level, BufferedImage image, Random rnd){   //enemylvl = current lvl , category = 1,2,3,4
+		int x = 0, y = 0;
+		while (x > TileSet.TILE_WIDTH || y > TileSet.TILE_HEIGHT) {
+			x = rnd.nextInt()%(2*Game.WINDOW_WIDTH+2*SPAWN_DISTANCE);
+			y = rnd.nextInt()%(2*Game.WINDOW_HEIGHT+2*SPAWN_DISTANCE);
+		}
+		coordinates = new Coordinates(x, y);
+		movement = new Movement(coordinates, Math.abs(rnd.nextInt())%3);
+		for (int i = 0; i < this.image.length; i++) {
+			this.image[i] = image.getSubimage(i*TileSet.TILE_WIDTH, (enemycategory-BOMBER_CLASS)*TileSet.TILE_HEIGHT, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT);	
+		}
 		this.level = level;
 		switch(enemycategory){
-		case BOMBER_CLASS: 
+		case BOMBER_CLASS:
 				setEnemydmg(15);    	
 				setEnemyelement();
 				setEnemylvl();
@@ -119,7 +137,9 @@ public class Enemy {
 			return enemycash;
 		}
 		
-		
+		public BufferedImage getImage() {
+			return image[movement.getDirection()];
+		}
 		
 		//all needed set constructors
 
@@ -169,6 +189,22 @@ public class Enemy {
 		
 		public void setEnemycash(int eVal){
 			enemycash = enemycash+enemylvl*eVal;
+		}
+		
+		public void move() {
+			movement.move();
+		}
+		
+		public Coordinates getCoordinates() {
+			return coordinates;
+		}
+		
+		public boolean isInView() {
+			boolean bretval = false;
+			if (coordinates.getX()>=0 && coordinates.getY()>=0) {
+				bretval = true;
+			}
+			return bretval;
 		}
 			
 }

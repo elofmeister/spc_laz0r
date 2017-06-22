@@ -36,6 +36,7 @@ public class MenuManager implements KeyListener {
 	private Ships shp;
 	private List<Bullet> bullets;
 	private List<Level> levels;
+	private List<Enemy> enemies;
 	private int loading;
 
 	private boolean fullscreen = true;
@@ -59,11 +60,12 @@ public class MenuManager implements KeyListener {
 	private final int KEY_ESC		= 27;
 	private final int KEY_BACKSPACE	= 8;
 	
-	public MenuManager(Game game, Window window, Ships shp, List<Bullet> bullets, List<Level> levels) {
+	public MenuManager(Game game, Window window, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies) {
 		this.game = game;
 		this.window = window;
 		this.shp = shp;
 		this.bullets = bullets;
+		this.enemies = enemies;
 		this.levels = levels;
 		this.window.getFrame().addKeyListener(this);
 		ConfigReader cr = new ConfigReader("config.json");
@@ -141,6 +143,21 @@ public class MenuManager implements KeyListener {
 		final int TRANSPARANCY 	= 16777215;
 		final int BLACK			= -16777216;
 		
+		if (!enemies.isEmpty()) {
+			for (int n = 0; n < enemies.size(); n++) {
+				if (enemies.get(n).isInView()) {
+					int[] rgbEnemy = new int[64*64];
+					enemies.get(n).getImage().getRGB(0, 0, 64, 64, rgbEnemy, 0, 64);
+					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+							if (rgbEnemy[i*TileSet.TILE_WIDTH+j]!=TRANSPARANCY && enemies.size()>n) {
+								rgbBackground[(enemies.get(n).getCoordinates().getY()+i)*16*64 + enemies.get(n).getCoordinates().getX() + j] = rgbEnemy[i*TileSet.TILE_WIDTH+j];
+							}
+						}
+					}		
+				}
+			}
+		}		
 		if (!bullets.isEmpty()) {
 			for (int n = 0; n < bullets.size(); n++) {
 				int[] rgbBullet = new int[64*64];

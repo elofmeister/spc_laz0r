@@ -10,6 +10,11 @@ public class Level {
 	private static final int PLANET_DICE 			= 16;
 	private static final int PLANET_DICE_PERCENTAGE = 30;
 	
+	private static final int WAVES					= 8;		// First level starts with 8 waves
+	private static final int WAVES_OFFSET			= 2;		// Each new level 
+	
+	private int waveAmount;
+	private int waveCnt;
 	private int levelCnt;
 	private int levelNxt;					// level needed to continue
 	private int[][] levelArray;				// defines the positioning of tiles
@@ -79,11 +84,30 @@ public class Level {
 			levelArray = new CSV("src/csv/base_level.csv").getIntegerArray();
 			levelWdt = levelArray[0].length;
 		} else {
+			waveAmount = WAVES + WAVES_OFFSET * (levelCnt-1);
 			levelArray = createNewLevel();
 		}
 		updateImage(tileset);
 	}
 
+	public boolean toggleWave() {
+		boolean bretval = false;
+		int waveDistance = (DEFAULT_WIDTH*TileSet.TILE_WIDTH)/waveAmount;
+		System.out.println(viewPos+" > "+waveCnt*waveDistance+" && "+waveCnt+" > "+ waveAmount);
+		if (viewPos>waveCnt*waveDistance && waveCnt<waveAmount) {
+			bretval = true;
+		}
+		return bretval;
+	}
+	
+	public void addWave() {
+		waveCnt++;
+	}
+	
+	public int getWaveAmount() {
+		return waveAmount;
+	}
+	
 	public void updateImage(TileSet newTileSet) {
 		tileset = newTileSet;
 		image = new BufferedImage(TileSet.TILE_WIDTH * levelArray[0].length, TileSet.TILE_HEIGHT * levelArray.length, BufferedImage.TYPE_INT_ARGB);
@@ -98,6 +122,7 @@ public class Level {
 	
 	public void restart() {
 		viewPos = 0;
+		waveCnt = 0;
 	}
 	
 	public Image getImage() {

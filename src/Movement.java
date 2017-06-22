@@ -14,20 +14,21 @@ public class Movement {
 
 	// DIRECTIONS
 	private	static final int 	NUMBER_OF_DIRECTIONS 	= 8;
-	private static final int 	DIRECTION_E 			= 0;
-	private static final int 	DIRECTION_SE 			= 1;
-	private static final int 	DIRECTION_S 			= 2;
-	private static final int 	DIRECTION_SW 			= 3;
-	private static final int 	DIRECTION_W 			= 4;
-	private static final int 	DIRECTION_NW 			= 5;
-	private static final int 	DIRECTION_N 			= 6;
-	private static final int 	DIRECTION_NE 			= 7;
+	public static final int 	DIRECTION_E 			= 0;
+	public static final int 	DIRECTION_SE 			= 1;
+	public static final int 	DIRECTION_S 			= 2;
+	public static final int 	DIRECTION_SW 			= 3;
+	public static final int 	DIRECTION_W 			= 4;
+	public static final int 	DIRECTION_NW 			= 5;
+	public static final int 	DIRECTION_N 			= 6;
+	public static final int 	DIRECTION_NE 			= 7;
 	
 	private Coordinates 		coordinates				= null;
 	private int 				movementDef				= 0;
 	private Random 				rnd 					= new Random();
 	private long 				moveCnt					= 0;
 	private int 				direction 				= rnd.nextInt() % NUMBER_OF_DIRECTIONS;
+	private int					mainDirection			= 0;
 	private int 				movement_offset 		= 1;
 	
 	/**
@@ -46,27 +47,39 @@ public class Movement {
 
 	// MOVE FUNCTIONS FOR SPECIFIC DIRECTIONS
 	private void moveNorth() {
-		if (coordinates.getY() > BORDER_MAX_Y * 0.1) {
-			coordinates.setY(coordinates.getY() - 1);
+		if (coordinates.getY() - Enemy.ENEMYSPEED > 0) {
+			coordinates.setY(coordinates.getY() - Enemy.ENEMYSPEED);
+		} else {
+			coordinates.setY(0);
 		}
+		mainDirection = 0;
 	}
 	
 	private void moveSouth() {
-		if (coordinates.getY() < BORDER_MAX_Y * 0.9) {
-			coordinates.setY(coordinates.getY() + 1);
+		if (coordinates.getY() + Enemy.ENEMYSPEED < BORDER_MAX_Y) {
+			coordinates.setY(coordinates.getY() + Enemy.ENEMYSPEED);
+		} else {
+			coordinates.setY(BORDER_MAX_Y);
 		}
+		mainDirection = 3;
 	}
 	
 	private void moveWest() {
-		if (coordinates.getX() > BORDER_MAX_X * 0.1) {
-			coordinates.setX(coordinates.getX() - 1);
+		if (coordinates.getX() - Enemy.ENEMYSPEED > 0) {
+			coordinates.setX(coordinates.getX() - Enemy.ENEMYSPEED);
+		} else {
+			coordinates.setX(0);
 		}
+		mainDirection = 2;
 	}
 	
 	private void moveEast() {
-		if (coordinates.getX() < BORDER_MAX_X * 0.9) {
-			coordinates.setX(coordinates.getX() + 1);
+		if (coordinates.getX() + Enemy.ENEMYSPEED < BORDER_MAX_X) {
+			coordinates.setX(coordinates.getX() + Enemy.ENEMYSPEED);
+		} else {
+			coordinates.setX(BORDER_MAX_X);
 		}
+		mainDirection = 1;
 	}
 	
 	// CHECK FUNCTIONS FOR SPECIFIC DIRECTIONS
@@ -235,7 +248,7 @@ public class Movement {
 	// ZIGZAG MOVEMENT
 	private void zigzagMove() {
 		final int NUMBER_OF_CHANGES = 6;
-		if ((int)(moveCnt / BORDER_MAX_X)%2 == 0) {
+		if ((int)((moveCnt * Enemy.ENEMYSPEED) / BORDER_MAX_X)%2 == 0) {
 			if ((int)(coordinates.getX()/(int)(BORDER_MAX_X / NUMBER_OF_CHANGES)) % 2 == 0) {
 				direction = DIRECTION_SE;
 			} else {
@@ -253,8 +266,8 @@ public class Movement {
 	
 	//CIRCLE MOVEMENT
 	private void circleMove() {
-		final int CIRCLE_MULT = 2;
-		switch((int)(moveCnt % (NUMBER_OF_DIRECTIONS * CIRCLE_MULT * TileSet.TILE_WIDTH)) / (CIRCLE_MULT * TileSet.TILE_WIDTH)) {
+		final int CIRCLE_MULT = 6;
+		switch((int)(moveCnt % (NUMBER_OF_DIRECTIONS * CIRCLE_MULT)) / (CIRCLE_MULT)) {
 		case 0:
 			direction = DIRECTION_NE;
 			break;
@@ -319,7 +332,8 @@ public class Movement {
 	}
 	
 	public void move() {
-		testPrint();
+		//testPrint();
+		//System.out.println(coordinates.getX()+", "+coordinates.getY());
 		if (checkBorder(coordinates.getX(), coordinates.getY())) {
 			switch (movementDef) {
 			case RANDOM_MOVE:
@@ -351,6 +365,10 @@ public class Movement {
 				coordinates.setY(coordinates.getY() - 1);
 			}
 		}
+	}
+	
+	public int getDirection() {
+		return mainDirection;
 	}
 	
 	public Movement(Coordinates coordinates, int movementDef) {

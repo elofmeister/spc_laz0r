@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 
 import java.util.*;
 
+import gui.Window;
 import util.ConfigReader;
 
 public class Game implements Runnable, KeyListener {
@@ -32,16 +33,18 @@ public class Game implements Runnable, KeyListener {
 	private int levelCnt = 0;	// number of generated levels
 	private int activeLvl = 0;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
-	private gui.Window mainWindow = new gui.Window(GAME_TITLE);
+	private Window mainWindow;
 	private String direction = CAMERA_DIRECTION_RIGHT;
 	@SuppressWarnings("unused")
 	private Player player = new Player("Horst");
 	private Ships shp = new Ships(Ships.STANDARDO);
 	private BufferedImage bulletTileset = new TileSet("tiles/bulletsitems.png", 10, 10).getTileset();
+	private BufferedImage enemiesTileset = new TileSet("tiles/enemys.png", 10, 10).getTileset();
 	private List<Bullet> bullets = new ArrayList<Bullet>();
+	private List<Enemy> enemies = new ArrayList<Enemy>();
 	private long bulletTimer = System.currentTimeMillis();
 	
-	private MenuManager menuManager = new MenuManager(this, mainWindow, shp, bullets, levels);
+	private MenuManager menuManager;
 	
 	public static void main(String[] arg) {
 	    new Thread(new Game()).start();	// calling run method 
@@ -49,14 +52,16 @@ public class Game implements Runnable, KeyListener {
 		
 	public void run() {
 		//new init.SaveJSON("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0).save("save");
-		readSoundConfig();
 		long timestamp;
 	    long oldTimestamp;
 		new init.FileManager();
+		readSoundConfig();
+		mainWindow = new Window(GAME_TITLE);
 		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));
 		for (int i = 0; i < 10; i++) {
 			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
 		}
+		menuManager = new MenuManager(this, mainWindow, shp, bullets, levels, enemies);
 		menuManager.setActiveMenu(MenuManager.MENU);
 		mainWindow.getFrame().addKeyListener(this);
 		while(true) {	
@@ -89,6 +94,19 @@ public class Game implements Runnable, KeyListener {
     			) {
     			nextLevel();
     		}
+	    	if (activeLvl>0) {
+				if (levels.get(activeLvl).toggleWave()) {
+					Random rnd = new Random();
+					rnd.setSeed(System.currentTimeMillis());
+					for (int i = 0; i < levels.get(activeLvl).getWaveAmount(); i++) {
+						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));
+					}
+					levels.get(activeLvl).addWave();
+				}
+				for (int i = 0; i < enemies.size(); i++) {
+					enemies.get(i).move();
+				}
+			}
 		}
 	}
 	
@@ -98,6 +116,7 @@ public class Game implements Runnable, KeyListener {
 			tpSound.play();
 			shp.respawn();
 			bullets.clear();
+			enemies.clear();
 			activeLvl++;
 		} else {
 			newGame();
@@ -109,6 +128,7 @@ public class Game implements Runnable, KeyListener {
 		shp.respawn();
 		newSound.play();
 		bullets.clear();
+		enemies.clear();
 		activeLvl = 0;
 	}
 	
