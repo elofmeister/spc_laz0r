@@ -1,10 +1,7 @@
-import java.awt.List;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.*;
 
-//z.B. Ships shp = new Ships(1); aufruf aus main mit übergabewerten
-
-public class Ships{
+public class Ships {
 
 	private String shipname;
 	private int shipclass;
@@ -14,8 +11,7 @@ public class Ships{
 	private int curse; //curse (1-4=Element)
 	private int dmg;	
 	private double firespeed;
-	private ArrayList<Item> currentitems = new ArrayList<Item>();
-		
+	private List<Item> currentitems = new ArrayList<Item>();
 
 	public static final int SPAWN_0 = 0;
 	public static final int SPAWN_1 = 1;
@@ -27,15 +23,12 @@ public class Ships{
 	public static final int MOVE_LEFT_DOWN = 7;
 	public static final int MOVE_LEFT_UP = 8;
 	public static final int MOVE_LEFT = 9;
-	
-	public static final int GUNSLOTS = 8;
 
 	public static final int STANDARDO = 1;
 	public static final int RUMPLER = 2;
 	public static final int GLASSCANNON = 3;
 	
 	public static final int SHIPSPEED = 15; //in pixel per move
-	
 	
 	private BufferedImage[] image = new BufferedImage[10];		// all ship tiles
 	private boolean spawned = false;
@@ -85,6 +78,14 @@ public class Ships{
 		}
 	}
 	
+	public void respawn() {
+		coor.setX(256);
+		coor.setY(256);
+		spawned = false;
+		spawnCnt = SPAWN_0;
+		animation = MOVE_RIGHT;
+	}
+	
 	public String getshipname(){
 		return shipname;
 	}
@@ -93,7 +94,6 @@ public class Ships{
 		return shipclass;
 	}
 	 
-
 //	private void test() {
 //	currentitems.add(new Item(x,y,z,a));
 //	currentitems.remove(int i);
@@ -106,6 +106,7 @@ public class Ships{
 //		}
 //	}
 //	
+	
 	public int getbonusslots(int i){
 		return bonusslots[i];
 	}
@@ -130,24 +131,23 @@ public class Ships{
 		return SHIPSPEED+cursedspeed;
 	}
 	
-	
 	//all needed set constructors
 	public void setshipname(String sVal){
 		shipname=sVal;
 	}
-	
+		 
 	public void setbonusslots(int i, int sVal){
-		if (sVal<4){
-		bonusslots[i]=sVal;
+		if (sVal<4) {
+			bonusslots[i]=sVal;
 		}
 	}
 	 
 	public void setlife(int sVal){
-		life=life+sVal;
-	}
-	
-	public void setcurse(int sVal){
-		curse=sVal;
+		if (sVal>=0) {
+			life=sVal;
+		} else {
+			life+=sVal;
+		}
 	}
 	
 	public void setdmg(int sVal){
@@ -157,11 +157,10 @@ public class Ships{
 	public void setfirespeed(double sVal){
 		firespeed=+sVal;
 	}
-	
+
 	public void setshipspeed(int sVal){
 		cursedspeed=sVal;
 	}
-
 
 	public boolean isSpawned() {
 		return spawned;
@@ -205,7 +204,6 @@ public class Ships{
 	public void setAnimation(int animation) {
 		this.animation = animation;
 	}
-	
 	
 }
 	
