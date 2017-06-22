@@ -183,7 +183,7 @@ public class Player {
 		
 	}
 	
-	public void setCritprb(){ //max = 0.2 step = 0.002
+	public void setCritprb(){ //max = 0.5 step = 0.002
 		 if (critprb < 0.2){
 			 critprb += 0.002;
 			 setSkillpts(-1);

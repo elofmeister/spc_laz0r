@@ -1,6 +1,6 @@
 import java.util.Random;
 
-// e.g. Enemy badguy = new Enemy (enemylvl, category);
+// e.g. Enemy badguy = new Enemy (enemylvl, category, currentlvl);
 
 public class Enemy {
 	
@@ -13,7 +13,7 @@ public class Enemy {
 	private double dropchance;
 	private int enemyxp;
 	private int enemycash;
-	
+	private Level level;
 	
 	public static final int BOMBER_CLASS = 1;
 	public static final int FIRE_CLASS = 2;
@@ -33,13 +33,13 @@ public class Enemy {
 
 	
 	
-	Enemy(int enemylvl, int enemycategory){   //enemylvl = current lvl , category = 1,2,3,4
-		
-		this.enemylvl = enemylvl;
+	Enemy(int enemycategory, Level level){   //enemylvl = current lvl , category = 1,2,3,4
+		this.level = level;
 		switch(enemycategory){
 		case BOMBER_CLASS: 
 				setEnemydmg(15);    	
 				setEnemyelement();
+				setEnemylvl();
 				setEnemylife(12);
 				setNumberguns(0);
 				setDropchance(60);  //can drop consumables
@@ -50,6 +50,7 @@ public class Enemy {
 		case FIRE_CLASS: 
 				setEnemydmg(10);			
 				setEnemyelement();
+				setEnemylvl();
 				setEnemylife(20);
 				setNumberguns(1);
 				setDropchance(50);  //can drop items
@@ -60,6 +61,7 @@ public class Enemy {
 		case SPECIAL_CLASS: 
 				setEnemydmg(20);			
 				setEnemyelement();
+				setEnemylvl();
 				setEnemylife(50);
 				setNumberguns(4);
 				setDropchance(30);  // always drop items
@@ -70,6 +72,7 @@ public class Enemy {
 		case BOZZ_CLASS: 
 				setEnemydmg(30);			//bozz class
 				setEnemyelement();
+				setEnemylvl();
 				setEnemylife(100);
 				setNumberguns(10);
 				setDropchance(25);  // always drop items
@@ -120,9 +123,10 @@ public class Enemy {
 		
 		//all needed set constructors
 
-		public void setEnemylvl(int eVal){
-			//Lvl+waveNumber+rand()%2; values between 1-100 <--- <--- <--- <---<--- <---<--- <---<--- <--- ???
-			enemylvl = eVal;
+		public void setEnemylvl(){
+			Random rnd = new Random();
+			rnd.setSeed(System.currentTimeMillis());
+			enemylvl = Math.abs(rnd.nextInt())%4+level.getLevelCnt()*10; //+ maybe level.getWavesamount()			
 		}
 		
 		public void setEnemydmg(int eVal){		//damage per bullet/contact
@@ -160,7 +164,7 @@ public class Enemy {
 		}
 		
 		public void setEnemyxp(int eVal){
-			enemyxp = eVal;
+			enemyxp = eVal*enemylvl;
 		}
 		
 		public void setEnemycash(int eVal){
