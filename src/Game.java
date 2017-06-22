@@ -173,34 +173,32 @@ public class Game implements Runnable, KeyListener {
 				shp.setAnimation(Ships.MOVE_RIGHT_DOWN);
 			}
 		}
-		Random rnd = new Random();
-		rnd.setSeed(System.currentTimeMillis());
 		if (key_right) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, player.getColor(), bulletTileset));	
 			}
 		}
 		if (key_left) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, player.getColor(), bulletTileset));	
 			}
 		}
 		if (key_up) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, player.getColor(), bulletTileset));	
 			}
 		}
 		if (key_down) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, Math.abs(rnd.nextInt()%(Bullet.YELLOW+1)), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, player.getColor(), bulletTileset));	
 			}
 		}
 		if (!key_w) {
