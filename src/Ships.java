@@ -8,6 +8,8 @@ public class Ships {
 	
 	private int bonusslots[] = new int[4];
 	private int life;
+	private int maxlife;
+	private int baselife;
 	private int curse; //curse (1-4=Element)
 	private int dmg;	
 	private double firespeed;
@@ -114,6 +116,14 @@ public class Ships {
 	public int getlife(){
 		return life;
 	}
+	
+	public int getmaxlife(){
+		return maxlife;
+	}
+	
+	public int getbaselife(){
+		return baselife;
+	} 
 	 
 	public int getcurse(){
 		return curse;
@@ -144,10 +154,23 @@ public class Ships {
 	 
 	public void setlife(int sVal){
 		if (sVal>=0) {
-			life=sVal;
-		} else {
-			life+=sVal;
+			life=maxlife;   //healing potion		
+		} 
+		else {
+			life+=sVal;     //damage
 		}
+	}
+	
+	public void setmaxlife(int sVal){
+			maxlife+=sVal;     //sval>0 shield activated	sval<0 shield deactivated
+			if(life>=maxlife) setlife(1);
+	}
+	
+	
+	public void setbaselife(int sVal){
+		baselife=sVal;  		//spawnlife				
+		maxlife=baselife;
+		setlife(baselife);
 	}
 	
 	public void setdmg(int sVal){

@@ -93,7 +93,19 @@ public class Level {
 	public boolean toggleWave() {
 		boolean bretval = false;
 		int waveDistance = (DEFAULT_WIDTH*TileSet.TILE_WIDTH)/waveAmount;
-		System.out.println(viewPos+" > "+waveCnt*waveDistance+" && "+waveCnt+" > "+ waveAmount);
+		if (waveCnt>0) {
+			int loadingProgress = (int)(100*((float)((float)viewPos-((float)waveCnt-1)*(float)waveDistance)/((float)waveCnt*(float)waveDistance-((float)waveCnt-1)*(float)waveDistance)));
+			String loadingBar = "";
+			String space = " ";
+			String load = "-";
+			for (int i = 0; i < loadingProgress; i++) {
+				loadingBar+=load;
+			}
+			for (int i = 0; i < 100-loadingProgress; i++) {
+				loadingBar+=space;				
+			}
+			System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
+		}
 		if (viewPos>waveCnt*waveDistance && waveCnt<waveAmount) {
 			bretval = true;
 		}

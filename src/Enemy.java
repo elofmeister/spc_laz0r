@@ -18,16 +18,17 @@ public class Enemy {
 	private Coordinates coordinates;
 	private Movement movement;
 	private BufferedImage[] image = new BufferedImage[4];
+	private Random rnd;
 	
 	public static final int ENEMYSPEED = 12;
-	public static final int SPAWN_DISTANCE = -200;
+	public static final int SPAWN_DISTANCE = 90;
 	
 	public static final int BOMBER_CLASS = 1;
 	public static final int FIRE_CLASS = 2;
 	public static final int SPECIAL_CLASS = 3;
 	public static final int BOZZ_CLASS = 4;
 	
-	public static final int lASER_RESISTANCE = 1;
+	public static final int LASER_RESISTANCE = 1;
 	public static final int ICE_RESISTANCE = 2;
 	public static final int ACID_RESISTANCE = 3;
 	public static final int EMP_RESISTANCE = 4;
@@ -42,16 +43,27 @@ public class Enemy {
 	
 	
 	public Enemy(int enemycategory, Level level, BufferedImage image, Random rnd){   //enemylvl = current lvl , category = 1,2,3,4
+		this.rnd = rnd;
 		int x = 0, y = 0;
-		while (x > TileSet.TILE_WIDTH || y > TileSet.TILE_HEIGHT) {
-			x = rnd.nextInt()%(2*Game.WINDOW_WIDTH+2*SPAWN_DISTANCE);
-			y = rnd.nextInt()%(2*Game.WINDOW_HEIGHT+2*SPAWN_DISTANCE);
+		while(!(
+				(
+						(x < -TileSet.TILE_WIDTH && y < -TileSet.TILE_HEIGHT) ||
+						(x > Game.WINDOW_WIDTH && y < -TileSet.TILE_HEIGHT) ||
+						(x < -TileSet.TILE_WIDTH && y > Game.WINDOW_HEIGHT) ||
+						(x > Game.WINDOW_WIDTH && y > Game.WINDOW_HEIGHT)
+				)
+						&&
+				(
+						(x > -SPAWN_DISTANCE - TileSet.TILE_WIDTH && y > -SPAWN_DISTANCE - TileSet.TILE_HEIGHT) &&
+						(x < Game.WINDOW_WIDTH + SPAWN_DISTANCE && y > -SPAWN_DISTANCE - TileSet.TILE_HEIGHT) &&
+						(x > -SPAWN_DISTANCE - TileSet.TILE_WIDTH && y < Game.WINDOW_HEIGHT + SPAWN_DISTANCE)
+				)			
+				)) {
+			x = rnd.nextInt() % (Game.WINDOW_WIDTH + SPAWN_DISTANCE);
+			y = rnd.nextInt() % (Game.WINDOW_HEIGHT + SPAWN_DISTANCE);
 		}
 		coordinates = new Coordinates(x, y);
 		movement = new Movement(coordinates, Math.abs(rnd.nextInt())%3);
-		for (int i = 0; i < this.image.length; i++) {
-			this.image[i] = image.getSubimage(i*TileSet.TILE_WIDTH, (enemycategory-BOMBER_CLASS)*TileSet.TILE_HEIGHT, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT);	
-		}
 		this.level = level;
 		switch(enemycategory){
 		case BOMBER_CLASS:
@@ -97,6 +109,31 @@ public class Enemy {
 				setEnemyxp(10);
 				setEnemycash(50);
 				break;				
+		}
+		int xOffset = 0, yOffset = 0;
+		switch (getEnemyelement()) {
+		case LASER_RESISTANCE:
+			xOffset = 0;
+			yOffset = 0;
+			break;
+		case ICE_RESISTANCE:
+			xOffset = 0;
+			yOffset = 4 * TileSet.TILE_HEIGHT;	
+			break;
+		case ACID_RESISTANCE:
+			xOffset = 4 * TileSet.TILE_WIDTH;
+			yOffset = 0;
+			break;
+		case EMP_RESISTANCE:
+			xOffset = 4 * TileSet.TILE_WIDTH;
+			yOffset = 4 * TileSet.TILE_HEIGHT;
+			break;
+
+		default:
+			break;
+		}
+		for (int i = 0; i < this.image.length; i++) {
+			this.image[i] = image.getSubimage(i * TileSet.TILE_WIDTH + xOffset, (enemycategory - BOMBER_CLASS) * TileSet.TILE_HEIGHT + yOffset, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT);	
 		}
 	} 
 	//all needed get constructors
@@ -144,8 +181,6 @@ public class Enemy {
 		//all needed set constructors
 
 		public void setEnemylvl(){
-			Random rnd = new Random();
-			rnd.setSeed(System.currentTimeMillis());
 			enemylvl = Math.abs(rnd.nextInt())%4+level.getLevelCnt()*10; //+ maybe level.getWavesamount()			
 		}
 		
@@ -201,7 +236,12 @@ public class Enemy {
 		
 		public boolean isInView() {
 			boolean bretval = false;
-			if (coordinates.getX()>=0 && coordinates.getY()>=0) {
+			if (
+					coordinates.getX() >= 0 && 
+					coordinates.getY() >= 0 && 
+					coordinates.getX() < Game.WINDOW_WIDTH - TileSet.TILE_WIDTH &&
+					coordinates.getY() < Game.WINDOW_HEIGHT - TileSet.TILE_HEIGHT
+				) {
 				bretval = true;
 			}
 			return bretval;

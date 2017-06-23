@@ -77,7 +77,7 @@ public class MenuManager implements KeyListener {
 	private BufferedImage getLoading() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/loading"+loading+".png"));
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/loading" + loading + ".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -86,7 +86,7 @@ public class MenuManager implements KeyListener {
 	private BufferedImage getMenu() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/menu"+menuPos+".png"));
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/menu" + menuPos + ".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -95,7 +95,7 @@ public class MenuManager implements KeyListener {
 	private BufferedImage getNewGame() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/choose"+menuPos+menuPos2+".png"));
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/choose" + menuPos + menuPos2 + ".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -104,7 +104,7 @@ public class MenuManager implements KeyListener {
 	private BufferedImage getLoadGame() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/load"+menuPos+".png"));
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/load" + menuPos + ".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -113,7 +113,7 @@ public class MenuManager implements KeyListener {
 	private BufferedImage getSaveGame() {
 		BufferedImage retval = null;
 		try {
-			retval = ImageIO.read(MenuManager.class.getResource("gui/images/save"+menuPos+".png"));
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/save" + menuPos + ".png"));
 		} catch (IOException e) {
 		}
 		return retval;
@@ -137,8 +137,8 @@ public class MenuManager implements KeyListener {
 	}
 	
 	private BufferedImage getLevel() {
-		int[] rgbBackground = new int[16*64*9*64];
-		levels.get(game.getActiveLevel()).getSubimage().getRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
+		int[] rgbBackground = new int[Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH * Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT];
+		levels.get(game.getActiveLevel()).getSubimage().getRGB(0, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH);
 
 		final int TRANSPARANCY 	= 16777215;
 		final int BLACK			= -16777216;
@@ -146,12 +146,12 @@ public class MenuManager implements KeyListener {
 		if (!enemies.isEmpty()) {
 			for (int n = 0; n < enemies.size(); n++) {
 				if (enemies.get(n).isInView()) {
-					int[] rgbEnemy = new int[64*64];
-					enemies.get(n).getImage().getRGB(0, 0, 64, 64, rgbEnemy, 0, 64);
+					int[] rgbEnemy = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+					enemies.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbEnemy, 0, TileSet.TILE_WIDTH);
 					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbEnemy[i*TileSet.TILE_WIDTH+j]!=TRANSPARANCY && enemies.size()>n) {
-								rgbBackground[(enemies.get(n).getCoordinates().getY()+i)*16*64 + enemies.get(n).getCoordinates().getX() + j] = rgbEnemy[i*TileSet.TILE_WIDTH+j];
+							if (rgbEnemy[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY && enemies.size() > n) {
+								rgbBackground[(enemies.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + enemies.get(n).getCoordinates().getX() + j] = rgbEnemy[i * TileSet.TILE_WIDTH + j];
 							}
 						}
 					}		
@@ -160,13 +160,13 @@ public class MenuManager implements KeyListener {
 		}		
 		if (!bullets.isEmpty()) {
 			for (int n = 0; n < bullets.size(); n++) {
-				int[] rgbBullet = new int[64*64];
-				bullets.get(n).getImage().getRGB(0, 0, 64, 64, rgbBullet, 0, 64);
-				if (bullets.get(n).move(20)) {
+				int[] rgbBullet = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+				bullets.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbBullet, 0, TileSet.TILE_WIDTH);
+				if (bullets.get(n).move(Bullet.DEFAULT_BULLETSPEED)) {
 					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbBullet[i*TileSet.TILE_WIDTH+j]!=BLACK && bullets.size()>n) {
-								rgbBackground[(bullets.get(n).getCoordinates().getY()+i)*16*64 + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i*TileSet.TILE_WIDTH+j];
+							if (rgbBullet[i * TileSet.TILE_WIDTH + j] != BLACK && bullets.size() > n) {
+								rgbBackground[(bullets.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i * TileSet.TILE_WIDTH + j];
 							}
 						}
 					}
@@ -175,17 +175,17 @@ public class MenuManager implements KeyListener {
 				}				
 			}
 		}
-		int[] rgbShip = new int[64*64];
-		shp.getImage().getRGB(0, 0, 64, 64, rgbShip, 0, 64);
+		int[] rgbShip = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+		shp.getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbShip, 0, TileSet.TILE_WIDTH);
 		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 			for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-				if (rgbShip[i*TileSet.TILE_WIDTH+j]!=TRANSPARANCY) {
-					rgbBackground[(shp.getCoordinates().getY()+i)*16*64 + shp.getCoordinates().getX() + j] = rgbShip[i*TileSet.TILE_WIDTH+j];
+				if (rgbShip[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY) {
+					rgbBackground[(shp.getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + shp.getCoordinates().getX() + j] = rgbShip[i * TileSet.TILE_WIDTH + j];
 				}
 			}
 		}
-		BufferedImage subimg = new BufferedImage(16*64, 9*64, BufferedImage.TYPE_INT_ARGB);
-		subimg.setRGB(0, 0, 16*64, 9*64, rgbBackground, 0, 16*64);
+		BufferedImage subimg = new BufferedImage(Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+		subimg.setRGB(0, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH);
 		return subimg;
 	}
 		
@@ -378,7 +378,7 @@ public class MenuManager implements KeyListener {
 						}
 						new ConfigWriter(fullscreen, sound, background);
 						for (int i = 1; i < levels.size(); i++) {
-							levels.get(i).updateImage(new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10));
+							levels.get(i).updateImage(new TileSet("tiles/tileset" + (int)new ConfigReader("config.json").getBackground() + ".png", 10, 10));
 						}
 						game.menuSound.play();
 						break;

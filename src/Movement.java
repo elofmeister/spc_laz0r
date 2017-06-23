@@ -8,9 +8,9 @@ public class Movement {
 	
 	// BORDER
 	private static final int 	BORDER_MIN_X 			= 0;
-	private static final int 	BORDER_MAX_X 			= (Game.WINDOW_WIDTH_TILE_NUM - 1) * TileSet.TILE_WIDTH;
+	private static final int 	BORDER_MAX_X 			= (Game.WINDOW_WIDTH_TILE_NUM - 1) * TileSet.TILE_WIDTH - 1;
 	private static final int 	BORDER_MIN_Y 			= 0;
-	private static final int 	BORDER_MAX_Y 			= (Game.WINDOW_HEIGHT_TILE_NUM - 1) * TileSet.TILE_HEIGHT;
+	private static final int 	BORDER_MAX_Y 			= (Game.WINDOW_HEIGHT_TILE_NUM - 1) * TileSet.TILE_HEIGHT - 1;
 
 	// DIRECTIONS
 	private	static final int 	NUMBER_OF_DIRECTIONS 	= 8;
@@ -51,6 +51,7 @@ public class Movement {
 			coordinates.setY(coordinates.getY() - Enemy.ENEMYSPEED);
 		} else {
 			coordinates.setY(0);
+			changeDirection();
 		}
 		mainDirection = 0;
 	}
@@ -60,6 +61,7 @@ public class Movement {
 			coordinates.setY(coordinates.getY() + Enemy.ENEMYSPEED);
 		} else {
 			coordinates.setY(BORDER_MAX_Y);
+			changeDirection();
 		}
 		mainDirection = 3;
 	}
@@ -69,6 +71,7 @@ public class Movement {
 			coordinates.setX(coordinates.getX() - Enemy.ENEMYSPEED);
 		} else {
 			coordinates.setX(0);
+			changeDirection();
 		}
 		mainDirection = 2;
 	}
@@ -78,6 +81,7 @@ public class Movement {
 			coordinates.setX(coordinates.getX() + Enemy.ENEMYSPEED);
 		} else {
 			coordinates.setX(BORDER_MAX_X);
+			changeDirection();
 		}
 		mainDirection = 1;
 	}
