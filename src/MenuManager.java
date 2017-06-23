@@ -37,6 +37,7 @@ public class MenuManager implements KeyListener {
 	private List<Bullet> bullets;
 	private List<Level> levels;
 	private List<Enemy> enemies;
+	private List<Explosion> explosions;
 	private int loading;
 
 	private boolean fullscreen = true;
@@ -60,13 +61,14 @@ public class MenuManager implements KeyListener {
 	private final int KEY_ESC		= 27;
 	private final int KEY_BACKSPACE	= 8;
 	
-	public MenuManager(Game game, Window window, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies) {
+	public MenuManager(Game game, Window window, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies, List<Explosion> explosions) {
 		this.game = game;
 		this.window = window;
 		this.shp = shp;
 		this.bullets = bullets;
 		this.enemies = enemies;
 		this.levels = levels;
+		this.explosions = explosions;
 		this.window.getFrame().addKeyListener(this);
 		ConfigReader cr = new ConfigReader("config.json");
 		fullscreen = cr.isFullscreen();
@@ -172,6 +174,23 @@ public class MenuManager implements KeyListener {
 					}
 				} else {
 					bullets.remove(n--);
+				}				
+			}
+		}
+		if (!explosions.isEmpty()) {
+			for (int n = 0; n < explosions.size(); n++) {
+				int[] rgbExplosion = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+				explosions.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbExplosion, 0, TileSet.TILE_WIDTH);
+				if (!explosions.get(n).isFinished()) {
+					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+							if (rgbExplosion[i * TileSet.TILE_WIDTH + j] != BLACK && explosions.size() > n) {
+								rgbBackground[(explosions.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + explosions.get(n).getCoordinates().getX() + j] = rgbExplosion[i * TileSet.TILE_WIDTH + j];
+							}
+						}
+					}
+				} else {
+					explosions.remove(n--);
 				}				
 			}
 		}

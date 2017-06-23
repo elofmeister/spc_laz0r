@@ -15,29 +15,39 @@ public class Ships {
 	private double firespeed;
 	private List<Item> currentitems = new ArrayList<Item>();
 
-	public static final int SPAWN_0 = 0;
-	public static final int SPAWN_1 = 1;
-	public static final int SPAWN_2 = 2;
-	public static final int SPAWN_3 = 3;
-	public static final int MOVE_RIGHT = 4;
-	public static final int MOVE_RIGHT_UP = 5;
-	public static final int MOVE_RIGHT_DOWN = 6;
-	public static final int MOVE_LEFT_DOWN = 7;
-	public static final int MOVE_LEFT_UP = 8;
-	public static final int MOVE_LEFT = 9;
+	public static final int SPAWN_0 				= 0;
+	public static final int SPAWN_1 				= 1;
+	public static final int SPAWN_2 				= 2;
+	public static final int SPAWN_3 				= 3;
+	public static final int SPAWN_4 				= 4;
+	public static final int MOVE_RIGHT 				= 5;
+	public static final int MOVE_RIGHT_UP 			= 6;
+	public static final int MOVE_RIGHT_DOWN 		= 7;
+	public static final int MOVE_LEFT_DOWN 			= 8;
+	public static final int MOVE_LEFT_UP 			= 9;
+	public static final int MOVE_LEFT 				= 10;
+	public static final int MOVE_RIGHT_SHIELD 		= 11;
+	public static final int MOVE_RIGHT_UP_SHIELD 	= 12;
+	public static final int MOVE_RIGHT_DOWN_SHIELD  = 13;
+	public static final int MOVE_LEFT_DOWN_SHIELD  	= 14;
+	public static final int MOVE_LEFT_UP_SHIELD  	= 15;
+	public static final int MOVE_LEFT_SHIELD  		= 16;
 
 	public static final int STANDARDO = 1;
 	public static final int RUMPLER = 2;
 	public static final int GLASSCANNON = 3;
 	
 	public static final int SHIPSPEED = 15; //in pixel per move
+	public static final int CURSE_DURATION = 5000;		//duration in milliseconds
+	public static final int SHIELD_DURATION = 5000; //consume shield last 5000 milliseconds
 	
-	private BufferedImage[] image = new BufferedImage[10];		// all ship tiles
+	private BufferedImage[] image = new BufferedImage[MOVE_LEFT_SHIELD + 1];		// all ship tiles
 	private boolean spawned = false;
 	private int spawnCnt = SPAWN_0;
 	private int animation = MOVE_RIGHT;
 	private int cursedspeed;
-	
+	private long cursetimestamp = System.currentTimeMillis();
+	private long invincible_timestamp = System.currentTimeMillis();
 	private long spawnTimer = System.currentTimeMillis();
 	
 	private Coordinates coor = new Coordinates(256, 256);
@@ -50,19 +60,19 @@ public class Ships {
 		this.shipclass = shipclass;
 		switch (this.shipclass) {
 		case GLASSCANNON: 
-			setlife(60);
+			setbaselife(60);
 			setdmg(10);
 			setfirespeed(1.00);
 			shipname = "GLASSCANNON";
 			break;
 		case RUMPLER: 
-			setlife(100);
+			setbaselife(100);
 			setdmg(6);
 			setfirespeed(1.40);
 			shipname = "Rumpler";
 			break;
 		case STANDARDO: 
-			setlife(80);
+			setbaselife(80);
 			setdmg(8);
 			setfirespeed(1.20);
 			shipname = "Standardo";
@@ -71,11 +81,13 @@ public class Ships {
 			break;
 		}
 		TileSet tileset = new TileSet("tiles/ships.png", 10, 10);
-		for (int i = 0; i <= MOVE_LEFT; i++) {
-			if (i <= SPAWN_3) {
-				image[i] = tileset.getTileset().getSubimage(i * 64 + 64, (this.shipclass-STANDARDO) * 128 + 64, 64, 64);
+		for (int i = 0; i < image.length; i++) {
+			if (i <= SPAWN_4) {
+				image[i] = tileset.getTileset().getSubimage(i * 64, (this.shipclass-STANDARDO) * 3 * 64 + 64, 64, 64);
+			} else if (i <= MOVE_LEFT) {
+				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT) * 64, (this.shipclass-STANDARDO) * 3 * 64, 64, 64);				
 			} else {
-				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT) * 64, (this.shipclass-STANDARDO) * 128, 64, 64);
+				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT_SHIELD) * 64, (this.shipclass-STANDARDO) * 3 * 64 + 128, 64, 64);
 			}
 		}
 	}
@@ -86,6 +98,9 @@ public class Ships {
 		spawned = false;
 		spawnCnt = SPAWN_0;
 		animation = MOVE_RIGHT;
+		life = baselife;
+		cursetimestamp = 1;
+		invincible_timestamp = 1;
 	}
 	
 	public String getshipname(){
@@ -95,19 +110,6 @@ public class Ships {
 	public int getshipclass(){
 		return shipclass;
 	}
-	 
-//	private void test() {
-//	currentitems.add(new Item(x,y,z,a));
-//	currentitems.remove(int i);
-//	currentitems.size();
-//	
-//		for (int j = 0; j < currentitems.size(); j++) {
-//			if(currentitems.get(j).isDead()) {
-//				currentitems.remove(j);
-//			}
-//		}
-//	}
-//	
 	
 	public int getbonusslots(int i){
 		return bonusslots[i];
@@ -138,7 +140,11 @@ public class Ships {
 	}
 	
 	public int getshipspeed(){
-		return SHIPSPEED+cursedspeed;
+		int retval = SHIPSPEED;
+		if (cursetimestamp + CURSE_DURATION > System.currentTimeMillis()) {
+			retval+=cursedspeed;
+		}
+		return retval;
 	}
 	
 	//all needed set constructors
@@ -173,6 +179,10 @@ public class Ships {
 		setlife(baselife);
 	}
 	
+	public void setinvincible() {
+		invincible_timestamp = System.currentTimeMillis();
+	}
+	
 	public void setdmg(int sVal){
 		dmg=sVal;
 	}
@@ -197,15 +207,19 @@ public class Ships {
 	public BufferedImage getImage() {
 		BufferedImage retval = null;
 		if (spawned) {
-			if (animation <= MOVE_LEFT) {
-				retval = image[animation];
+				 if (animation <= MOVE_LEFT) {
+					retval = image[animation];
+					if(invincible_timestamp + SHIELD_DURATION > System.currentTimeMillis()){
+						retval = image[animation+6];
+					}
 			}
+			
 		}
 		else {
-			if (spawnTimer+1000<System.currentTimeMillis()) {
+			if (spawnTimer+300<System.currentTimeMillis()) {
 				spawnTimer = System.currentTimeMillis();
 				retval = image[spawnCnt++];
-				if (spawnCnt > SPAWN_3) {
+				if (spawnCnt > SPAWN_4) {
 					spawned = true;
 				}
 			} else {
@@ -214,7 +228,6 @@ public class Ships {
 		}
 		return retval;
 	}
-
 
 	public Coordinates getCoordinates() {
 		return coor;
@@ -228,5 +241,12 @@ public class Ships {
 		this.animation = animation;
 	}
 	
+	public void setcurse(int curse) {
+		this.curse = curse;
+	}
+	
+	public void setcursetimestamp() {
+		cursetimestamp = System.currentTimeMillis();
+	}
 }
 	

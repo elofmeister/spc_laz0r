@@ -42,9 +42,12 @@ public class Game implements Runnable, KeyListener {
 	private BufferedImage enemiesTileset = new TileSet("tiles/enemys.png", 10, 10).getTileset();
 	private List<Bullet> bullets = new ArrayList<Bullet>();
 	private List<Enemy> enemies = new ArrayList<Enemy>();
+	private List<Explosion> explosions = new ArrayList<Explosion>();
 	private long bulletTimer = System.currentTimeMillis();
+	private long enemyTimer = System.currentTimeMillis();
 	
 	private MenuManager menuManager;
+	private CollisionDetector collisionDetector = new CollisionDetector();
 	
 	public static void main(String[] arg) {
 	    new Thread(new Game()).start();	// calling run method 
@@ -61,7 +64,7 @@ public class Game implements Runnable, KeyListener {
 		for (int i = 0; i < 10; i++) {
 			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
 		}
-		menuManager = new MenuManager(this, mainWindow, shp, bullets, levels, enemies);
+		menuManager = new MenuManager(this, mainWindow, shp, bullets, levels, enemies, explosions);
 		menuManager.setActiveMenu(MenuManager.MENU);
 		mainWindow.getFrame().addKeyListener(this);
 		while(true) {	
@@ -105,6 +108,29 @@ public class Game implements Runnable, KeyListener {
 				}
 				for (int i = 0; i < enemies.size(); i++) {
 					enemies.get(i).move();
+					if (enemyTimer + Bullet.DEFAULT_FIRESPEED * 2 < System.currentTimeMillis() && enemies.get(i).isInView()) {
+						bullets.add(new Bullet(enemies.get(i).getCoordinates(), enemies.get(i).getDirection(), enemies.get(i).getEnemyelement(), bulletTileset, enemies.get(i).getIdentity()));
+					}
+				}
+				if (enemyTimer + Bullet.DEFAULT_FIRESPEED * 2 < System.currentTimeMillis()) {
+					enemyTimer = System.currentTimeMillis();
+				}
+				for (int i = 0; i < bullets.size(); i++) {
+					if (collisionDetector.isCollide(bullets.get(i), shp, enemies)) {
+						new DamageCalculator(collisionDetector.getLastCollsion(), player, enemies.get(collisionDetector.getEnemy()), shp);
+						bullets.remove(i--);
+						if (shp.getlife() < 0) {
+							newGame();
+						}
+						if (collisionDetector.getLastCollsion() != Player.ID && enemies.get(collisionDetector.getEnemy()).getEnemylife() <= 0) {
+							/*
+							 * Enemy killed
+							 */
+							player.setXp(enemies.get(collisionDetector.getEnemy()).getEnemyxp());
+							explosions.add(new Explosion(enemies.get(collisionDetector.getEnemy()).getCoordinates(), bulletTileset, explosionSound));
+							enemies.remove(collisionDetector.getEnemy());
+						}
+					}
 				}
 			}
 		}
@@ -130,6 +156,7 @@ public class Game implements Runnable, KeyListener {
 		bullets.clear();
 		enemies.clear();
 		activeLvl = 0;
+		direction = "right";
 	}
 	
 	private void update() {
@@ -155,9 +182,21 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	private void handleKeys() {
+		if (key_1) {
+			//shp.setheal()			
+		}
+		if (key_2) {
+			shp.setinvincible();			
+		}
+		if (key_3) {
+			//shp.setbomb();			
+		}
+		if (key_4) {
+			//shp.settownportal();			
+		}
 		if (key_a) {
-			if (!(shp.getCoordinates().getX()-Ships.SHIPSPEED<0)) {
-				shp.getCoordinates().setX(shp.getCoordinates().getX()-Ships.SHIPSPEED);
+			if (!(shp.getCoordinates().getX()-shp.getshipspeed()<0)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()-shp.getshipspeed());
 			} else {
 				shp.getCoordinates().setX(0);
 				direction = CAMERA_DIRECTION_LEFT;
@@ -165,8 +204,8 @@ public class Game implements Runnable, KeyListener {
 			shp.setAnimation(Ships.MOVE_LEFT);
 		}
 		if (key_d) {
-			if (!(shp.getCoordinates().getX()+Ships.SHIPSPEED>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
-				shp.getCoordinates().setX(shp.getCoordinates().getX()+Ships.SHIPSPEED);
+			if (!(shp.getCoordinates().getX()+shp.getshipspeed()>WINDOW_WIDTH-TileSet.TILE_WIDTH)) {
+				shp.getCoordinates().setX(shp.getCoordinates().getX()+shp.getshipspeed());
 			} else {
 				shp.getCoordinates().setX(WINDOW_WIDTH-TileSet.TILE_WIDTH);
 				direction = CAMERA_DIRECTION_RIGHT;
@@ -174,8 +213,8 @@ public class Game implements Runnable, KeyListener {
 			shp.setAnimation(Ships.MOVE_RIGHT);
 		}
 		if (key_w) {
-			if (!(shp.getCoordinates().getY()-Ships.SHIPSPEED<0)) {
-				shp.getCoordinates().setY(shp.getCoordinates().getY()-Ships.SHIPSPEED);
+			if (!(shp.getCoordinates().getY()-shp.getshipspeed()<0)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()-shp.getshipspeed());
 			} else {
 				shp.getCoordinates().setY(0);
 			}			
@@ -186,8 +225,8 @@ public class Game implements Runnable, KeyListener {
 			}
 		}
 		if (key_s) {
-			if (!(shp.getCoordinates().getY()+Ships.SHIPSPEED>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
-				shp.getCoordinates().setY(shp.getCoordinates().getY()+Ships.SHIPSPEED);
+			if (!(shp.getCoordinates().getY()+shp.getshipspeed()>WINDOW_HEIGHT-TileSet.TILE_HEIGHT)) {
+				shp.getCoordinates().setY(shp.getCoordinates().getY()+shp.getshipspeed());
 			} else {
 				shp.getCoordinates().setY(WINDOW_HEIGHT-TileSet.TILE_HEIGHT);
 			}
@@ -201,28 +240,28 @@ public class Game implements Runnable, KeyListener {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, player.getColor(), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, player.getColor(), bulletTileset, Player.ID));	
 			}
 		}
 		if (key_left) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, player.getColor(), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, player.getColor(), bulletTileset, Player.ID));	
 			}
 		}
 		if (key_up) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, player.getColor(), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, player.getColor(), bulletTileset, Player.ID));	
 			}
 		}
 		if (key_down) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, player.getColor(), bulletTileset));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, player.getColor(), bulletTileset, Player.ID));	
 			}
 		}
 		if (!key_w) {
@@ -249,6 +288,10 @@ public class Game implements Runnable, KeyListener {
 	boolean key_up 		= false;
 	boolean key_right 	= false;
 	boolean key_down 	= false;
+	boolean key_1    	= false;
+	boolean key_2     	= false;
+	boolean key_3     	= false;
+	boolean key_4     	= false;
 	final int KEY_W 	= 87;
 	final int KEY_A 	= 65;
 	final int KEY_S 	= 83;
@@ -257,6 +300,10 @@ public class Game implements Runnable, KeyListener {
 	final int KEY_UP 	= 38;
 	final int KEY_RIGHT = 39;
 	final int KEY_DOWN 	= 40;
+	final int KEY_1     = 49;
+	final int KEY_2     = 50;
+	final int KEY_3     = 51;
+	final int KEY_4     = 52;
 	
 	public void keyPressed(KeyEvent e) {
 		if (menuManager.getActiveMenu()==MenuManager.LEVEL) {
@@ -284,6 +331,18 @@ public class Game implements Runnable, KeyListener {
 				break;
 			case KEY_DOWN:
 				key_down = true;
+				break;
+			case KEY_1:
+				key_1 = true;
+				break;
+			case KEY_2:
+				key_2 = true;
+				break;
+			case KEY_3:
+				key_3 = true;
+				break;
+			case KEY_4:
+				key_4 = true;
 				break;
 			default:
 				break;
@@ -316,6 +375,18 @@ public class Game implements Runnable, KeyListener {
 			break;
 		case KEY_DOWN:
 			key_down = false;
+			break;
+		case KEY_1:
+			key_1 = false;
+			break;
+		case KEY_2:
+			key_2 = false;
+			break;
+		case KEY_3:
+			key_3 = false;
+			break;
+		case KEY_4:
+			key_4 = false;
 			break;
 		default:
 			break;

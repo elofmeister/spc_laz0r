@@ -21,8 +21,10 @@ public class Bullet {
 	private Coordinates coordinates;
 	private int direction;
 	private BufferedImage image;
+	private long id;
 		
-	public Bullet(Coordinates start, int direction, int color, BufferedImage image) {
+	public Bullet(Coordinates start, int direction, int color, BufferedImage image, long id) {
+		this.id = id;
 		coordinates = new Coordinates(start.getX(), start.getY());
 		this.direction = direction;
 		int xOffset = 0;
@@ -84,5 +86,13 @@ public class Bullet {
 	
 	public void dispose() {
 		image.flush();
+	}
+	
+	public long getIdentity() {
+		return id;
+	}
+	
+	public int getDirection() {
+		return direction;
 	}
 }

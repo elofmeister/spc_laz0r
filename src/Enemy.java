@@ -5,6 +5,7 @@ import java.util.Random;
 
 public class Enemy {
 	
+	private long id;
 	private int enemylvl;
 	private int enemydmg;
 	private int enemycategory;
@@ -44,6 +45,7 @@ public class Enemy {
 	
 	public Enemy(int enemycategory, Level level, BufferedImage image, Random rnd){   //enemylvl = current lvl , category = 1,2,3,4
 		this.rnd = rnd;
+		this.id = rnd.nextLong();
 		int x = 0, y = 0;
 		while(!(
 				(
@@ -246,5 +248,12 @@ public class Enemy {
 			}
 			return bretval;
 		}
-			
+		
+		public long getIdentity() {
+			return id;
+		}
+		
+		public int getDirection() {
+			return movement.getDirection();
+		}
 }

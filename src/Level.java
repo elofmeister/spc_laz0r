@@ -10,8 +10,8 @@ public class Level {
 	private static final int PLANET_DICE 			= 16;
 	private static final int PLANET_DICE_PERCENTAGE = 30;
 	
-	private static final int WAVES					= 8;		// First level starts with 8 waves
-	private static final int WAVES_OFFSET			= 2;		// Each new level 
+	private static final int WAVES					= 6;		// First level starts with 8 waves
+	private static final int WAVES_OFFSET			= 1;		// Each new level 
 	
 	private int waveAmount;
 	private int waveCnt;
@@ -41,7 +41,7 @@ public class Level {
 	}
 	
 	public void moveLeft() {
-		if (!isEndReached()) {
+		if (!isEndReached() && viewPos > 0) {
 			viewPos--;
 		}
 	}
@@ -104,7 +104,7 @@ public class Level {
 			for (int i = 0; i < 100-loadingProgress; i++) {
 				loadingBar+=space;				
 			}
-			System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
+			//System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
 		}
 		if (viewPos>waveCnt*waveDistance && waveCnt<waveAmount) {
 			bretval = true;

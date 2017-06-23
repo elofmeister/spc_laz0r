@@ -5,7 +5,6 @@ public class DamageCalculator {
 	public static final int PLAYER_IS_TARGET = 1;
 	public static final int ENEMY_IS_TARGET = 2;
 	
-	public static final int CURSE_DURATION = 5;		//duration in miliseconds
 	
 	public static final int LASER = 1;  			//damage type
 	public static final int ICE = 2;
@@ -25,26 +24,28 @@ public class DamageCalculator {
 	private int damage;
 	private int elementchance;
 	private double crtitchance;
-	private static Player player;
-	private static Enemy gegner;
-	private static Ships shp;
-	public DamageCalculator(int target){  
 	
+	public DamageCalculator(long id, Player player, Enemy enemy, Ships shp){  
+		
+		int target = ENEMY_IS_TARGET;
+		if (id == Player.ID) {
+			target = PLAYER_IS_TARGET;
+		}
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());
 		elementchance = Math.abs(rnd.nextInt())%100;	
 	
 		switch (target){
 		case PLAYER_IS_TARGET:
-			shp.setlife(-gegner.getEnemydmg()); // bullet damage
+			shp.setlife(-enemy.getEnemydmg()); // bullet damage
 			
 	    if(shp.getcurse() == 0){
-			switch (gegner.getEnemyelement()){
+			switch (enemy.getEnemyelement()){
 			case LASER: 
 						if(elementchance>player.getLaser()){
 							shp.setcurse(LASER);
 							shp.setlife(LASER_DMG);
-							shp.setshipspeed(LASER_SLOW);
+							shp.setshipspeed(LASER_SLOW);/*
 							long timestamp = System.currentTimeMillis()/1000, oldtimestamp = System.currentTimeMillis()/1000;							
 								while (timestamp+CURSE_DURATION>System.currentTimeMillis()/1000){
 								
@@ -54,7 +55,7 @@ public class DamageCalculator {
 											shp.setlife(LASER_DMG);												
 											oldtimestamp = newtimestamp;
 										    }						
-								}														
+								}	*/													
 						}
 						break;
 						
@@ -62,7 +63,7 @@ public class DamageCalculator {
 					if(elementchance>player.getLaser()){
 						shp.setshipspeed(ICE);
 						shp.setlife(ICE_DMG);
-						shp.setshipspeed(ICE_SLOW);
+						shp.setshipspeed(ICE_SLOW);/*
 						long timestamp = System.currentTimeMillis()/1000, oldtimestamp = System.currentTimeMillis()/1000;							
 							while (timestamp+CURSE_DURATION>System.currentTimeMillis()/1000){
 							
@@ -72,7 +73,7 @@ public class DamageCalculator {
 										shp.setlife(ICE_DMG); 		
 										oldtimestamp = newtimestamp;
 									    }						
-							}					
+							}		*/			
 					}
 					break;
 				
@@ -80,7 +81,7 @@ public class DamageCalculator {
 					if(elementchance>player.getLaser()){
 						shp.setcurse(ACID);
 						shp.setlife(ACID_DMG);
-						shp.setshipspeed(ACID_SLOW);
+						shp.setshipspeed(ACID_SLOW);/*
 						long timestamp = System.currentTimeMillis()/1000, oldtimestamp = System.currentTimeMillis()/1000;							
 							while (timestamp+CURSE_DURATION>System.currentTimeMillis()/1000){
 							
@@ -90,7 +91,7 @@ public class DamageCalculator {
 										shp.setlife(ACID_DMG); 		
 										oldtimestamp = newtimestamp;
 									    }						
-							}			
+							}		*/	
 					}
 			       	break;
 				
@@ -100,7 +101,7 @@ public class DamageCalculator {
 						shp.setcurse(EMP);
 						shp.setlife(EMP_DMG);
 						shp.setshipspeed(EMP_SLOW);
-						long timestamp = System.currentTimeMillis()/1000, oldtimestamp = System.currentTimeMillis()/1000;							
+						/*long timestamp = System.currentTimeMillis()/1000, oldtimestamp = System.currentTimeMillis()/1000;							
 							while (timestamp+CURSE_DURATION>System.currentTimeMillis()/1000){
 							
 								long newtimestamp = System.currentTimeMillis()/1000; 
@@ -109,38 +110,38 @@ public class DamageCalculator {
 										shp.setlife(EMP_DMG); 		
 										oldtimestamp = newtimestamp;
 									    }						
-							}							
+							}	*/						
 					}
 					
 			       	break;
 				}
 		    }	
-	    	shp.setcurse(0);
-	    	shp.setshipspeed(0);
+	    	//shp.setcurse(0);
+	    	shp.setcursetimestamp();
 			break;
 
 			
 		case ENEMY_IS_TARGET:
-			gegner.setEnemylife(-shp.getdmg());
+			enemy.setEnemylife(-shp.getdmg());
 			
 		
 			crtitchance = Math.abs(rnd.nextDouble());
 			if (crtitchance<=player.getCritprb()){
 				damage = (int) Math.round(shp.getdmg()*player.getCritdmg());
 				System.out.println("critchan"+ damage);
-				gegner.setEnemylife(-damage);
+				enemy.setEnemylife(-damage);
 			}
 			 //bonusbullet still missing <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- <-- 
-	//		gegner.setEnemylife(shp.getdmg()+player.getLaser()+player.getIce()+player.getAcid()+player.getEmp());
+	//		enemy.setEnemylife(shp.getdmg()+player.getLaser()+player.getIce()+player.getAcid()+player.getEmp());
 			
-			switch(gegner.getEnemyelement()){
-			case LASER: gegner.setEnemylife(-(player.getIce()+player.getAcid()+player.getEmp()));
+			switch(enemy.getEnemyelement()){
+			case LASER: enemy.setEnemylife(-(player.getIce()+player.getAcid()+player.getEmp()));
 						break;
-			case ICE: gegner.setEnemylife(-(player.getLaser()+player.getAcid()+player.getEmp()));
+			case ICE: enemy.setEnemylife(-(player.getLaser()+player.getAcid()+player.getEmp()));
 						break;
-			case ACID: gegner.setEnemylife(-(player.getLaser()+player.getIce()+player.getEmp())); 
+			case ACID: enemy.setEnemylife(-(player.getLaser()+player.getIce()+player.getEmp())); 
 						break;
-			case EMP: gegner.setEnemylife(-(player.getLaser()+player.getIce()+player.getAcid()));
+			case EMP: enemy.setEnemylife(-(player.getLaser()+player.getIce()+player.getAcid()));
 						break;
 			}
 			break;
@@ -152,9 +153,9 @@ public class DamageCalculator {
 //	public static void main(String[] arg){
 //		Level lvl = new Level(5, new TileSet("tiles/tileset1.png",10,10));
 //		player = new Player("Horst");
-//		gegner = new Enemy(2,lvl); 
+//		enemy = new Enemy(2,lvl); 
 //		shp = new Ships(3);
-//		gegner.setEnemylife(20);	
+//		enemy.setEnemylife(20);	
 //
 //}
 

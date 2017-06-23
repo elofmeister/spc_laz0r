@@ -8,6 +8,7 @@ import java.util.stream.IntStream;
 
 public class Player {
 
+	public static final long ID = 1;
 	private String name;
 	private int xp;
 	private int oldxp;
@@ -30,8 +31,11 @@ public class Player {
 	 */
 	
 	public Player(String name) {
-		
 		this.name  =  name;
+		this.lvl=1;
+				this.xp =10;
+		this.oldxp=5;
+		
 		reset();
 	}  
 	
@@ -54,7 +58,7 @@ public class Player {
 	public void reset(){
 		this.xp  =  0;
 		this.oldxp  =  0;
-		this.lvl  =  1;
+		this.lvl  =  0;
 		this.skillpts  =  0;
 		this.agl  =  0;
 		this.critprb  =  0;
@@ -112,6 +116,9 @@ public class Player {
 	public int getCash(){
 		return cash;
 	}
+	public int getoldXP(){
+		return oldxp;
+	}
 	
 	public int getColor(){
 		int retval = Bullet.PURPLE;
@@ -139,7 +146,7 @@ public class Player {
 	}
 	public void setXp(int val){  //Level Calculating formula 
 	    xp += val;
-	     
+
 	    if(lvl <= 10){				//low Level formula
 	    	while(xp >= lvl*lvl*2){
 	    		setLvl(1);
@@ -233,7 +240,6 @@ public class Player {
 		 if (cash < 1000000){
 			 cash += val;
 		 }
-	}
-	
+	}	
 }
 	
