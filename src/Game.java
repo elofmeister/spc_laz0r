@@ -60,8 +60,7 @@ public class Game implements Runnable, KeyListener {
 		new init.FileManager();
 		readSoundConfig();
 		mainWindow = new Window(GAME_TITLE);
-		levels.add(new Level(levelCnt++, new TileSet("tiles/tileset1.png",10,10)));
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i <= 10; i++) {
 			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
 		}
 		menuManager = new MenuManager(this, mainWindow, shp, bullets, levels, enemies, explosions);
@@ -101,10 +100,10 @@ public class Game implements Runnable, KeyListener {
 				if (levels.get(activeLvl).toggleWave()) {
 					Random rnd = new Random();
 					rnd.setSeed(System.currentTimeMillis());
+					levels.get(activeLvl).addWave();
 					for (int i = 0; i < levels.get(activeLvl).getWaveAmount(); i++) {
 						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));
 					}
-					levels.get(activeLvl).addWave();
 				}
 				for (int i = 0; i < enemies.size(); i++) {
 					enemies.get(i).move();

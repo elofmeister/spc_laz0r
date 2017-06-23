@@ -396,7 +396,7 @@ public class MenuManager implements KeyListener {
 							background = menuPos-2;
 						}
 						new ConfigWriter(fullscreen, sound, background);
-						for (int i = 1; i < levels.size(); i++) {
+						for (int i = 0; i < levels.size(); i++) {
 							levels.get(i).updateImage(new TileSet("tiles/tileset" + (int)new ConfigReader("config.json").getBackground() + ".png", 10, 10));
 						}
 						game.menuSound.play();

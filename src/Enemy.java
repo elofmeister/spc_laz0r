@@ -183,7 +183,7 @@ public class Enemy {
 		//all needed set constructors
 
 		public void setEnemylvl(){
-			enemylvl = Math.abs(rnd.nextInt())%4+level.getLevelCnt()*10; //+ maybe level.getWavesamount()			
+			enemylvl = Math.abs(rnd.nextInt())%4 + (level.getLevelCnt()-1) * 10 + level.getWaveCnt(); //+ maybe level.getWavesamount()			
 		}
 		
 		public void setEnemydmg(int eVal){		//damage per bullet/contact

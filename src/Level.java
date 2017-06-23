@@ -104,7 +104,7 @@ public class Level {
 			for (int i = 0; i < 100-loadingProgress; i++) {
 				loadingBar+=space;				
 			}
-			//System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
+			System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
 		}
 		if (viewPos>waveCnt*waveDistance && waveCnt<waveAmount) {
 			bretval = true;
@@ -118,6 +118,10 @@ public class Level {
 	
 	public int getWaveAmount() {
 		return waveAmount;
+	}
+	
+	public int getWaveCnt() {
+		return waveCnt;
 	}
 	
 	public void updateImage(TileSet newTileSet) {
