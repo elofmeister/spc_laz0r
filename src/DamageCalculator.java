@@ -28,7 +28,7 @@ public class DamageCalculator {
 	private int elementchance;
 	private double crtitchance;
 	
-	public DamageCalculator(long id, Player player, Enemy enemy, Ships shp){  
+	public DamageCalculator(long id, Player player, Enemy enemy, Ships shp, SoundPlayer fire){  
 		
 		int target = ENEMY_IS_TARGET;
 		if (id == Player.ID) {
@@ -48,7 +48,8 @@ public class DamageCalculator {
 						if(elementchance>player.getLaser()){
 							shp.setcurse(LASER);
 							shp.setlife(LASER_DMG);
-							shp.setshipspeed(LASER_SLOW);												
+							shp.setshipspeed(LASER_SLOW);
+							fire.play();
 						}
 						break;
 						
@@ -65,6 +66,7 @@ public class DamageCalculator {
 						shp.setcurse(ACID);
 						shp.setlife(ACID_DMG);
 						shp.setshipspeed(ACID_SLOW);
+						fire.play();
 					}
 			       	break;
 				
@@ -73,7 +75,8 @@ public class DamageCalculator {
 							
 						shp.setcurse(EMP);
 						shp.setlife(EMP_DMG);
-						shp.setshipspeed(EMP_SLOW);						
+						shp.setshipspeed(EMP_SLOW);
+						fire.play();				
 					}
 					
 			       	break;

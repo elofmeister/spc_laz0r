@@ -41,6 +41,8 @@ public class MenuManager implements KeyListener {
 	private List<Explosion> explosions;
 	private GuiBar guiBar = new GuiBar();;
 	private int loading;
+	private CollisionDetector shopDetector = new CollisionDetector();
+	private Shop shop;
 
 	private boolean fullscreen = true;
 	private boolean sound = false;
@@ -77,6 +79,8 @@ public class MenuManager implements KeyListener {
 		fullscreen = cr.isFullscreen();
 		sound = cr.isSound();
 		background = (int) cr.getBackground();
+		shop = new Shop(player, shp, game);
+		this.window.getFrame().addKeyListener(shop);
 	}
 	
 	private BufferedImage getLoading() {
@@ -147,11 +151,29 @@ public class MenuManager implements KeyListener {
 
 		final int TRANSPARANCY 	= 16777215;
 		final int BLACK			= -16777216;
-
+		
+		int[] rgbShop = new int[Shop.SHOP_HEIGHT * Shop.SHOP_WIDTH];
+		if (shop.isAtShop(Shop.SHOP_1)) {
+			shop.getShopImage(Shop.SHOP_1).getRGB(0, 0, Shop.SHOP_WIDTH, Shop.SHOP_HEIGHT, rgbShop, 0, Shop.SHOP_WIDTH);
+		} else if (shop.isAtShop(Shop.SHOP_2)) {
+			shop.getShopImage(Shop.SHOP_2).getRGB(0, 0, Shop.SHOP_WIDTH, Shop.SHOP_HEIGHT, rgbShop, 0, Shop.SHOP_WIDTH);
+		} else if (shop.isAtShop(Shop.SHOP_3)) {
+			shop.getShopImage(Shop.SHOP_3).getRGB(0, 0, Shop.SHOP_WIDTH, Shop.SHOP_HEIGHT, rgbShop, 0, Shop.SHOP_WIDTH);
+		}
+		if (shop.isAtShop(Shop.SHOP_1) || shop.isAtShop(Shop.SHOP_2) || shop.isAtShop(Shop.SHOP_3)) {
+			for (int i = 0; i < Shop.SHOP_HEIGHT; i++) {
+				for (int j = 0; j < Shop.SHOP_WIDTH; j++) {
+					rgbBackground[i * Game.WINDOW_WIDTH + j + Game.WINDOW_WIDTH - Shop.SHOP_WIDTH] = rgbShop[i * Shop.SHOP_WIDTH + j];
+				}
+			}
+		}		
+		
 		guiBar.setXP(new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage());
+		guiBar.setBonusslots(shp.getbonusslots(0), shp.getbonusslots(1), shp.getbonusslots(2), shp.getbonusslots(3));
+		guiBar.setCurse(shp.getcurse());
 		if (shp.getlife() < 0) {
 			guiBar = new GuiBar();
-			game.newGame();
+			game.portToBase();
 		} else {
 			guiBar.setLife((float) shp.getlife() / (float) shp.getmaxlife());
 		}
@@ -307,8 +329,7 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == NEW_GAME) {
+			} else if (getActiveMenu() == NEW_GAME) {
 				switch (e.getKeyCode()) {
 				case KEY_UP:
 				case KEY_LEFT:
@@ -339,8 +360,7 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == LOAD_GAME) {
+			} else if (getActiveMenu() == LOAD_GAME) {
 				switch (e.getKeyCode()) {
 				case KEY_UP:
 				case KEY_LEFT:
@@ -371,8 +391,7 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == EXTRA) {
+			} else if (getActiveMenu() == EXTRA) {
 				switch (e.getKeyCode()) {
 				case KEY_UP:
 				case KEY_LEFT:
@@ -482,7 +501,8 @@ public class MenuManager implements KeyListener {
 						shp.setshipclass(menuPos);
 						activeMenu = LEVEL;
 						menuPos = 1;
-						game.newGame();
+						game.portToBase();
+						game.newSound.play();
 						break;
 
 					default:
@@ -508,7 +528,8 @@ public class MenuManager implements KeyListener {
 					case 7:
 						activeMenu = LEVEL;
 						menuPos = 1;
-						game.newGame();
+						game.portToBase();
+						game.newSound.play();
 						break;
 
 					default:

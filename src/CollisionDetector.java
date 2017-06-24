@@ -10,6 +10,34 @@ public class CollisionDetector {
 	
 	public CollisionDetector() {
 	}
+	
+	public boolean isAtShop(Ships ship, Coordinates shop) {
+		boolean bretval = false;
+		int shopXmin, shopXmax, shopYmin, shopYmax;
+		int targetXmin, targetXmax, targetYmin, targetYmax;
+
+		shopXmin = shop.getX() + TileSet.TILE_WIDTH / 2 ;
+		shopXmax = shop.getX() + TileSet.TILE_WIDTH - TileSet.TILE_WIDTH / 2;
+		shopYmin = shop.getY() + TileSet.TILE_HEIGHT / 2;
+		shopYmax = shop.getY() + TileSet.TILE_HEIGHT - TileSet.TILE_HEIGHT / 2;
+
+		targetXmin = ship.getCoordinates().getX();
+		targetXmax = ship.getCoordinates().getX() + TileSet.TILE_WIDTH;
+		targetYmin = ship.getCoordinates().getY();
+		targetYmax = ship.getCoordinates().getY() + TileSet.TILE_HEIGHT;
+		if ((
+				(targetXmin < shopXmin && shopXmin < targetXmax) ||
+				(targetXmin < shopXmax && shopXmax < targetXmax)
+			)
+				&&
+			(
+				(targetYmin < shopYmin && shopYmin < targetYmax) ||
+				(targetYmin < shopYmax && shopYmax < targetYmax)
+			)) {
+			bretval = true;
+		}
+		return bretval;
+	}
 
 	public boolean isCollide(Bullet bullet, Ships ship, List<Enemy> enemies) {
 		boolean bretval = false;

@@ -144,6 +144,8 @@ public class Ships {
 		int retval = SHIPSPEED;
 		if (cursetimestamp + CURSE_DURATION > System.currentTimeMillis()) {
 			retval+=cursedspeed;
+		} else {
+			curse = 0;
 		}
 		return retval;
 	}
@@ -164,7 +166,7 @@ public class Ships {
 	}
 		 
 	public void setbonusslots(int i, int sVal){
-		if (sVal<4) {
+		if (sVal<=4) {
 			bonusslots[i]=sVal;
 		}
 	}

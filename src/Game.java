@@ -58,6 +58,7 @@ public class Game implements Runnable, KeyListener {
 		long timestamp;
 	    long oldTimestamp;
 		new init.FileManager();
+		player.setCash(300);
 		readSoundConfig();
 		mainWindow = new Window(GAME_TITLE);
 		for (int i = 0; i <= 10; i++) {
@@ -104,6 +105,12 @@ public class Game implements Runnable, KeyListener {
 					for (int i = 0; i < levels.get(activeLvl).getWaveAmount(); i++) {
 						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));
 					}
+					if (levels.get(activeLvl).getWaveCnt() == (int) (levels.get(activeLvl).getWaveAmount()/2)) {
+						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
+					}
+					if (levels.get(activeLvl).getWaveCnt() == levels.get(activeLvl).getWaveAmount()) {
+						enemies.add(new Enemy(Enemy.BOZZ_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
+					}
 				}
 				for (int i = 0; i < enemies.size(); i++) {
 					enemies.get(i).move();
@@ -117,14 +124,12 @@ public class Game implements Runnable, KeyListener {
 				for (int i = 0; i < bullets.size(); i++) {
 					if (collisionDetector.isCollide(bullets.get(i), shp, enemies)) {
 						try {
-							new DamageCalculator(collisionDetector.getLastCollsion(), player, enemies.get(collisionDetector.getEnemy()), shp);
+							new DamageCalculator(collisionDetector.getLastCollsion(), player, enemies.get(collisionDetector.getEnemy()), shp, fireSound);
 						} catch (Exception e) {
 							System.err.println("Damage Calculator Error.");
 						}
 						bullets.remove(i--);
-						if (shp.getlife() < 0) {
-							//newGame();
-						} else if (collisionDetector.getLastCollsion() != Player.ID && enemies.get(collisionDetector.getEnemy()).getEnemylife() <= 0) {
+						if (shp.getlife() > 0 && collisionDetector.getLastCollsion() != Player.ID && enemies.get(collisionDetector.getEnemy()).getEnemylife() <= 0) {
 							/*
 							 * Enemy killed
 							 */
@@ -132,6 +137,9 @@ public class Game implements Runnable, KeyListener {
 							explosions.add(new Explosion(enemies.get(collisionDetector.getEnemy()).getCoordinates(), bulletTileset, explosionSound));
 							enemies.remove(collisionDetector.getEnemy());
 							System.out.println("Level: "+player.getLvl()+" XP: "+player.getXp()+" ("+new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage()+"%)");
+						}
+						if (collisionDetector.getLastCollsion() == Player.ID) {
+							dmgSound.play();
 						}
 					}
 				}
@@ -151,14 +159,14 @@ public class Game implements Runnable, KeyListener {
 			direction = "right";
 			shp.setlife(0);
 		} else {
-			newGame();
+			portToBase();
 		}
 	}
 	
-	public void newGame() {
+	public void portToBase() {
 		levels.get(activeLvl).restart();
 		shp.respawn();
-		newSound.play();
+		tpSound.play();
 		bullets.clear();
 		enemies.clear();
 		explosions.clear();
@@ -190,35 +198,6 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	private void handleKeys() {
-		if (key_1) {
-			if (shp.getbonusslots(0)>=1){
-			shp.setlife(1);
-			}			
-		}
-		if (key_2) {
-			if (shp.getbonusslots(1)>=1){
-			shp.setinvincible();
-			}		
-		}
-		if (key_3) {
-			if (shp.getbonusslots(2)>=1){
-				for (int i = 0; i < enemies.size(); i++) {
-					if (enemies.get(i).isInView()) {			
-						new DamageCalculator(enemies.get(i).getIdentity(), player, enemies.get(i), shp);
-						   if(enemies.get(i).getEnemylife() <= 0){
-							   player.setXp(enemies.get(i).getEnemyxp());   					   				
-							   explosions.add(new Explosion(enemies.get(i).getCoordinates(), bulletTileset, explosionSound));
-							   enemies.remove(enemies.get(i--));
-						   }
-					}
-				}
-			}
-		}
-		if (key_4) {
-			if (shp.getbonusslots(3)>=1){
-			//	shp.settownportal();
-			}			
-		}
 		if (key_a) {
 			if (!(shp.getCoordinates().getX()-shp.getshipspeed()<0)) {
 				shp.getCoordinates().setX(shp.getCoordinates().getX()-shp.getshipspeed());
@@ -358,18 +337,54 @@ public class Game implements Runnable, KeyListener {
 				key_down = true;
 				break;
 			case KEY_1:
+				if (!key_1) {
+					if (shp.getbonusslots(0)>=1){
+						shp.setlife(1);
+						shp.setbonusslots(0, shp.getbonusslots(0)-1);
+						healSound.play();
+					}
+				}
 				key_1 = true;
 				break;
 			case KEY_2:
+				if (!key_2) {
+					if (shp.getbonusslots(1)>=1){
+						shp.setinvincible();
+						shp.setbonusslots(1, shp.getbonusslots(1)-1);
+					}
+				}				
 				key_2 = true;
 				break;
 			case KEY_3:
+				if (!key_3) {
+					if (shp.getbonusslots(2)>=1){
+						for (int i = 0; i < enemies.size(); i++) {
+							if (enemies.get(i).isInView()) {			
+								new DamageCalculator(enemies.get(i).getIdentity(), player, enemies.get(i), shp, fireSound);
+								   if(enemies.get(i).getEnemylife() <= 0){
+									   player.setXp(enemies.get(i).getEnemyxp());   					   				
+									   explosions.add(new Explosion(enemies.get(i).getCoordinates(), bulletTileset, explosionSound));
+									   enemies.remove(enemies.get(i--));
+								   }
+							}
+						}
+						shp.setbonusslots(2, shp.getbonusslots(2)-1);
+						bombSound.play();
+					}
+				}
 				key_3 = true;
 				break;
 			case KEY_4:
+				if (!key_4) {
+					if (shp.getbonusslots(3)>=1){
+						portToBase();
+						shp.setbonusslots(3, shp.getbonusslots(3)-1);
+					}	
+				}
 				key_4 = true;
 				break;
 			default:
+				shp.setbonusslots(2, 4);
 				break;
 			}
 		}
