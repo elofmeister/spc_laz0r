@@ -240,6 +240,9 @@ public class Player {
 		 if (cash < 1000000){
 			 cash += val;
 		 }
-	}	
+	}
+	public void setoldXP(int oldXP) {
+		oldxp = oldXP;
+	}
 }
 	

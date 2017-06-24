@@ -1,3 +1,4 @@
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -104,7 +105,7 @@ public class Level {
 			for (int i = 0; i < 100-loadingProgress; i++) {
 				loadingBar+=space;				
 			}
-			System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
+			//System.out.println("Loading new wave "+loadingBar+" ("+loadingProgress+"%). Wave "+waveCnt+" of "+ waveAmount+".");
 		}
 		if (viewPos>waveCnt*waveDistance && waveCnt<waveAmount) {
 			bretval = true;

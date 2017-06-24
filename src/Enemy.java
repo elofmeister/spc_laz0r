@@ -15,13 +15,16 @@ public class Enemy {
 	private double dropchance;
 	private int enemyxp;
 	private int enemycash;
+	private long enemycurse_timestamp = System.currentTimeMillis();
+	private long enemycurse_speed = 0;
 	private Level level;
 	private Coordinates coordinates;
 	private Movement movement;
 	private BufferedImage[] image = new BufferedImage[4];
 	private Random rnd;
 	
-	public static final int ENEMYSPEED = 12;
+	public static final int ENEMYSPEED = 10;
+	public static final int ENEMY_CURSE_DURATION = 5000;
 	public static final int SPAWN_DISTANCE = 90;
 	
 	public static final int BOMBER_CLASS = 1;
@@ -176,6 +179,14 @@ public class Enemy {
 			return enemycash;
 		}
 		
+		public int getEnemyspeed(){
+			int retval = ENEMYSPEED;
+			if (enemycurse_timestamp + ENEMY_CURSE_DURATION > System.currentTimeMillis()) {
+				retval+=enemycurse_speed;
+			}
+			return retval; 
+		}
+		
 		public BufferedImage getImage() {
 			return image[movement.getDirection()];
 		}
@@ -228,8 +239,16 @@ public class Enemy {
 			enemycash = enemycash+enemylvl*eVal;
 		}
 		
+		public void setEnemycurse() {
+			enemycurse_timestamp = System.currentTimeMillis();
+		}
+		
+		public void setEnemycursespeed(int eVal){
+			enemycurse_speed = eVal;
+		}
+		
 		public void move() {
-			movement.move();
+			movement.move(getEnemyspeed());
 		}
 		
 		public Coordinates getCoordinates() {

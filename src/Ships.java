@@ -43,6 +43,7 @@ public class Ships {
 	
 	private BufferedImage[] image = new BufferedImage[MOVE_LEFT_SHIELD + 1];		// all ship tiles
 	private boolean spawned = false;
+	private boolean isinvincible = false;
 	private int spawnCnt = SPAWN_0;
 	private int animation = MOVE_RIGHT;
 	private int cursedspeed;
@@ -98,9 +99,9 @@ public class Ships {
 		spawned = false;
 		spawnCnt = SPAWN_0;
 		animation = MOVE_RIGHT;
-		life = baselife;
+		setlife(0);
 		cursetimestamp = 1;
-		invincible_timestamp = 1;
+		invincible_timestamp = 1;	
 	}
 	
 	public String getshipname(){
@@ -147,6 +148,16 @@ public class Ships {
 		return retval;
 	}
 	
+	public boolean getinvincible(){
+		if(invincible_timestamp + SHIELD_DURATION > System.currentTimeMillis()){
+			isinvincible = true;
+		}
+		else {
+			isinvincible = false;
+		}
+		return isinvincible;
+	}
+	
 	//all needed set constructors
 	public void setshipname(String sVal){
 		shipname=sVal;
@@ -163,7 +174,9 @@ public class Ships {
 			life=maxlife;   //healing potion		
 		} 
 		else {
-			life+=sVal;     //damage
+			if (getinvincible()==false){
+				life+=sVal;     //damage
+			}
 		}
 	}
 	

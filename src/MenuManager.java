@@ -34,10 +34,12 @@ public class MenuManager implements KeyListener {
 	private Game game;
 	private Window window;
 	private Ships shp;
+	private Player player;
 	private List<Bullet> bullets;
 	private List<Level> levels;
 	private List<Enemy> enemies;
 	private List<Explosion> explosions;
+	private GuiBar guiBar = new GuiBar();;
 	private int loading;
 
 	private boolean fullscreen = true;
@@ -61,9 +63,10 @@ public class MenuManager implements KeyListener {
 	private final int KEY_ESC		= 27;
 	private final int KEY_BACKSPACE	= 8;
 	
-	public MenuManager(Game game, Window window, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies, List<Explosion> explosions) {
+	public MenuManager(Game game, Window window, Player player, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies, List<Explosion> explosions) {
 		this.game = game;
 		this.window = window;
+		this.player = player;
 		this.shp = shp;
 		this.bullets = bullets;
 		this.enemies = enemies;
@@ -144,7 +147,21 @@ public class MenuManager implements KeyListener {
 
 		final int TRANSPARANCY 	= 16777215;
 		final int BLACK			= -16777216;
-		
+
+		guiBar.setXP(new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage());
+		if (shp.getlife() < 0) {
+			guiBar = new GuiBar();
+			game.newGame();
+		} else {
+			guiBar.setLife((float) shp.getlife() / (float) shp.getmaxlife());
+		}
+		int[] rgbGuiBar = new int[Game.WINDOW_WIDTH * TileSet.TILE_HEIGHT];
+		guiBar.getImage().getRGB(0, 0, Game.WINDOW_WIDTH, TileSet.TILE_HEIGHT, rgbGuiBar, 0, Game.WINDOW_WIDTH);
+		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+			for (int j = 0; j < Game.WINDOW_WIDTH; j++) {
+				rgbBackground[(Game.WINDOW_HEIGHT - TileSet.TILE_HEIGHT + i) * Game.WINDOW_WIDTH + j] = rgbGuiBar[i * Game.WINDOW_WIDTH + j];
+			}
+		}
 		if (!enemies.isEmpty()) {
 			for (int n = 0; n < enemies.size(); n++) {
 				if (enemies.get(n).isInView()) {

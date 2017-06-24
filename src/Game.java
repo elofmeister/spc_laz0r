@@ -63,10 +63,10 @@ public class Game implements Runnable, KeyListener {
 		for (int i = 0; i <= 10; i++) {
 			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
 		}
-		menuManager = new MenuManager(this, mainWindow, shp, bullets, levels, enemies, explosions);
+		menuManager = new MenuManager(this, mainWindow, player, shp, bullets, levels, enemies, explosions);
 		menuManager.setActiveMenu(MenuManager.MENU);
 		mainWindow.getFrame().addKeyListener(this);
-		while(true) {	
+		while(true) {
 			oldTimestamp = System.currentTimeMillis();
 		    update();
 		    timestamp = System.currentTimeMillis();
@@ -116,18 +116,22 @@ public class Game implements Runnable, KeyListener {
 				}
 				for (int i = 0; i < bullets.size(); i++) {
 					if (collisionDetector.isCollide(bullets.get(i), shp, enemies)) {
-						new DamageCalculator(collisionDetector.getLastCollsion(), player, enemies.get(collisionDetector.getEnemy()), shp);
+						try {
+							new DamageCalculator(collisionDetector.getLastCollsion(), player, enemies.get(collisionDetector.getEnemy()), shp);
+						} catch (Exception e) {
+							System.err.println("Damage Calculator Error.");
+						}
 						bullets.remove(i--);
 						if (shp.getlife() < 0) {
-							newGame();
-						}
-						if (collisionDetector.getLastCollsion() != Player.ID && enemies.get(collisionDetector.getEnemy()).getEnemylife() <= 0) {
+							//newGame();
+						} else if (collisionDetector.getLastCollsion() != Player.ID && enemies.get(collisionDetector.getEnemy()).getEnemylife() <= 0) {
 							/*
 							 * Enemy killed
 							 */
 							player.setXp(enemies.get(collisionDetector.getEnemy()).getEnemyxp());
 							explosions.add(new Explosion(enemies.get(collisionDetector.getEnemy()).getCoordinates(), bulletTileset, explosionSound));
 							enemies.remove(collisionDetector.getEnemy());
+							System.out.println("Level: "+player.getLvl()+" XP: "+player.getXp()+" ("+new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage()+"%)");
 						}
 					}
 				}
@@ -142,7 +146,10 @@ public class Game implements Runnable, KeyListener {
 			shp.respawn();
 			bullets.clear();
 			enemies.clear();
+			explosions.clear();
 			activeLvl++;
+			direction = "right";
+			shp.setlife(0);
 		} else {
 			newGame();
 		}
@@ -154,8 +161,10 @@ public class Game implements Runnable, KeyListener {
 		newSound.play();
 		bullets.clear();
 		enemies.clear();
+		explosions.clear();
 		activeLvl = 0;
 		direction = "right";
+		shp.setlife(0);
 	}
 	
 	private void update() {
@@ -182,16 +191,33 @@ public class Game implements Runnable, KeyListener {
 	
 	private void handleKeys() {
 		if (key_1) {
-			//shp.setheal()			
+			if (shp.getbonusslots(0)>=1){
+			shp.setlife(1);
+			}			
 		}
 		if (key_2) {
-			shp.setinvincible();			
+			if (shp.getbonusslots(1)>=1){
+			shp.setinvincible();
+			}		
 		}
 		if (key_3) {
-			//shp.setbomb();			
+			if (shp.getbonusslots(2)>=1){
+				for (int i = 0; i < enemies.size(); i++) {
+					if (enemies.get(i).isInView()) {			
+						new DamageCalculator(enemies.get(i).getIdentity(), player, enemies.get(i), shp);
+						   if(enemies.get(i).getEnemylife() <= 0){
+							   player.setXp(enemies.get(i).getEnemyxp());   					   				
+							   explosions.add(new Explosion(enemies.get(i).getCoordinates(), bulletTileset, explosionSound));
+							   enemies.remove(enemies.get(i--));
+						   }
+					}
+				}
+			}
 		}
 		if (key_4) {
-			//shp.settownportal();			
+			if (shp.getbonusslots(3)>=1){
+			//	shp.settownportal();
+			}			
 		}
 		if (key_a) {
 			if (!(shp.getCoordinates().getX()-shp.getshipspeed()<0)) {

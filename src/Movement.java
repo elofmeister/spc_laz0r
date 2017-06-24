@@ -30,6 +30,7 @@ public class Movement {
 	private int 				direction 				= rnd.nextInt() % NUMBER_OF_DIRECTIONS;
 	private int					mainDirection			= 0;
 	private int 				movement_offset 		= 1;
+	private int 				movementSpeed			= Enemy.ENEMYSPEED;
 	
 	/**
 	 * This function checks if the input coordinates are inside the window borders.
@@ -47,8 +48,8 @@ public class Movement {
 
 	// MOVE FUNCTIONS FOR SPECIFIC DIRECTIONS
 	private void moveNorth() {
-		if (coordinates.getY() - Enemy.ENEMYSPEED > 0) {
-			coordinates.setY(coordinates.getY() - Enemy.ENEMYSPEED);
+		if (coordinates.getY() - movementSpeed > 0) {
+			coordinates.setY(coordinates.getY() - movementSpeed);
 		} else {
 			coordinates.setY(0);
 			changeDirection();
@@ -57,8 +58,8 @@ public class Movement {
 	}
 	
 	private void moveSouth() {
-		if (coordinates.getY() + Enemy.ENEMYSPEED < BORDER_MAX_Y) {
-			coordinates.setY(coordinates.getY() + Enemy.ENEMYSPEED);
+		if (coordinates.getY() + movementSpeed < BORDER_MAX_Y) {
+			coordinates.setY(coordinates.getY() + movementSpeed);
 		} else {
 			coordinates.setY(BORDER_MAX_Y);
 			changeDirection();
@@ -67,8 +68,8 @@ public class Movement {
 	}
 	
 	private void moveWest() {
-		if (coordinates.getX() - Enemy.ENEMYSPEED > 0) {
-			coordinates.setX(coordinates.getX() - Enemy.ENEMYSPEED);
+		if (coordinates.getX() - movementSpeed > 0) {
+			coordinates.setX(coordinates.getX() - movementSpeed);
 		} else {
 			coordinates.setX(0);
 			changeDirection();
@@ -77,8 +78,8 @@ public class Movement {
 	}
 	
 	private void moveEast() {
-		if (coordinates.getX() + Enemy.ENEMYSPEED < BORDER_MAX_X) {
-			coordinates.setX(coordinates.getX() + Enemy.ENEMYSPEED);
+		if (coordinates.getX() + movementSpeed < BORDER_MAX_X) {
+			coordinates.setX(coordinates.getX() + movementSpeed);
 		} else {
 			coordinates.setX(BORDER_MAX_X);
 			changeDirection();
@@ -252,7 +253,7 @@ public class Movement {
 	// ZIGZAG MOVEMENT
 	private void zigzagMove() {
 		final int NUMBER_OF_CHANGES = 6;
-		if ((int)((moveCnt * Enemy.ENEMYSPEED) / BORDER_MAX_X)%2 == 0) {
+		if ((int)((moveCnt * movementSpeed) / BORDER_MAX_X)%2 == 0) {
 			if ((int)(coordinates.getX()/(int)(BORDER_MAX_X / NUMBER_OF_CHANGES)) % 2 == 0) {
 				direction = DIRECTION_SE;
 			} else {
@@ -335,7 +336,9 @@ public class Movement {
 		System.out.println();
 	}
 	
-	public void move() {
+	public void move(int movementSpeed) {
+		this.movementSpeed = movementSpeed;
+		
 		//testPrint();
 		//System.out.println(coordinates.getX()+", "+coordinates.getY());
 		if (checkBorder(coordinates.getX(), coordinates.getY())) {
@@ -381,16 +384,16 @@ public class Movement {
 		rnd.setSeed(System.currentTimeMillis());
 	}
 	
-	public static void main(String[] arg) {
-	    Movement movement = new Movement(new Coordinates(-100, 300), Movement.CIRCLE_MOVE);
-	    long time1 = System.currentTimeMillis();
-	    long time2 = time1;
-	    while(true) {
-	    	time2 = System.currentTimeMillis();
-	    	if (time2-time1 > 10) {
-				time1 = time2;
-				movement.move();
-			}
-	    }
-	}
+//	public static void main(String[] arg) {
+//	    Movement movement = new Movement(new Coordinates(-100, 300), Movement.CIRCLE_MOVE);
+//	    long time1 = System.currentTimeMillis();
+//	    long time2 = time1;
+//	    while(true) {
+//	    	time2 = System.currentTimeMillis();
+//	    	if (time2-time1 > 10) {
+//				time1 = time2;
+//				movement.move();
+//			}
+//	    }
+//	}
 }
