@@ -48,6 +48,7 @@ public class MenuManager implements KeyListener {
 	private int loading;
 	private CollisionDetector shopDetector = new CollisionDetector();
 	private Shop shop;
+	private FontManager font = new FontManager();
 
 	private boolean fullscreen = true;
 	private boolean sound = false;
@@ -140,6 +141,112 @@ public class MenuManager implements KeyListener {
 			retval = ImageIO.read(MenuManager.class.getResource("gui/images/skill" + menuPos + ".png"));
 		} catch (IOException e) {
 		}
+		int[] rgbBackground = new int[Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH * Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT];
+		retval.getRGB(0, 0, Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH);
+		
+		// SMALL
+		int number;
+		int size = FontManager.SMALL;
+		int[] skills = {player.getAgl(), player.getCritdmg(), player.getCritprb(), player.getLaser(), player.getIce(), player.getAcid(), player.getEmp()};
+		// LAST NUMBER
+		for (int n = 0; n < 7; n++) {
+			number = skills[n]%10;
+			int[] rgbNum = new int[font.getNumber(size, number).getWidth() * font.getNumber(size, number).getHeight()];
+			font.getNumber(size, number).getRGB(0, 0, font.getNumber(size, number).getWidth(), font.getNumber(size, number).getHeight(), rgbNum, 0, font.getNumber(size, number).getWidth());
+			for (int i = 0; i < font.getNumber(size, number).getHeight(); i++) {
+				for (int j = 0; j < font.getNumber(size, number).getWidth(); j++) {
+					rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576] = rgbNum[i * font.getNumber(size, number).getWidth() + j];
+				}
+			}
+		}
+		// MIDDLE NUMBER
+		for (int n = 0; n < 7; n++) {
+			if (skills[n] > 9) {
+				number = (skills[n]-skills[n]%10)/10%10;
+				int[] rgbNum = new int[font.getNumber(size, number).getWidth() * font.getNumber(size, number).getHeight()];
+				font.getNumber(size, number).getRGB(0, 0, font.getNumber(size, number).getWidth(), font.getNumber(size, number).getHeight(), rgbNum, 0, font.getNumber(size, number).getWidth());
+				for (int i = 0; i < font.getNumber(size, number).getHeight(); i++) {
+					for (int j = 0; j < font.getNumber(size, number).getWidth(); j++) {
+						rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576 - font.getNumber(size, number).getWidth()] = rgbNum[i * font.getNumber(size, number).getWidth() + j];
+					}
+				}		
+			}			
+		}
+		// LAST NUMBER
+		for (int n = 0; n < 7; n++) {
+			if (skills[n] > 99) {
+				number = (skills[n]-10*(skills[n]-skills[n]%10)/10%10-skills[n]%10)/100;
+				int[] rgbNum = new int[font.getNumber(size, number).getWidth() * font.getNumber(size, number).getHeight()];
+				font.getNumber(size, number).getRGB(0, 0, font.getNumber(size, number).getWidth(), font.getNumber(size, number).getHeight(), rgbNum, 0, font.getNumber(size, number).getWidth());
+				for (int i = 0; i < font.getNumber(size, number).getHeight(); i++) {
+					for (int j = 0; j < font.getNumber(size, number).getWidth(); j++) {
+						rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576 - 2 * font.getNumber(size, number).getWidth()] = rgbNum[i * font.getNumber(size, number).getWidth() + j];
+					}
+				}
+			}					
+		}
+		// CASH
+		number = player.getCash();
+		if (number > 999999999) {
+			number = 999999999;
+		}
+		for (int n = 0; n < 9; n++) {
+			if (n > 0 && number == 0) {
+				break;
+			}
+			int[] rgbNum = new int[font.getNumber(size, number%10).getWidth() * font.getNumber(size, number%10).getHeight()];
+			font.getNumber(size, number%10).getRGB(0, 0, font.getNumber(size, number%10).getWidth(), font.getNumber(size, number%10).getHeight(), rgbNum, 0, font.getNumber(size, number%10).getWidth());
+			for (int i = 0; i < font.getNumber(size, number%10).getHeight(); i++) {
+				for (int j = 0; j < font.getNumber(size, number%10).getWidth(); j++) {
+					rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 912 - n * font.getNumber(size, number%10).getWidth()] = rgbNum[i * font.getNumber(size, number%10).getWidth() + j];
+				}
+			}
+			number-=number%10;
+			number/=10;
+		}
+		// CASH
+		number = player.getLvl();
+		for (int n = 0; n < 3; n++) {
+			if (n > 0 && number == 0) {
+				break;
+			}
+			int[] rgbNum = new int[font.getNumber(size, number%10).getWidth() * font.getNumber(size, number%10).getHeight()];
+			font.getNumber(size, number%10).getRGB(0, 0, font.getNumber(size, number%10).getWidth(), font.getNumber(size, number%10).getHeight(), rgbNum, 0, font.getNumber(size, number%10).getWidth());
+			for (int i = 0; i < font.getNumber(size, number%10).getHeight(); i++) {
+				for (int j = 0; j < font.getNumber(size, number%10).getWidth(); j++) {
+					rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 647 - n * font.getNumber(size, number%10).getWidth()] = rgbNum[i * font.getNumber(size, number%10).getWidth() + j];
+				}
+			}
+			number-=number%10;
+			number/=10;
+		}
+		// SKILLPTS
+		number = player.getSkillpts();
+		size = FontManager.BIG;
+		for (int n = 0; n < 3; n++) {
+			if (n > 0 && number == 0) {
+				break;
+			}
+			int[] rgbNum = new int[font.getNumber(size, number%10).getWidth() * font.getNumber(size, number%10).getHeight()];
+			font.getNumber(size, number%10).getRGB(0, 0, font.getNumber(size, number%10).getWidth(), font.getNumber(size, number%10).getHeight(), rgbNum, 0, font.getNumber(size, number%10).getWidth());
+			for (int i = 0; i < font.getNumber(size, number%10).getHeight(); i++) {
+				for (int j = 0; j < font.getNumber(size, number%10).getWidth(); j++) {
+					rgbBackground[(i + 288) * Game.WINDOW_WIDTH + j + 190 - n * font.getNumber(size, number%10).getWidth()] = rgbNum[i * font.getNumber(size, number%10).getWidth() + j];
+				}
+			}
+			number-=number%10;
+			number/=10;
+		}
+		// PLAYER NAME
+		int[] rgbNum = new int[font.getPlayer(game.getPlayerNumber()).getWidth() * font.getPlayer(game.getPlayerNumber()).getHeight()];
+		font.getPlayer(game.getPlayerNumber()).getRGB(0, 0, font.getPlayer(game.getPlayerNumber()).getWidth(), font.getPlayer(game.getPlayerNumber()).getHeight(), rgbNum, 0, font.getPlayer(game.getPlayerNumber()).getWidth());
+		for (int i = 0; i < font.getPlayer(game.getPlayerNumber()).getHeight(); i++) {
+			for (int j = 0; j < font.getPlayer(game.getPlayerNumber()).getWidth(); j++) {
+				rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 194] = rgbNum[i * font.getPlayer(game.getPlayerNumber()).getWidth() + j];
+			}
+		}
+	
+		retval.setRGB(0, 0, Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH);
 		return retval;
 	}
 	
@@ -641,6 +748,7 @@ public class MenuManager implements KeyListener {
 						menuPos = 1;
 						game.portToBase();
 						game.newSound.play();
+						game.setPlayerNumber(1);
 						break;
 
 					default:
@@ -670,6 +778,7 @@ public class MenuManager implements KeyListener {
 						game.portToBase();
 						game.newSound.play();
 						activeMenu = LEVEL;
+						game.setPlayerNumber(menuPos-4);
 						menuPos = 1;
 						guiBar = new GuiBar();
 						break;

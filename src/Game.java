@@ -32,6 +32,7 @@ public class Game implements Runnable, KeyListener {
 	
 	private int levelCnt = 0;	// number of generated levels
 	private int activeLvl = 0;
+	private int playerNumber = 1;
 	private int levelProgress = 0;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
 	private Window mainWindow;
@@ -473,5 +474,13 @@ public class Game implements Runnable, KeyListener {
 	
 	public int getLevelProgress() {
 		return levelProgress;
+	}
+	
+	public int getPlayerNumber() {
+		return playerNumber;
+	}
+	
+	public void setPlayerNumber(int num) {
+		playerNumber = num;
 	}
 }
