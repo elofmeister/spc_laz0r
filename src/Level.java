@@ -4,15 +4,20 @@ import java.awt.image.BufferedImage;
 
 import java.util.Random;
 
+import javax.imageio.ImageIO;
+
 public class Level {
 	private static final int CONTINUE_OFFSET 		= 10;
 	private static final int DEFAULT_WIDTH 			= 100;
 	private static final int DEFAULT_HEIGHT 		= 9;
 	private static final int PLANET_DICE 			= 16;
 	private static final int PLANET_DICE_PERCENTAGE = 30;
+
+	private static final int WAVES					= 10;		// First level starts with 10 waves
+	private static final int WAVES_OFFSET			= 0;		// Each new level
 	
-	private static final int WAVES					= 6;		// First level starts with 8 waves
-	private static final int WAVES_OFFSET			= 1;		// Each new level 
+	private static final int ENEMIES_PER_WAVE		= 6;		// First level starts with 6 enemies
+	private static final int ENEMIES_OFFSET			= 1;		// Each new level 
 	
 	private int waveAmount;
 	private int waveCnt;
@@ -35,6 +40,14 @@ public class Level {
 		return bretval;
 	}
 	
+	public boolean isBeginReached() {
+		boolean bretval = false;
+		if (viewPos == 0) {
+			bretval = true;
+		}
+		return bretval;
+	}
+	
 	public void moveRight() {
 		if (!isEndReached()) {
 			viewPos++;
@@ -42,7 +55,7 @@ public class Level {
 	}
 	
 	public void moveLeft() {
-		if (!isEndReached() && viewPos > 0) {
+		if (!isBeginReached()) {
 			viewPos--;
 		}
 	}
@@ -119,6 +132,10 @@ public class Level {
 	
 	public int getWaveAmount() {
 		return waveAmount;
+	}
+	
+	public int getEnemyAmount() {
+		return ENEMIES_PER_WAVE + (levelCnt-1) * ENEMIES_OFFSET;
 	}
 	
 	public int getWaveCnt() {

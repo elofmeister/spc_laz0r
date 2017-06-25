@@ -14,6 +14,8 @@ public class Ships {
 	private int dmg;	
 	private double firespeed;
 	private List<Item> currentitems = new ArrayList<Item>();
+	
+	private static final int ITEM_MAX = 8;
 
 	public static final int SPAWN_0 				= 0;
 	public static final int SPAWN_1 				= 1;
@@ -56,7 +58,15 @@ public class Ships {
 	public Ships(int shipclass) {
 		setshipclass(shipclass);
 	}  
-		
+	
+	public void load(int shipclass, int healthpotions, int shields, int bombs, int portals) {
+		setshipclass(shipclass);
+		bonusslots[0] = healthpotions;
+		bonusslots[1] = shields;
+		bonusslots[2] = bombs;
+		bonusslots[3] = portals;
+	}
+	
 	public void setshipclass(int shipclass) {
 		this.shipclass = shipclass;
 		switch (this.shipclass) {
@@ -64,18 +74,21 @@ public class Ships {
 			setbaselife(60);
 			setdmg(10);
 			setfirespeed(1.00);
+			curse = 0;
 			shipname = "GLASSCANNON";
 			break;
 		case RUMPLER: 
 			setbaselife(100);
 			setdmg(6);
 			setfirespeed(1.40);
+			curse = 0;
 			shipname = "Rumpler";
 			break;
 		case STANDARDO: 
 			setbaselife(80);
 			setdmg(8);
 			setfirespeed(1.20);
+			curse = 0;
 			shipname = "Standardo";
 			break;
 		default: 
@@ -262,6 +275,48 @@ public class Ships {
 	
 	public void setcursetimestamp() {
 		cursetimestamp = System.currentTimeMillis();
+	}
+	
+	public boolean isItemSpace() {
+		boolean bretval = false;
+		if (currentitems.size() < ITEM_MAX) {
+			bretval = true;
+		}
+		return bretval;
+	}
+	
+	public void addItem(Item item) {
+		if (item.getCategory() == 1) {
+			if (isItemSpace()) {
+				currentitems.add(item);
+				dmg += item.getItemstat();
+			}
+		}
+		if (item.getCategory() == 2) {
+			if (isItemSpace()) {
+				currentitems.add(item);
+				maxlife += item.getItemstat();
+			}
+		}
+		if (item.getCategory() >=3 && item.getCategory() <= 6) {
+			setbonusslots(item.getCategory()-3, getbonusslots(item.getCategory()-3)+1);
+		}
+	}
+	
+	public void prooveItemTimer() {
+		if (!currentitems.isEmpty()) {
+			for (int i = 0; i < currentitems.size(); i++) {
+				if (currentitems.get(i).getItemtimer() + currentitems.get(i).getTimestamp() < System.currentTimeMillis()) {
+					if (currentitems.get(i).getCategory() == 1) {
+						dmg -= currentitems.get(i).getItemstat();
+					}
+					if (currentitems.get(i).getCategory() == 2) {
+						maxlife -= currentitems.get(i).getItemstat();
+					}
+					currentitems.remove(i);
+				}
+			}
+		}
 	}
 }
 	

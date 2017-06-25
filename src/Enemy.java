@@ -12,7 +12,7 @@ public class Enemy {
 	private int enemyelement;
 	private int enemylife;
 	private int numberguns;	
-	private double dropchance;
+	private int dropchance;
 	private int enemyxp;
 	private int enemycash;
 	private long enemycurse_timestamp = System.currentTimeMillis();
@@ -167,7 +167,7 @@ public class Enemy {
 			return numberguns;
 		}
 		
-		public double getDropchance(){
+		public int getDropchance(){
 			return dropchance;
 		}
 		

@@ -7,18 +7,21 @@ public class ItemCalculator {
 	String weaponnames[]={"Blaster", "Dizzler", "Gun", "Biggun", "Photonbouncer", "Plasmagun", "Damager", "Projectileemitter", "LAZOR", "Phaser"};
 	String shieldnames[]={"Protector", "Quantumshield", "Forcefield", "Shizzler", "Bigshield"};	
 	
-	public static final int ITEMTIMER = 10;
+	public static final int ITEMTIMER = 20000;	// in ms
 	public static final int ITEMSTATS = 10;
 
+	private String name = "";
+	private int timer = 0;
+	private int stat = 0;
+	private int itemtype;
+	
 	ItemCalculator(int rarity, int itemtype){
 					
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());	
 		
-		int qualitycase = Math.abs(rnd.nextInt())%5;
-		String name = "";
-		int timer = 0;
-		int stat = 0;
+		int qualitycase = Math.abs(rnd.nextInt());
+		this.itemtype = itemtype;
 		
 		
 		switch(qualitycase){  						// = duration, sets timer
@@ -68,10 +71,11 @@ public class ItemCalculator {
 				name = name.concat(shieldnames[rand]);			
 				break;
 		default: break;
-		}
-		
-		new Item(name, timer, stat, itemtype);
-		
+		}	
+	}
+	
+	public Item getItem() {
+		return new Item(name, timer, stat, itemtype);
 	}
 
 }

@@ -14,9 +14,9 @@ public class Player {
 	private int oldxp;
 	private int lvl;
 	private int skillpts;
-	private double agl;
-	private double critprb;
-	private double critdmg;
+	private int agl;
+	private int critprb;
+	private int critdmg;
 	private int laser;
 	private int acid;
 	private int ice;
@@ -32,14 +32,10 @@ public class Player {
 	
 	public Player(String name) {
 		this.name  =  name;
-		this.lvl=1;
-				this.xp =10;
-		this.oldxp=5;
-		
 		reset();
 	}  
 	
-	public void load(String name, int xp, int oldxp, int lvl, int skillpts, double agl, double critprb, double critdmg, int laser, int acid, int ice, int emp, int cash){
+	public void load(String name, int xp, int oldxp, int lvl, int skillpts, int agl, int critprb, int critdmg, int laser, int acid, int ice, int emp, int cash){
 		this.name  =  name;
 		this.xp  =  xp;
 		this.oldxp  = oldxp;
@@ -55,10 +51,10 @@ public class Player {
 		this.cash  =  cash;
 	}
 	
-	public void reset(){
+	public void reset() {
 		this.xp  =  0;
 		this.oldxp  =  0;
-		this.lvl  =  0;
+		this.lvl  =  1;
 		this.skillpts  =  0;
 		this.agl  =  0;
 		this.critprb  =  0;
@@ -86,15 +82,15 @@ public class Player {
 		return skillpts;
 	}
 	
-	public double getAgl(){
+	public int getAgl(){
 		return agl;
 	}
 	
-	public double getCritprb(){
+	public int getCritprb(){
 		return critprb;
 	}
 	
-	public double getCritdmg(){
+	public int getCritdmg(){
 		return critdmg;
 	}
 	 
@@ -190,20 +186,20 @@ public class Player {
 		
 	}
 	
-	public void setCritprb(){ //max = 0.5 step = 0.002
-		 if (critprb < 0.2){
-			 critprb += 0.002;
-			 setSkillpts(-1);
+	public void setCritprb(){ //max = 50% step = 1
+		 if (critprb < 50){
+			 critprb += 1;
+			 setSkillpts(-2);
 		 }
-		 else setSkillpts(1);
+		 else setSkillpts(2);
 	}
 	
-	public void setCritdmg(){	//max = 5x step = 0.05
-		 if (critdmg < 5){
-			 critdmg += 0.05;
-			 setSkillpts(-1);
+	public void setCritdmg(){	//max = 50x step = 1
+		 if (critdmg < 50){
+			 critdmg += 1;
+			 setSkillpts(-2);
 		 }
-		 else setSkillpts(1);
+		 else setSkillpts(2);
 	}
 	 
 	public void setLaser(){	//Max = 100 step = 1
@@ -244,5 +240,6 @@ public class Player {
 	public void setoldXP(int oldXP) {
 		oldxp = oldXP;
 	}
+
 }
 	

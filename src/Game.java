@@ -32,6 +32,7 @@ public class Game implements Runnable, KeyListener {
 	
 	private int levelCnt = 0;	// number of generated levels
 	private int activeLvl = 0;
+	private int levelProgress = 0;
 	private List<Level> levels = new ArrayList<Level>();	// list of all generated levels
 	private Window mainWindow;
 	private String direction = CAMERA_DIRECTION_RIGHT;
@@ -43,6 +44,7 @@ public class Game implements Runnable, KeyListener {
 	private List<Bullet> bullets = new ArrayList<Bullet>();
 	private List<Enemy> enemies = new ArrayList<Enemy>();
 	private List<Explosion> explosions = new ArrayList<Explosion>();
+	private List<Chest> chests = new ArrayList<Chest>();
 	private long bulletTimer = System.currentTimeMillis();
 	private long enemyTimer = System.currentTimeMillis();
 	
@@ -64,7 +66,7 @@ public class Game implements Runnable, KeyListener {
 		for (int i = 0; i <= 10; i++) {
 			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
 		}
-		menuManager = new MenuManager(this, mainWindow, player, shp, bullets, levels, enemies, explosions);
+		menuManager = new MenuManager(this, mainWindow, player, shp, bullets, levels, enemies, explosions, chests);
 		menuManager.setActiveMenu(MenuManager.MENU);
 		mainWindow.getFrame().addKeyListener(this);
 		while(true) {
@@ -86,8 +88,18 @@ public class Game implements Runnable, KeyListener {
 		    }
 	    	if ( direction == CAMERA_DIRECTION_RIGHT ) {
 	    		levels.get(activeLvl).moveRight();
+	    		if (!levels.get(activeLvl).isEndReached()) {
+	    			for (Chest chest : chests) {
+						chest.moveLeft();
+					}
+				}
 	    	} else {
 	    		levels.get(activeLvl).moveLeft();
+	    		if (!levels.get(activeLvl).isBeginReached()) {
+	    			for (Chest chest : chests) {
+						chest.moveRight();
+					}
+				}
 	    	}
 	    	if ( levels.get(activeLvl).isEndReached() && 
     				shp.getCoordinates().getX()>=12.5*TileSet.TILE_WIDTH && 
@@ -98,11 +110,12 @@ public class Game implements Runnable, KeyListener {
     			nextLevel();
     		}
 	    	if (activeLvl>0) {
+	    		shp.prooveItemTimer();	
 				if (levels.get(activeLvl).toggleWave()) {
 					Random rnd = new Random();
 					rnd.setSeed(System.currentTimeMillis());
 					levels.get(activeLvl).addWave();
-					for (int i = 0; i < levels.get(activeLvl).getWaveAmount(); i++) {
+					for (int i = 0; i < levels.get(activeLvl).getEnemyAmount(); i++) {
 						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));
 					}
 					if (levels.get(activeLvl).getWaveCnt() == (int) (levels.get(activeLvl).getWaveAmount()/2)) {
@@ -113,7 +126,6 @@ public class Game implements Runnable, KeyListener {
 					}
 				}
 				for (int i = 0; i < enemies.size(); i++) {
-					enemies.get(i).move();
 					if (enemyTimer + Bullet.DEFAULT_FIRESPEED * 2 < System.currentTimeMillis() && enemies.get(i).isInView()) {
 						bullets.add(new Bullet(enemies.get(i).getCoordinates(), enemies.get(i).getDirection(), enemies.get(i).getEnemyelement(), bulletTileset, enemies.get(i).getIdentity()));
 					}
@@ -126,7 +138,7 @@ public class Game implements Runnable, KeyListener {
 						try {
 							new DamageCalculator(collisionDetector.getLastCollsion(), player, enemies.get(collisionDetector.getEnemy()), shp, fireSound);
 						} catch (Exception e) {
-							System.err.println("Damage Calculator Error.");
+							System.err.println("DamageCalculatorException");
 						}
 						bullets.remove(i--);
 						if (shp.getlife() > 0 && collisionDetector.getLastCollsion() != Player.ID && enemies.get(collisionDetector.getEnemy()).getEnemylife() <= 0) {
@@ -135,8 +147,9 @@ public class Game implements Runnable, KeyListener {
 							 */
 							player.setXp(enemies.get(collisionDetector.getEnemy()).getEnemyxp());
 							explosions.add(new Explosion(enemies.get(collisionDetector.getEnemy()).getCoordinates(), bulletTileset, explosionSound));
+							chests.add(new DropCalculator(new Chest(bulletTileset, enemies.get(collisionDetector.getEnemy()).getCoordinates()), enemies.get(collisionDetector.getEnemy()).getDropchance(), activeLvl, enemies.get(collisionDetector.getEnemy()).getEnemycash()).getChest());
 							enemies.remove(collisionDetector.getEnemy());
-							System.out.println("Level: "+player.getLvl()+" XP: "+player.getXp()+" ("+new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage()+"%)");
+							System.out.println("Level: "+player.getLvl()+" XP: "+player.getXp() + " OldXP: " + player.getoldXP() +" ("+new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage()+"%)");
 						}
 						if (collisionDetector.getLastCollsion() == Player.ID) {
 							dmgSound.play();
@@ -147,17 +160,34 @@ public class Game implements Runnable, KeyListener {
 		}
 	}
 	
+	public void load(int levelProgress) {
+		this.levelProgress = levelProgress;
+	}
+	
 	public void nextLevel() {
-		if (activeLvl<levels.size()-1) {
+		if (activeLvl == 0 && levelProgress > activeLvl + 1) {
 			levels.get(activeLvl).restart();
 			tpSound.play();
 			shp.respawn();
 			bullets.clear();
 			enemies.clear();
 			explosions.clear();
-			activeLvl++;
+			chests.clear();
+			activeLvl = levelProgress;
 			direction = "right";
-			shp.setlife(0);
+		} else if (activeLvl<levels.size()-1) {
+			levels.get(activeLvl).restart();
+			tpSound.play();
+			shp.respawn();
+			bullets.clear();
+			enemies.clear();
+			explosions.clear();
+			chests.clear();
+			activeLvl++;
+			if (activeLvl > levelProgress) {
+				levelProgress = activeLvl;
+			}
+			direction = "right";
 		} else {
 			portToBase();
 		}
@@ -170,6 +200,7 @@ public class Game implements Runnable, KeyListener {
 		bullets.clear();
 		enemies.clear();
 		explosions.clear();
+		chests.clear();
 		activeLvl = 0;
 		direction = "right";
 		shp.setlife(0);
@@ -384,7 +415,6 @@ public class Game implements Runnable, KeyListener {
 				key_4 = true;
 				break;
 			default:
-				shp.setbonusslots(2, 4);
 				break;
 			}
 		}
@@ -439,5 +469,9 @@ public class Game implements Runnable, KeyListener {
 
 	public int getActiveLevel() {
 		return activeLvl;
+	}
+	
+	public int getLevelProgress() {
+		return levelProgress;
 	}
 }

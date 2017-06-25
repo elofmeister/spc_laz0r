@@ -17,10 +17,11 @@ public class DropCalculator {
 	public static final int ENCHANTED_RARITY = 2;
 	public static final int GOLD_RARITY = 3;
 	public static final int UNIQUE_RARITY = 4;
+	private Chest chest;
 	
 	
-	DropCalculator(int thisdropchance, int thisactivelevel, int thiscash){
-		
+	DropCalculator(Chest chest, int thisdropchance, int thisactivelevel, int thiscash){
+		this.chest = chest;
 		int dropchance = thisdropchance;  
 		int consumetype = 0;
 		
@@ -34,21 +35,25 @@ public class DropCalculator {
 				
 				if (retval >= dropchance){					//drop cash only values > 7;
 					retval -= dropchance;
-					new Item("",0,0,thiscash);   
+					chest.addItemToChest(new Item("",0,0,thiscash));   
 				}
 				
 				if (retval >= dropchance){					//drop consumables
 					retval -= dropchance;
 					consumetype = Math.abs(rnd.nextInt())%4;
 					switch (consumetype){					
-					case 0: new Item("",0,0,HEAL); 
-							break;
-					case 1: new Item("",0,0,CONSUMESHIELD); 
-							break;
-					case 2: new Item("",0,0,BOMB); 
-							break;
-					case 3:	new Item("",0,0,TOWNPORTAL); 
-							break;					
+					case 0: 
+						chest.addItemToChest(new Item("",0,0,HEAL)); 
+						break;
+					case 1: 
+						chest.addItemToChest(new Item("",0,0,CONSUMESHIELD)); 
+						break;
+					case 2: 
+						chest.addItemToChest(new Item("",0,0,BOMB)); 
+						break;
+					case 3:	
+						chest.addItemToChest(new Item("",0,0,TOWNPORTAL)); 
+						break;					
 					}
 				
 				}
@@ -67,15 +72,15 @@ public class DropCalculator {
 				
 					switch (boxrarity){
 					case 1: 							
-						new ItemCalculator(NORMAL_RARITY,category);	 		
+						chest.addItemToChest(new ItemCalculator(NORMAL_RARITY,category).getItem());			
 				
 // set box 1
 							break;
-					case 2: new ItemCalculator(ENCHANTED_RARITY, category);   
+					case 2: chest.addItemToChest(new ItemCalculator(ENCHANTED_RARITY, category).getItem());   
 				
 // set box 2
 							break;
-					case 3:	new ItemCalculator(GOLD_RARITY,category);    		
+					case 3:	chest.addItemToChest(new ItemCalculator(GOLD_RARITY,category).getItem());    		
 // set box 3
 							break;	
 					default: 	
@@ -86,27 +91,30 @@ public class DropCalculator {
 							category	= Math.abs(rnd.nextInt())%2+1;
 							
 						switch (additem){
-							case 0: new ItemCalculator(NORMAL_RARITY, category); 
+							case 0: chest.addItemToChest(new ItemCalculator(NORMAL_RARITY, category).getItem()); 
 									boxrarity--;
+									chest.setRarity(1);
 								  	break;
-							case 1: new ItemCalculator(ENCHANTED_RARITY, category); 
+							case 1: chest.addItemToChest(new ItemCalculator(ENCHANTED_RARITY, category).getItem()); 
 									boxrarity -= ENCHANTED_RARITY;
+									chest.setRarity(2);
 									break;
-							case 2: new ItemCalculator(GOLD_RARITY, category); // 
+							case 2: chest.addItemToChest(new ItemCalculator(GOLD_RARITY, category).getItem()); // 
 									boxrarity -= GOLD_RARITY;
+									chest.setRarity(3);
 									break;
-							case 3:	new ItemCalculator(UNIQUE_RARITY, category);  //
+							case 3:	chest.addItemToChest(new ItemCalculator(UNIQUE_RARITY, category).getItem());  //
 									boxrarity -= UNIQUE_RARITY;
+									chest.setRarity(3);
 									break;
 							
 					}
-				}
-				
-					
+				}	
 			}
-		}
-				
-	}	
-				
+		}		
+	}
+	public Chest getChest() {
+		return chest;
+	}
 }
 

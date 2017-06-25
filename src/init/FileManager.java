@@ -2,6 +2,8 @@ package init;
 
 import java.io.File;
 
+import util.SaveWriter;
+
 public class FileManager {
 
 	private final static String MAIN_DIRECTORY = ".spc_laz0r";
@@ -45,10 +47,20 @@ public class FileManager {
 		}
 	}
 	
+	private void createSave(int savegame) {
+		File directory = getFile(SAVES + "/" + "savegame" + savegame + ".json");
+		if (directory.exists() == false) {
+			new SaveWriter(savegame).save();
+		}
+	}
+	
 	public FileManager() {
 		createDirectory(MAIN_DIRECTORY);
 		createDirectory(CONFIG);
 		createDirectory(SAVES);
 		createConfig("config.json", CONFIG);
+		createSave(1);
+		createSave(2);
+		createSave(3);
 	}
 }

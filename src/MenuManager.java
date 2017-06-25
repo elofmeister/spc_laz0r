@@ -21,6 +21,8 @@ import gui.Window;
 
 import util.ConfigReader;
 import util.ConfigWriter;
+import util.SaveReader;
+import util.SaveWriter;
 
 public class MenuManager implements KeyListener {
 
@@ -28,8 +30,10 @@ public class MenuManager implements KeyListener {
 	public final static int MENU		= 1;
 	public final static int NEW_GAME	= 2;
 	public final static int LOAD_GAME	= 3;
-	public final static int EXTRA		= 4;
-	public final static int LEVEL		= 5;
+	public final static int SAVE_GAME	= 4;
+	public final static int EXTRA		= 5;
+	public final static int LEVEL		= 6;
+	public final static int SKILL		= 7;
 		
 	private Game game;
 	private Window window;
@@ -39,7 +43,8 @@ public class MenuManager implements KeyListener {
 	private List<Level> levels;
 	private List<Enemy> enemies;
 	private List<Explosion> explosions;
-	private GuiBar guiBar = new GuiBar();;
+	private List<Chest> chests;
+	private GuiBar guiBar = new GuiBar();
 	private int loading;
 	private CollisionDetector shopDetector = new CollisionDetector();
 	private Shop shop;
@@ -65,7 +70,7 @@ public class MenuManager implements KeyListener {
 	private final int KEY_ESC		= 27;
 	private final int KEY_BACKSPACE	= 8;
 	
-	public MenuManager(Game game, Window window, Player player, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies, List<Explosion> explosions) {
+	public MenuManager(Game game, Window window, Player player, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies, List<Explosion> explosions, List<Chest> chests) {
 		this.game = game;
 		this.window = window;
 		this.player = player;
@@ -74,6 +79,7 @@ public class MenuManager implements KeyListener {
 		this.enemies = enemies;
 		this.levels = levels;
 		this.explosions = explosions;
+		this.chests = chests;
 		this.window.getFrame().addKeyListener(this);
 		ConfigReader cr = new ConfigReader("config.json");
 		fullscreen = cr.isFullscreen();
@@ -128,6 +134,15 @@ public class MenuManager implements KeyListener {
 		return retval;
 	}
 	
+	private BufferedImage getSkill() {
+		BufferedImage retval = null;
+		try {
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/skill" + menuPos + ".png"));
+		} catch (IOException e) {
+		}
+		return retval;
+	}
+	
 	private BufferedImage getExtra() {
 		BufferedImage retval = null;
 		try {
@@ -163,7 +178,11 @@ public class MenuManager implements KeyListener {
 		if (shop.isAtShop(Shop.SHOP_1) || shop.isAtShop(Shop.SHOP_2) || shop.isAtShop(Shop.SHOP_3)) {
 			for (int i = 0; i < Shop.SHOP_HEIGHT; i++) {
 				for (int j = 0; j < Shop.SHOP_WIDTH; j++) {
-					rgbBackground[i * Game.WINDOW_WIDTH + j + Game.WINDOW_WIDTH - Shop.SHOP_WIDTH] = rgbShop[i * Shop.SHOP_WIDTH + j];
+					try {
+						rgbBackground[i * Game.WINDOW_WIDTH + j + Game.WINDOW_WIDTH - Shop.SHOP_WIDTH] = rgbShop[i * Shop.SHOP_WIDTH + j];
+					} catch (Exception e) {
+						System.err.println("ShopRenderException");
+					}
 				}
 			}
 		}		
@@ -181,18 +200,62 @@ public class MenuManager implements KeyListener {
 		guiBar.getImage().getRGB(0, 0, Game.WINDOW_WIDTH, TileSet.TILE_HEIGHT, rgbGuiBar, 0, Game.WINDOW_WIDTH);
 		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 			for (int j = 0; j < Game.WINDOW_WIDTH; j++) {
-				rgbBackground[(Game.WINDOW_HEIGHT - TileSet.TILE_HEIGHT + i) * Game.WINDOW_WIDTH + j] = rgbGuiBar[i * Game.WINDOW_WIDTH + j];
+				try {
+					rgbBackground[(Game.WINDOW_HEIGHT - TileSet.TILE_HEIGHT + i) * Game.WINDOW_WIDTH + j] = rgbGuiBar[i * Game.WINDOW_WIDTH + j];
+				} catch (Exception e) {
+					System.err.println("GuiBarRenderException");
+				}
 			}
 		}
+		
+		for (int i = 0; i < chests.size(); i++) {
+			if (chests.get(i).isInRange(shp.getCoordinates())) {
+				while (!chests.get(i).isEmpty()) {
+					Item item = chests.get(i).getNextItem();
+					if (item.getCategory() > 6) {
+						player.setCash(item.getItemvalue());
+					} else {
+						shp.addItem(item);
+					}
+				}
+				chests.remove(i);
+			}
+		}
+		
+		if (!chests.isEmpty()) {
+			for (int n = 0; n < chests.size(); n++) {
+				int[] rgbChest = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+				chests.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbChest, 0, TileSet.TILE_WIDTH);
+				if (chests.get(n).isInView()) {
+					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+							if (rgbChest[i * TileSet.TILE_WIDTH + j] != BLACK && chests.size() > n) {
+								try {
+									rgbBackground[(chests.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + chests.get(n).getCoordinates().getX() + j] = rgbChest[i * TileSet.TILE_WIDTH + j];
+								} catch (Exception e) {
+									System.err.println("ChestRenderException");
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		if (!enemies.isEmpty()) {
 			for (int n = 0; n < enemies.size(); n++) {
+				enemies.get(n).move();
 				if (enemies.get(n).isInView()) {
 					int[] rgbEnemy = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
 					enemies.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbEnemy, 0, TileSet.TILE_WIDTH);
 					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
 							if (rgbEnemy[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY && enemies.size() > n) {
-								rgbBackground[(enemies.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + enemies.get(n).getCoordinates().getX() + j] = rgbEnemy[i * TileSet.TILE_WIDTH + j];
+								try {
+									rgbBackground[(enemies.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + enemies.get(n).getCoordinates().getX() + j] = rgbEnemy[i * TileSet.TILE_WIDTH + j];
+								} catch (Exception e) {
+									System.err.println("EnemyRenderException");
+								}
 							}
 						}
 					}		
@@ -207,7 +270,11 @@ public class MenuManager implements KeyListener {
 					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
 							if (rgbBullet[i * TileSet.TILE_WIDTH + j] != BLACK && bullets.size() > n) {
-								rgbBackground[(bullets.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i * TileSet.TILE_WIDTH + j];
+								try {
+									rgbBackground[(bullets.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i * TileSet.TILE_WIDTH + j];
+								} catch (Exception e) {
+									System.err.println("BulletRenderException");
+								}
 							}
 						}
 					}
@@ -224,7 +291,11 @@ public class MenuManager implements KeyListener {
 					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
 							if (rgbExplosion[i * TileSet.TILE_WIDTH + j] != BLACK && explosions.size() > n) {
-								rgbBackground[(explosions.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + explosions.get(n).getCoordinates().getX() + j] = rgbExplosion[i * TileSet.TILE_WIDTH + j];
+								try {
+									rgbBackground[(explosions.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + explosions.get(n).getCoordinates().getX() + j] = rgbExplosion[i * TileSet.TILE_WIDTH + j];
+								} catch (Exception e) {
+									System.err.println("ExplosionRenderException");
+								}
 							}
 						}
 					}
@@ -238,7 +309,11 @@ public class MenuManager implements KeyListener {
 		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 			for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
 				if (rgbShip[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY) {
-					rgbBackground[(shp.getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + shp.getCoordinates().getX() + j] = rgbShip[i * TileSet.TILE_WIDTH + j];
+					try {
+						rgbBackground[(shp.getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + shp.getCoordinates().getX() + j] = rgbShip[i * TileSet.TILE_WIDTH + j];
+					} catch (Exception e) {
+						System.err.println("ShipRenderException");
+					}
 				}
 			}
 		}
@@ -276,11 +351,17 @@ public class MenuManager implements KeyListener {
 		case LOAD_GAME:
 			retval = getLoadGame();
 			break;
+		case SAVE_GAME:
+			retval = getSaveGame();
+			break;
 		case EXTRA:
 			retval = getExtra();
 			break;
 		case LEVEL:
 			retval = getLevel();
+			break;
+		case SKILL:
+			retval = getSkill();
 			break;
 
 		default:
@@ -308,7 +389,7 @@ public class MenuManager implements KeyListener {
 					break;
 				case KEY_DOWN:
 				case KEY_RIGHT:
-					if (menuPos < 4) {
+					if (menuPos < 5) {
 						menuPos++;
 					}
 					break;
@@ -317,8 +398,12 @@ public class MenuManager implements KeyListener {
 					case 2:
 					case 3:
 					case 4:
-						menuPos+=3;
 						game.menuSound.play();
+						menuPos+=4;
+						break;
+					case 5:
+						game.escSound.play();
+						menuPos+=4;
 						break;
 
 					default:
@@ -379,7 +464,39 @@ public class MenuManager implements KeyListener {
 					case 2:
 					case 3:
 					case 4:
+					case 5:
 						menuPos+=3;
+						game.menuSound.play();
+						break;
+
+					default:
+						break;
+					}
+					break;
+
+				default:
+					break;
+				}
+			} else if (getActiveMenu() == SAVE_GAME) {
+				switch (e.getKeyCode()) {
+				case KEY_UP:
+				case KEY_LEFT:
+					if (menuPos > 2) {
+						menuPos--;
+					}
+					break;
+				case KEY_DOWN:
+				case KEY_RIGHT:
+					if (menuPos < 6) {
+						menuPos++;
+					}
+					break;
+				case KEY_ENTER:
+					switch (menuPos) {
+					case 2:
+					case 3:
+					case 4:
+						menuPos+=5;
 						game.menuSound.play();
 						break;
 
@@ -442,6 +559,24 @@ public class MenuManager implements KeyListener {
 
 				default:
 					break;
+				} 
+			} else if (getActiveMenu() == SKILL) {
+				switch (e.getKeyCode()) {
+				case KEY_UP:
+				case KEY_LEFT:
+					if (menuPos > 2) {
+						menuPos--;
+					}
+					break;
+				case KEY_DOWN:
+				case KEY_RIGHT:
+					if (menuPos < 11) {
+						menuPos++;
+					}
+					break;
+					
+				default:
+					break;
 				}
 			}
 			keyPressed = true;
@@ -455,17 +590,20 @@ public class MenuManager implements KeyListener {
 				switch (e.getKeyCode()) {
 				case KEY_ENTER:
 					switch (menuPos) {
-					case 5:						
+					case 6:						
 						activeMenu = NEW_GAME;
 						menuPos = 1;
 						break;
-					case 6:
+					case 7:
 						activeMenu = LOAD_GAME;
 						menuPos = 1;
 						break;
-					case 7:
+					case 8:
 						activeMenu = EXTRA;
 						menuPos = 0;
+						break;
+					case 9:
+						System.exit(0);
 						break;
 
 					default:
@@ -476,8 +614,7 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == NEW_GAME) {
+			} else if (getActiveMenu() == NEW_GAME) {
 				switch (e.getKeyCode()) {
 				case KEY_UP:
 				case KEY_LEFT:
@@ -498,6 +635,7 @@ public class MenuManager implements KeyListener {
 					case Ships.STANDARDO:
 					case Ships.RUMPLER:
 					case Ships.GLASSCANNON:
+						player.reset();
 						shp.setshipclass(menuPos);
 						activeMenu = LEVEL;
 						menuPos = 1;
@@ -518,18 +656,22 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == LOAD_GAME) {
+			} else if (getActiveMenu() == LOAD_GAME) {
 				switch (e.getKeyCode()) {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case 5:
 					case 6:
 					case 7:
-						activeMenu = LEVEL;
-						menuPos = 1;
+						SaveReader saveReader = new SaveReader(menuPos-4);
+						game.load(saveReader.getLevelProgress());
+						player.load(saveReader.getName(), saveReader.getXp(), saveReader.getOldxp(), saveReader.getLvl(), saveReader.getSkillpts(), saveReader.getAgl(), saveReader.getCritprb(), saveReader.getCritdmg(), saveReader.getLaser(), saveReader.getAcid(), saveReader.getIce(), saveReader.getEmp(), saveReader.getCash());
+						shp.load(saveReader.getShipclass(), saveReader.getHealthpotions(), saveReader.getShields(), saveReader.getBombs(), saveReader.getPortals());
 						game.portToBase();
 						game.newSound.play();
+						activeMenu = LEVEL;
+						menuPos = 1;
+						guiBar = new GuiBar();
 						break;
 
 					default:
@@ -545,8 +687,38 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == EXTRA) {
+			} else if (getActiveMenu() == SAVE_GAME) {
+				switch (e.getKeyCode()) {
+				case KEY_ENTER:
+					switch (menuPos) {
+					case 7:
+					case 8:
+					case 9:
+						SaveWriter saveWriter = new SaveWriter(menuPos-6);
+						saveWriter.setLevelData(game.getLevelProgress());
+						saveWriter.setPlayerData(player.getName(), player.getXp(), player.getoldXP(), player.getLvl(), player.getSkillpts(), player.getAgl(), player.getCritprb(), player.getCritdmg(), player.getLaser(), player.getAcid(), player.getIce(), player.getEmp(), player.getCash());
+						saveWriter.setShipData(shp.getshipclass(), shp.getbonusslots(0), shp.getbonusslots(1), shp.getbonusslots(2), shp.getbonusslots(3));
+						saveWriter.save();
+						activeMenu = SKILL;
+						menuPos = 1;
+						game.menuSound.play();
+						break;
+
+					default:
+						break;
+					}
+					break;
+				case KEY_ESC:
+				case KEY_BACKSPACE:
+					activeMenu = SKILL;
+					menuPos = 1;
+					game.escSound.play();
+					break;
+
+				default:
+					break;
+				}
+			} else if (getActiveMenu() == EXTRA) {
 				switch (e.getKeyCode()) {
 				case KEY_ESC:
 				case KEY_BACKSPACE:
@@ -558,14 +730,101 @@ public class MenuManager implements KeyListener {
 				default:
 					break;
 				}
-			}
-			else if (getActiveMenu() == LEVEL) {
+			} else if (getActiveMenu() == LEVEL) {
 				switch (e.getKeyCode()) {
 				case KEY_ESC:
-					activeMenu = MENU;
+					activeMenu = SKILL;
 					game.escSound.play();
 					break;
 
+				default:
+					break;
+				}
+			} else if (getActiveMenu() == SKILL) {
+				switch (e.getKeyCode()) {
+				case KEY_ENTER:
+					switch (menuPos) {
+					case 2:
+						if (player.getSkillpts() >= 10) {
+							player.setAgl();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 3:
+						if (player.getSkillpts() >= 2) {
+							player.setCritdmg();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 4:
+						if (player.getSkillpts() >= 2) {
+							player.setCritprb();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 5:
+						if (player.getSkillpts() >= 1) {
+							player.setLaser();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 6:
+						if (player.getSkillpts() >= 1) {
+							player.setIce();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 7:
+						if (player.getSkillpts() >= 1) {
+							player.setAcid();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 8:
+						if (player.getSkillpts() >= 1) {
+							player.setEmp();	
+							game.menuSound.play();						
+						} else {
+							game.escSound.play();
+						}
+						break;
+					case 9:
+						activeMenu = MENU;
+						menuPos = 1;
+						game.menuSound.play();
+						break;
+					case 10:
+						activeMenu = SAVE_GAME;
+						menuPos = 1;
+						game.menuSound.play();
+						break;
+					case 11:
+						activeMenu = LEVEL;
+						menuPos = 1;
+						game.menuSound.play();
+						break;
+
+					default:
+						break;
+					}
+					break;
+				case KEY_ESC:
+					activeMenu = LEVEL;
+					game.escSound.play();
+					break;
+					
 				default:
 					break;
 				}

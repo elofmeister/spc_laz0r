@@ -41,7 +41,14 @@ public class GuiBar {
 			lifedifference = 0;
 		}
 		int offset = 8 - (int) (lifedifference / (float) 0.125);
-		tileset.getSubimage(0, offset * TileSet.TILE_HEIGHT, 4 * TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT).getRGB(0, 0, 4 * TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbLifepoints, 0, 4 * TileSet.TILE_WIDTH);
+		if (offset < 0 || offset > 8) {
+			offset = 8;
+		}
+		try {
+			tileset.getSubimage(0, offset * TileSet.TILE_HEIGHT, 4 * TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT).getRGB(0, 0, 4 * TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbLifepoints, 0, 4 * TileSet.TILE_WIDTH);
+		} catch (Exception e) {
+			System.err.println("GuiBarSetLifeException "+offset);
+		}
 	}
 	
 	public void setXP(float percentage) {

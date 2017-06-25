@@ -1,6 +1,7 @@
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.Random;
 
 public class Shop implements KeyListener {
 
@@ -30,17 +31,17 @@ public class Shop implements KeyListener {
 		if (game.getActiveLevel() == 0) {
 			switch (shopNumber) {
 			case SHOP_1:
-				if (new CollisionDetector().isAtShop(ship, new Coordinates(4 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT))) {
+				if (new CollisionDetector().isInRange(ship.getCoordinates(), new Coordinates(4 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT))) {
 					bretval = true;
 				}
 				break;
 			case SHOP_2:
-				if (new CollisionDetector().isAtShop(ship, new Coordinates(6 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT))) {
+				if (new CollisionDetector().isInRange(ship.getCoordinates(), new Coordinates(6 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT))) {
 					bretval = true;
 				}
 				break;
 			case SHOP_3:
-				if (new CollisionDetector().isAtShop(ship, new Coordinates(8 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT))) {
+				if (new CollisionDetector().isInRange(ship.getCoordinates(), new Coordinates(8 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT))) {
 					bretval = true;
 				}
 				break;
@@ -54,10 +55,11 @@ public class Shop implements KeyListener {
 	
 	public void keyPressed(KeyEvent key) {
 		if (key.getKeyCode() == KEY_ENTER) {
-			if (isAtShop(SHOP_1) && player.getCash() >= 1000) {
-				/*
-				 * Add Shop 1 here
-				 */
+			if (isAtShop(SHOP_1) && player.getCash() >= 1000 && ship.isItemSpace()) {
+				Random rnd = new Random();
+				rnd.setSeed(System.currentTimeMillis());
+				player.setCash(-1000);
+				ship.addItem(new ItemCalculator(Math.abs(rnd.nextInt())%3+1, Math.abs(rnd.nextInt())%2+1).getItem());
 				game.menuSound.play();
 			} else if (isAtShop(SHOP_2) && player.getCash() >= 100 && ship.getbonusslots(0) < 4) {
 				player.setCash(-100);
@@ -67,6 +69,8 @@ public class Shop implements KeyListener {
 				player.setCash(-100);
 				ship.setbonusslots(1, ship.getbonusslots(1)+1);
 				game.menuSound.play();
+			} else {
+				game.escSound.play();
 			}
 			keyPressed = true;
 		}	

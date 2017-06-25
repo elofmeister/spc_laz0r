@@ -11,28 +11,28 @@ public class CollisionDetector {
 	public CollisionDetector() {
 	}
 	
-	public boolean isAtShop(Ships ship, Coordinates shop) {
+	public boolean isInRange(Coordinates ship, Coordinates otherTile) {
 		boolean bretval = false;
-		int shopXmin, shopXmax, shopYmin, shopYmax;
+		int otherTileXmin, otherTileXmax, otherTileYmin, otherTileYmax;
 		int targetXmin, targetXmax, targetYmin, targetYmax;
 
-		shopXmin = shop.getX() + TileSet.TILE_WIDTH / 2 ;
-		shopXmax = shop.getX() + TileSet.TILE_WIDTH - TileSet.TILE_WIDTH / 2;
-		shopYmin = shop.getY() + TileSet.TILE_HEIGHT / 2;
-		shopYmax = shop.getY() + TileSet.TILE_HEIGHT - TileSet.TILE_HEIGHT / 2;
+		otherTileXmin = otherTile.getX() + TileSet.TILE_WIDTH / 2 ;
+		otherTileXmax = otherTile.getX() + TileSet.TILE_WIDTH - TileSet.TILE_WIDTH / 2;
+		otherTileYmin = otherTile.getY() + TileSet.TILE_HEIGHT / 2;
+		otherTileYmax = otherTile.getY() + TileSet.TILE_HEIGHT - TileSet.TILE_HEIGHT / 2;
 
-		targetXmin = ship.getCoordinates().getX();
-		targetXmax = ship.getCoordinates().getX() + TileSet.TILE_WIDTH;
-		targetYmin = ship.getCoordinates().getY();
-		targetYmax = ship.getCoordinates().getY() + TileSet.TILE_HEIGHT;
+		targetXmin = ship.getX();
+		targetXmax = ship.getX() + TileSet.TILE_WIDTH;
+		targetYmin = ship.getY();
+		targetYmax = ship.getY() + TileSet.TILE_HEIGHT;
 		if ((
-				(targetXmin < shopXmin && shopXmin < targetXmax) ||
-				(targetXmin < shopXmax && shopXmax < targetXmax)
+				(targetXmin < otherTileXmin && otherTileXmin < targetXmax) ||
+				(targetXmin < otherTileXmax && otherTileXmax < targetXmax)
 			)
 				&&
 			(
-				(targetYmin < shopYmin && shopYmin < targetYmax) ||
-				(targetYmin < shopYmax && shopYmax < targetYmax)
+				(targetYmin < otherTileYmin && otherTileYmin < targetYmax) ||
+				(targetYmin < otherTileYmax && otherTileYmax < targetYmax)
 			)) {
 			bretval = true;
 		}

@@ -12,9 +12,9 @@ public class DamageCalculator {
 	public static final int EMP = 4;
 	public static final int BOMB = 5;
 	
-	public static final int LASER_DMG = -3;  		//damage per second
-	public static final int ICE_DMG = -2;
-	public static final int ACID_DMG = -1;
+	public static final int LASER_DMG = -10;  		//damage per curse
+	public static final int ICE_DMG = -5;
+	public static final int ACID_DMG = -3;
 	public static final int EMP_DMG = 0;
 	
 	public static final int BOMB_DMG = -100;
@@ -26,7 +26,7 @@ public class DamageCalculator {
 	
 	private int damage;
 	private int elementchance;
-	private double crtitchance;
+	private int crtitchance;
 	
 	public DamageCalculator(long id, Player player, Enemy enemy, Ships shp, SoundPlayer fire){  
 		
@@ -90,9 +90,9 @@ public class DamageCalculator {
 			enemy.setEnemylife(-shp.getdmg());
 			
 		
-			crtitchance = Math.abs(rnd.nextDouble());
+			crtitchance = Math.abs(rnd.nextInt());
 			if (crtitchance<=player.getCritprb()){
-				damage = (int) Math.round(shp.getdmg()*player.getCritdmg());
+				damage = shp.getdmg()*player.getCritdmg();
 				enemy.setEnemylife(-damage);
 			}	
 			
@@ -151,5 +151,5 @@ public class DamageCalculator {
 		case BOMB:
 			enemy.setEnemylife(player.getLvl()*BOMB_DMG);
 		}
-	}	
+	}
 }

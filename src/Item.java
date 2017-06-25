@@ -10,24 +10,25 @@ public class Item {
 	private int itemtimer;
 	private int itemstat;
 	private int category;
+	private long timestamp = System.currentTimeMillis();
 
 
 	
 	
-	Item(String thisitemname, int thisitemtimer, int thisitemstat, int thiscategory){
+	Item(String itemname, int itemtimer, int itemstat, int category){
 		
 
-		this.category = thiscategory;
+		this.category = category;
 		switch(category){
-		case 1: setItemname(thisitemname);
+		case 1: setItemname(itemname);
 				setItemvalue(0);	
-				setItemtimer(thisitemtimer);
-				setItemstat(thisitemstat);
+				setItemtimer(itemtimer);
+				setItemstat(itemstat);
 				break;
-		case 2: setItemname(thisitemname);
+		case 2: setItemname(itemname);
 				setItemvalue(0);	
-				setItemtimer(thisitemtimer);
-				setItemstat(thisitemstat);
+				setItemtimer(itemtimer);
+				setItemstat(itemstat);
 				break;
 		case 3: setItemname("Healthpotion");
 				setItemvalue(100);	
@@ -114,7 +115,11 @@ public class Item {
 	
 	public void setCategory(int iVal){
 		category=iVal;
-	}	 
+	}	
+	
+	public long getTimestamp() {
+		return timestamp;
+	}
 		
 }
 

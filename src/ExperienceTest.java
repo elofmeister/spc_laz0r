@@ -5,8 +5,7 @@ public class ExperienceTest {
 	
 	public ExperienceTest(int level, int oldXP, int currentXP) {
 		Player horst = new Player("Horst");
-		horst.setLvl(level);
-		horst.setoldXP(oldXP);
+		horst.load("Horst", currentXP, oldXP, level, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		while (level == horst.getLvl()) {
 			horst.setXp(horst.getLvl());
 		}
@@ -18,6 +17,6 @@ public class ExperienceTest {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println((new ExperienceTest(12, 3000, 3200).getPercentage()));
+		System.out.println(new ExperienceTest(12, 3000, 3200).getPercentage());
 	}
 }
