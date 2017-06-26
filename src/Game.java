@@ -118,6 +118,7 @@ public class Game implements Runnable, KeyListener {
 					levels.get(activeLvl).addWave();
 					for (int i = 0; i < levels.get(activeLvl).getEnemyAmount(); i++) {
 						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));
+						System.out.println(enemies.get(enemies.size()-1).getEnemyelement());
 					}
 					if (levels.get(activeLvl).getWaveCnt() == (int) (levels.get(activeLvl).getWaveAmount()/2)) {
 						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
@@ -153,7 +154,9 @@ public class Game implements Runnable, KeyListener {
 							System.out.println("Level: "+player.getLvl()+" XP: "+player.getXp() + " OldXP: " + player.getoldXP() +" ("+new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage()+"%)");
 						}
 						if (collisionDetector.getLastCollsion() == Player.ID) {
-							dmgSound.play();
+							if (!shp.getinvincible()) {
+								dmgSound.play();
+							}							
 						}
 					}
 				}

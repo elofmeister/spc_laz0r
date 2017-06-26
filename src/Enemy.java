@@ -209,9 +209,8 @@ public class Enemy {
 		
 		public void setEnemyelement(){  //type of enemy resistances 1=laser 2=ice 3=acid 4=emp , e.g. bozz = 14 or 41 acid laser  
 			Random rnd = new Random();
-			rnd.setSeed(System.currentTimeMillis());
-			int eVal = Math.abs(rnd.nextInt())%4+1;  
-					enemyelement = eVal;		
+			rnd.setSeed(System.currentTimeMillis()); 
+			enemyelement = Math.abs(rnd.nextInt())%4+1;		
 		}
 		
 		public void setEnemylife(int eVal){

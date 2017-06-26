@@ -326,6 +326,7 @@ public class MenuManager implements KeyListener {
 					}
 				}
 				chests.remove(i);
+				game.menuSound.play();
 			}
 		}
 		
@@ -809,6 +810,7 @@ public class MenuManager implements KeyListener {
 						saveWriter.setShipData(shp.getshipclass(), shp.getbonusslots(0), shp.getbonusslots(1), shp.getbonusslots(2), shp.getbonusslots(3));
 						saveWriter.save();
 						activeMenu = SKILL;
+						game.setPlayerNumber(menuPos-6);
 						menuPos = 1;
 						game.menuSound.play();
 						break;
