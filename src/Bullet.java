@@ -18,20 +18,30 @@ public class Bullet {
 	public final static int GREEN	= 3;
 	public final static int YELLOW	= 4;
 	
+	public final static int NORMAL_BULLET	= 0;
+	public final static int MEDIUM_BULLET	= 1;
+	public final static int BIG_BULLET		= 2;
+	public final static int MICRO_BULLET	= 3;
+	public final static int SMALL_BULLET	= 4;
+	
 	private Coordinates coordinates;
 	private int direction;
 	private BufferedImage image;
 	private long id;
+	private int bulletStyle;
 		
-	public Bullet(Coordinates start, int direction, int color, BufferedImage image, long id) {
+	public Bullet(Coordinates start, int direction, int color, BufferedImage image, long id, int bulletStyle) {
 		this.id = id;
 		coordinates = new Coordinates(start.getX(), start.getY());
 		this.direction = direction;
+		this.bulletStyle = bulletStyle;
 		int xOffset = 0;
 		if (direction == MOVE_NORTH || direction == MOVE_SOUTH) {
 			xOffset = 5 * TileSet.TILE_WIDTH;
 		}
-		this.image = image.getSubimage(color * TileSet.TILE_WIDTH + xOffset, 0, 64, 64);
+		int yOffset = bulletStyle*TileSet.TILE_HEIGHT;
+				
+		this.image = image.getSubimage(color * TileSet.TILE_WIDTH + xOffset, yOffset, 64, 64);
 	}
 	
 	public boolean move(int speed) {

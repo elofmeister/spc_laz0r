@@ -235,7 +235,7 @@ public class Enemy {
 		}
 		
 		public void setEnemycash(int eVal){
-			enemycash = enemycash+enemylvl*eVal;
+			enemycash = enemycash;
 		}
 		
 		public void setEnemycurse() {

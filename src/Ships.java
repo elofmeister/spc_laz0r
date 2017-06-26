@@ -43,6 +43,10 @@ public class Ships {
 	public static final int CURSE_DURATION = 5000;		//duration in milliseconds
 	public static final int SHIELD_DURATION = 5000; //consume shield last 5000 milliseconds
 	
+	public static final int GOOD_DAMAGE = 11;
+	public static final int BIG_DAMAGE = 50;
+	public static final int HUGE_DAMAGE = 100;
+	
 	private BufferedImage[] image = new BufferedImage[MOVE_LEFT_SHIELD + 1];		// all ship tiles
 	private boolean spawned = false;
 	private boolean isinvincible = false;
@@ -147,6 +151,20 @@ public class Ships {
 	
 	public int getdmg(){
 		return dmg;
+	}
+	
+	public int getbulletstyle(){
+	int retval = 0;
+		if (getdmg()>=GOOD_DAMAGE){
+			retval += 1;
+			if (getdmg()>=BIG_DAMAGE){
+				retval += 1;
+					if (getdmg()>=HUGE_DAMAGE){
+					retval += 1;
+				}	
+			}		
+		}		
+		return retval;
 	}
 	
 	public double getfirespeed(){

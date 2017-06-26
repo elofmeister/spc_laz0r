@@ -47,7 +47,9 @@ public class Game implements Runnable, KeyListener {
 	private List<Explosion> explosions = new ArrayList<Explosion>();
 	private List<Chest> chests = new ArrayList<Chest>();
 	private long bulletTimer = System.currentTimeMillis();
+	private int bulletStyle = 0;
 	private long enemyTimer = System.currentTimeMillis();
+	
 	
 	private MenuManager menuManager;
 	private CollisionDetector collisionDetector = new CollisionDetector();
@@ -129,7 +131,7 @@ public class Game implements Runnable, KeyListener {
 				}
 				for (int i = 0; i < enemies.size(); i++) {
 					if (enemyTimer + Bullet.DEFAULT_FIRESPEED * 2 < System.currentTimeMillis() && enemies.get(i).isInView()) {
-						bullets.add(new Bullet(enemies.get(i).getCoordinates(), enemies.get(i).getDirection(), enemies.get(i).getEnemyelement(), bulletTileset, enemies.get(i).getIdentity()));
+						bullets.add(new Bullet(enemies.get(i).getCoordinates(), enemies.get(i).getDirection(), enemies.get(i).getEnemyelement(), bulletTileset, enemies.get(i).getIdentity(), Bullet.SMALL_BULLET));
 					}
 				}
 				if (enemyTimer + Bullet.DEFAULT_FIRESPEED * 2 < System.currentTimeMillis()) {
@@ -279,28 +281,28 @@ public class Game implements Runnable, KeyListener {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, player.getColor(), bulletTileset, Player.ID));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_EAST, player.getColor(), bulletTileset, Player.ID, Bullet.NORMAL_BULLET+shp.getbulletstyle()));	
 			}
 		}
 		if (key_left) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
-				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, player.getColor(), bulletTileset, Player.ID));	
+				pewSound.play();				
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_WEST, player.getColor(), bulletTileset, Player.ID, Bullet.NORMAL_BULLET+shp.getbulletstyle()));	
 			}
 		}
 		if (key_up) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, player.getColor(), bulletTileset, Player.ID));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_NORTH, player.getColor(), bulletTileset, Player.ID, Bullet.NORMAL_BULLET+shp.getbulletstyle()));	
 			}
 		}
 		if (key_down) {
 			if (bulletTimer+Bullet.DEFAULT_FIRESPEED*shp.getfirespeed()<System.currentTimeMillis()) {
 				bulletTimer = System.currentTimeMillis();
 				pewSound.play();
-				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, player.getColor(), bulletTileset, Player.ID));	
+				bullets.add(new Bullet(shp.getCoordinates(), Bullet.MOVE_SOUTH, player.getColor(), bulletTileset, Player.ID, Bullet.NORMAL_BULLET+shp.getbulletstyle()));	
 			}
 		}
 		if (!key_w) {
