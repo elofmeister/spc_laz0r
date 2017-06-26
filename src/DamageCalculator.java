@@ -54,15 +54,16 @@ public class DamageCalculator {
 						break;
 						
 			case ICE: 
-					if(elementchance>player.getLaser()){
-						shp.setshipspeed(ICE);
+					if(elementchance>player.getIce()){
+						shp.setcurse(ICE);
 						shp.setlife(ICE_DMG);
-						shp.setshipspeed(ICE_SLOW);	
+						shp.setshipspeed(ICE_SLOW);
+						fire.play();
 					}
 					break;
 				
 			case ACID: 
-					if(elementchance>player.getLaser()){
+					if(elementchance>player.getAcid()){
 						shp.setcurse(ACID);
 						shp.setlife(ACID_DMG);
 						shp.setshipspeed(ACID_SLOW);
@@ -71,7 +72,7 @@ public class DamageCalculator {
 			       	break;
 				
 			case EMP:
-					if(elementchance>player.getLaser()){
+					if(elementchance>player.getEmp()){
 							
 						shp.setcurse(EMP);
 						shp.setlife(EMP_DMG);
