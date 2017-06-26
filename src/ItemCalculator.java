@@ -20,7 +20,7 @@ public class ItemCalculator {
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());	
 		
-		int qualitycase = Math.abs(rnd.nextInt());
+		int qualitycase = Math.abs(rnd.nextInt())%5;
 		this.itemtype = itemtype;
 		
 		
