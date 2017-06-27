@@ -142,6 +142,10 @@ public class Level {
 		return waveCnt;
 	}
 	
+	public int getViewPos() {
+		return viewPos;
+	}
+	
 	public void updateImage(TileSet newTileSet) {
 		tileset = newTileSet;
 		image = new BufferedImage(TileSet.TILE_WIDTH * levelArray[0].length, TileSet.TILE_HEIGHT * levelArray.length, BufferedImage.TYPE_INT_ARGB);
@@ -157,6 +161,14 @@ public class Level {
 	public void restart() {
 		viewPos = 0;
 		waveCnt = 0;
+	}
+	
+	public void setWaveCnt(int waveCnt) {
+		this.waveCnt = waveCnt;
+	}
+	
+	public void setViewPos(int viewPos) {
+		this.viewPos = viewPos;
 	}
 	
 	public Image getImage() {

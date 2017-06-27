@@ -10,14 +10,14 @@ public class Item {
 	private int itemtimer;
 	private int itemstat;
 	private int category;
-	private long timestamp = System.currentTimeMillis();
+	private long timestamp;
 
 
 	
 	
 	Item(String itemname, int itemtimer, int itemstat, int category){
 		
-
+		timestamp = System.currentTimeMillis();
 		this.category = category;
 		switch(category){
 		case 1: setItemname(itemname);

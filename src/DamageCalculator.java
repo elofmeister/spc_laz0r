@@ -16,9 +16,7 @@ public class DamageCalculator {
 	public static final int ICE_DMG = -5;
 	public static final int ACID_DMG = -3;
 	public static final int EMP_DMG = 0;
-	
-	public static final int BOMB_DMG = -100;
-	
+		
 	public static final int LASER_SLOW = 0;			//shipspeed reduction (pixel per move)	
 	public static final int ICE_SLOW = -4;
 	public static final int ACID_SLOW = -6;
@@ -34,6 +32,7 @@ public class DamageCalculator {
 		if (id == Player.ID) {
 			target = PLAYER_IS_TARGET;
 		}
+		
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());
 		elementchance = Math.abs(rnd.nextInt())%100;	
@@ -90,7 +89,6 @@ public class DamageCalculator {
 		case ENEMY_IS_TARGET:
 			enemy.setEnemylife(-shp.getdmg());
 			
-		
 			crtitchance = Math.abs(rnd.nextInt());
 			if (crtitchance<=player.getCritprb()){
 				damage = shp.getdmg()*player.getCritdmg();
@@ -145,12 +143,11 @@ public class DamageCalculator {
 							enemy.setEnemycursespeed(LASER_SLOW);	
 						}									
 						break;
+			
 				}
 			enemy.setEnemycurse();
-			break;
-			
-		case BOMB:
-			enemy.setEnemylife(player.getLvl()*BOMB_DMG);
+			break;			
+
 		}
 	}
 }

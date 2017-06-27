@@ -49,6 +49,13 @@ public class Game implements Runnable, KeyListener {
 	private long bulletTimer = System.currentTimeMillis();
 	private int bulletStyle = 0;
 	private long enemyTimer = System.currentTimeMillis();
+	private int[] tpInf = new int[3];
+	/*
+	 * tpInf
+	 * 	1. Level
+	 * 	2. Wave
+	 * 	3. View Position
+	 */
 	
 	
 	private MenuManager menuManager;
@@ -89,21 +96,23 @@ public class Game implements Runnable, KeyListener {
 		        	System.err.println(e.getMessage());
 		        }
 		    }
-	    	if ( direction == CAMERA_DIRECTION_RIGHT ) {
-	    		levels.get(activeLvl).moveRight();
-	    		if (!levels.get(activeLvl).isEndReached()) {
-	    			for (Chest chest : chests) {
-						chest.moveLeft();
+		    if (menuManager.getActiveMenu() == MenuManager.LEVEL) {
+		    	if ( direction == CAMERA_DIRECTION_RIGHT ) {
+		    		levels.get(activeLvl).moveRight();
+		    		if (!levels.get(activeLvl).isEndReached()) {
+		    			for (Chest chest : chests) {
+							chest.moveLeft();
+						}
 					}
-				}
-	    	} else {
-	    		levels.get(activeLvl).moveLeft();
-	    		if (!levels.get(activeLvl).isBeginReached()) {
-	    			for (Chest chest : chests) {
-						chest.moveRight();
+		    	} else {
+		    		levels.get(activeLvl).moveLeft();
+		    		if (!levels.get(activeLvl).isBeginReached()) {
+		    			for (Chest chest : chests) {
+							chest.moveRight();
+						}
 					}
-				}
-	    	}
+		    	}
+			}	    	
 	    	if ( levels.get(activeLvl).isEndReached() && 
     				shp.getCoordinates().getX()>=12.5*TileSet.TILE_WIDTH && 
     				shp.getCoordinates().getX()<=13.5*TileSet.TILE_WIDTH && 
@@ -115,6 +124,7 @@ public class Game implements Runnable, KeyListener {
 	    	if (activeLvl>0) {
 	    		shp.prooveItemTimer();	
 				if (levels.get(activeLvl).toggleWave()) {
+					menuManager.toggleWave();
 					Random rnd = new Random();
 					rnd.setSeed(System.currentTimeMillis());
 					levels.get(activeLvl).addWave();
@@ -149,7 +159,30 @@ public class Game implements Runnable, KeyListener {
 							/*
 							 * Enemy killed
 							 */
-							player.setXp(enemies.get(collisionDetector.getEnemy()).getEnemyxp());
+							int playerlvl = player.getLvl();
+							int xp = enemies.get(collisionDetector.getEnemy()).getEnemyxp();
+							int enemylvl = enemies.get(collisionDetector.getEnemy()).getEnemylvl();
+							if (enemylvl < playerlvl) {
+								if (enemylvl + 1 == playerlvl) {
+									xp *= 0.87;
+								} else if (enemylvl + 2 == playerlvl) {
+									xp *= 0.81;
+								} else if (enemylvl + 3 == playerlvl) {
+									xp *= 0.66;
+								} else if (enemylvl + 4 == playerlvl) {
+									xp *= 0.58;
+								} else if (enemylvl + 5 == playerlvl) {
+									xp *= 0.50;
+								} else if (enemylvl + 6 == playerlvl) {
+									xp *= 0.40;
+								} else {
+									xp *= 0.10;
+								}
+							}
+							player.setXp(xp);
+							if (playerlvl != player.getLvl()) {
+								shp.toggleLvlUpAnimation();
+							}
 							explosions.add(new Explosion(enemies.get(collisionDetector.getEnemy()).getCoordinates(), bulletTileset, explosionSound));
 							chests.add(new DropCalculator(new Chest(bulletTileset, enemies.get(collisionDetector.getEnemy()).getCoordinates()), enemies.get(collisionDetector.getEnemy()).getDropchance(), activeLvl, enemies.get(collisionDetector.getEnemy()).getEnemycash()).getChest());
 							enemies.remove(collisionDetector.getEnemy());
@@ -200,6 +233,13 @@ public class Game implements Runnable, KeyListener {
 	}
 	
 	public void portToBase() {
+		tpInf[0] = activeLvl;
+		if (enemies.isEmpty()) {
+			tpInf[1] = levels.get(activeLvl).getWaveCnt();
+		} else {
+			tpInf[1] = levels.get(activeLvl).getWaveCnt() - 1;
+		}
+		tpInf[2] = levels.get(activeLvl).getViewPos();
 		levels.get(activeLvl).restart();
 		shp.respawn();
 		tpSound.play();
@@ -210,6 +250,20 @@ public class Game implements Runnable, KeyListener {
 		activeLvl = 0;
 		direction = "right";
 		shp.setlife(0);
+	}
+	
+	public void useTP() {
+		levels.get(activeLvl).restart();
+		shp.respawn();
+		tpSound.play();
+		bullets.clear();
+		enemies.clear();
+		explosions.clear();
+		chests.clear();
+		activeLvl = tpInf[0];
+		levels.get(activeLvl).setWaveCnt(tpInf[1]);
+		levels.get(activeLvl).setViewPos(tpInf[2]);
+		direction = "right";
 	}
 	
 	private void update() {
@@ -395,16 +449,39 @@ public class Game implements Runnable, KeyListener {
 			case KEY_3:
 				if (!key_3) {
 					if (shp.getbonusslots(2)>=1){
+						shp.setdmg(shp.getdmg()+player.getLvl()*100);
 						for (int i = 0; i < enemies.size(); i++) {
-							if (enemies.get(i).isInView()) {			
+							if (enemies.get(i).isInView()) {
 								new DamageCalculator(enemies.get(i).getIdentity(), player, enemies.get(i), shp, fireSound);
-								   if(enemies.get(i).getEnemylife() <= 0){
-									   player.setXp(enemies.get(i).getEnemyxp());   					   				
-									   explosions.add(new Explosion(enemies.get(i).getCoordinates(), bulletTileset, explosionSound));
-									   enemies.remove(enemies.get(i--));
-								   }
+								
+								explosions.add(new Explosion(enemies.get(i).getCoordinates(), bulletTileset, explosionSound));
+								if(enemies.get(i).getEnemylife() <= 0){									   
+									int playerlvl = player.getLvl();
+									int xp = enemies.get(collisionDetector.getEnemy()).getEnemyxp();
+									int enemylvl = enemies.get(collisionDetector.getEnemy()).getEnemylvl();
+									if (enemylvl < playerlvl) {
+										if (enemylvl + 1 == playerlvl) {
+											xp *= 0.87;
+										} else if (enemylvl + 2 == playerlvl) {
+											xp *= 0.81;
+										} else if (enemylvl + 3 == playerlvl) {
+											xp *= 0.66;
+										} else if (enemylvl + 4 == playerlvl) {
+											xp *= 0.58;
+										} else if (enemylvl + 5 == playerlvl) {
+											xp *= 0.50;
+										} else if (enemylvl + 6 == playerlvl) {
+											xp *= 0.40;
+										} else {
+											xp *= 0.10;
+										}
+									}									
+								   player.setXp(xp);									  
+								   enemies.remove(enemies.get(i--));
+							   }
 							}
 						}
+						shp.setdmg(shp.getdmg()-player.getLvl()*100);						
 						shp.setbonusslots(2, shp.getbonusslots(2)-1);
 						bombSound.play();
 					}
@@ -413,10 +490,14 @@ public class Game implements Runnable, KeyListener {
 				break;
 			case KEY_4:
 				if (!key_4) {
-					if (shp.getbonusslots(3)>=1){
+					if (activeLvl == 0) {
+						if (shp.getbonusslots(3)>=1){
+							useTP();
+							shp.setbonusslots(3, shp.getbonusslots(3)-1);
+						}
+					} else {
 						portToBase();
-						shp.setbonusslots(3, shp.getbonusslots(3)-1);
-					}	
+					}						
 				}
 				key_4 = true;
 				break;

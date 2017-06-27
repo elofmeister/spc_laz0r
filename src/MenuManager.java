@@ -50,6 +50,10 @@ public class MenuManager implements KeyListener {
 	private Shop shop;
 	private FontManager font = new FontManager();
 
+	private boolean waveIncomming = false;
+	private long waveIncommingTimestamp = System.currentTimeMillis();
+	private int waveIncommingCnt = 0;
+	
 	private boolean fullscreen = true;
 	private boolean sound = false;
 	private int background = 1;
@@ -70,6 +74,12 @@ public class MenuManager implements KeyListener {
 	private final int KEY_ENTER		= 10;
 	private final int KEY_ESC		= 27;
 	private final int KEY_BACKSPACE	= 8;
+	
+	public void toggleWave() {
+		waveIncomming = true;
+		waveIncommingCnt = 0;
+		waveIncommingTimestamp = System.currentTimeMillis();
+	}
 	
 	public MenuManager(Game game, Window window, Player player, Ships shp, List<Bullet> bullets, List<Level> levels, List<Enemy> enemies, List<Explosion> explosions, List<Chest> chests) {
 		this.game = game;
@@ -268,6 +278,14 @@ public class MenuManager implements KeyListener {
 	}
 	
 	private BufferedImage getLevel() {
+		if (activeMenu == LEVEL && game.getActiveLevel() == 0) {
+			shop.setActivated(true);
+			if (waveIncomming) {
+				waveIncomming = false;
+			}
+		} else {
+			shop.setActivated(false);
+		}
 		int[] rgbBackground = new int[Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH * Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT];
 		levels.get(game.getActiveLevel()).getSubimage().getRGB(0, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH);
 
@@ -425,6 +443,34 @@ public class MenuManager implements KeyListener {
 				}
 			}
 		}
+		if (waveIncomming) {
+			if (waveIncommingCnt > 7) {
+				waveIncommingCnt = 0;
+				waveIncomming = false;
+			} else {
+				BufferedImage img = font.getWaveIncomming(waveIncommingCnt);
+				int height = img.getHeight();
+				int width = img.getWidth();
+				int[] rgbWaveIncomming = new int[width * height];
+				img.getRGB(0, 0, width, height, rgbWaveIncomming, 0, width);
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						if (rgbWaveIncomming[i * width + j] != BLACK) {
+							try {
+								rgbBackground[(3 * height + i) * Game.WINDOW_WIDTH + 6 * TileSet.TILE_WIDTH + j] = rgbWaveIncomming[i * width + j];
+							} catch (Exception e) {
+								System.err.println("WaveIncommingRenderException");
+							}
+						}
+					}
+				}
+				if (waveIncommingTimestamp + 400 < System.currentTimeMillis()) {
+					waveIncommingTimestamp = System.currentTimeMillis();
+					waveIncommingCnt++;
+				}
+			}
+		}
+		
 		BufferedImage subimg = new BufferedImage(Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
 		subimg.setRGB(0, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH);
 		return subimg;
@@ -759,6 +805,7 @@ public class MenuManager implements KeyListener {
 				case KEY_ESC:
 				case KEY_BACKSPACE:
 					activeMenu = MENU;
+					menuPos = 1;
 					game.escSound.play();
 					break;
 				
@@ -791,6 +838,7 @@ public class MenuManager implements KeyListener {
 				case KEY_ESC:
 				case KEY_BACKSPACE:
 					activeMenu = MENU;
+					menuPos = 1;
 					game.escSound.play();
 					break;
 
@@ -844,6 +892,7 @@ public class MenuManager implements KeyListener {
 			} else if (getActiveMenu() == LEVEL) {
 				switch (e.getKeyCode()) {
 				case KEY_ESC:
+				case KEY_BACKSPACE:
 					activeMenu = SKILL;
 					game.escSound.play();
 					break;
@@ -856,7 +905,7 @@ public class MenuManager implements KeyListener {
 				case KEY_ENTER:
 					switch (menuPos) {
 					case 2:
-						if (player.getSkillpts() >= 10) {
+						if (player.getSkillpts() >= 10 && player.getAgl() < 4) {
 							player.setAgl();	
 							game.menuSound.play();						
 						} else {
@@ -864,7 +913,7 @@ public class MenuManager implements KeyListener {
 						}
 						break;
 					case 3:
-						if (player.getSkillpts() >= 2) {
+						if (player.getSkillpts() >= 2 && player.getCritdmg() < 50) {
 							player.setCritdmg();	
 							game.menuSound.play();						
 						} else {
@@ -872,7 +921,7 @@ public class MenuManager implements KeyListener {
 						}
 						break;
 					case 4:
-						if (player.getSkillpts() >= 2) {
+						if (player.getSkillpts() >= 2 && player.getCritprb() < 50) {
 							player.setCritprb();	
 							game.menuSound.play();						
 						} else {
@@ -880,7 +929,7 @@ public class MenuManager implements KeyListener {
 						}
 						break;
 					case 5:
-						if (player.getSkillpts() >= 1) {
+						if (player.getSkillpts() >= 1 && player.getLaser() < 100) {
 							player.setLaser();	
 							game.menuSound.play();						
 						} else {
@@ -888,7 +937,7 @@ public class MenuManager implements KeyListener {
 						}
 						break;
 					case 6:
-						if (player.getSkillpts() >= 1) {
+						if (player.getSkillpts() >= 1 && player.getIce() < 100) {
 							player.setIce();	
 							game.menuSound.play();						
 						} else {
@@ -896,7 +945,7 @@ public class MenuManager implements KeyListener {
 						}
 						break;
 					case 7:
-						if (player.getSkillpts() >= 1) {
+						if (player.getSkillpts() >= 1 && player.getAcid() < 100) {
 							player.setAcid();	
 							game.menuSound.play();						
 						} else {
@@ -904,7 +953,7 @@ public class MenuManager implements KeyListener {
 						}
 						break;
 					case 8:
-						if (player.getSkillpts() >= 1) {
+						if (player.getSkillpts() >= 1 && player.getEmp() < 100) {
 							player.setEmp();	
 							game.menuSound.play();						
 						} else {
@@ -923,7 +972,6 @@ public class MenuManager implements KeyListener {
 						break;
 					case 11:
 						activeMenu = LEVEL;
-						menuPos = 1;
 						game.menuSound.play();
 						break;
 
@@ -932,6 +980,7 @@ public class MenuManager implements KeyListener {
 					}
 					break;
 				case KEY_ESC:
+				case KEY_BACKSPACE:
 					activeMenu = LEVEL;
 					game.escSound.play();
 					break;

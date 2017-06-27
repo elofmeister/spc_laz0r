@@ -34,6 +34,14 @@ public class Ships {
 	public static final int MOVE_LEFT_DOWN_SHIELD  	= 14;
 	public static final int MOVE_LEFT_UP_SHIELD  	= 15;
 	public static final int MOVE_LEFT_SHIELD  		= 16;
+	public static final int LVLUP_0 				= 17;
+	public static final int LVLUP_1 				= 18;
+	public static final int LVLUP_2 				= 19;
+	public static final int LVLUP_3 				= 20;
+	public static final int LVLUP_4 				= 21;
+	public static final int LVLUP_5 				= 22;
+	public static final int LVLUP_6 				= 23;
+	public static final int LVLUP_7 				= 24;
 
 	public static final int STANDARDO = 1;
 	public static final int RUMPLER = 2;
@@ -47,15 +55,18 @@ public class Ships {
 	public static final int BIG_DAMAGE = 50;
 	public static final int HUGE_DAMAGE = 100;
 	
-	private BufferedImage[] image = new BufferedImage[MOVE_LEFT_SHIELD + 1];		// all ship tiles
+	private BufferedImage[] image = new BufferedImage[LVLUP_7 + 1];		// all ship tiles
 	private boolean spawned = false;
+	private boolean lvlUp = true;
 	private boolean isinvincible = false;
 	private int spawnCnt = SPAWN_0;
+	private int lvlUpCnt = LVLUP_0;
 	private int animation = MOVE_RIGHT;
 	private int cursedspeed;
 	private long cursetimestamp = System.currentTimeMillis();
 	private long invincible_timestamp = System.currentTimeMillis();
 	private long spawnTimer = System.currentTimeMillis();
+	private long lvlUpTimer = System.currentTimeMillis();
 	
 	private Coordinates coor = new Coordinates(256, 256);
 		
@@ -104,8 +115,12 @@ public class Ships {
 				image[i] = tileset.getTileset().getSubimage(i * 64, (this.shipclass-STANDARDO) * 3 * 64 + 64, 64, 64);
 			} else if (i <= MOVE_LEFT) {
 				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT) * 64, (this.shipclass-STANDARDO) * 3 * 64, 64, 64);				
-			} else {
+			} else if (i <= MOVE_LEFT_SHIELD) {
 				image[i] = tileset.getTileset().getSubimage((i - MOVE_RIGHT_SHIELD) * 64, (this.shipclass-STANDARDO) * 3 * 64 + 128, 64, 64);
+			} else if (i <= LVLUP_3) {
+				image[i] = tileset.getTileset().getSubimage((i - LVLUP_0 + 6) * 64, (this.shipclass-STANDARDO) * 3 * 64, 64, 64);
+			}  else {
+				image[i] = tileset.getTileset().getSubimage((i - LVLUP_4 + 6) * 64, (this.shipclass-STANDARDO) * 3 * 64 + 64, 64, 64);
 			}
 		}
 	}
@@ -115,6 +130,8 @@ public class Ships {
 		coor.setY(256);
 		spawned = false;
 		spawnCnt = SPAWN_0;
+		lvlUp = true;
+		lvlUpCnt = LVLUP_0;
 		animation = MOVE_RIGHT;
 		setlife(0);
 		cursetimestamp = 1;
@@ -252,7 +269,7 @@ public class Ships {
 	
 	public BufferedImage getImage() {
 		BufferedImage retval = null;
-		if (spawned) {
+		if (spawned && lvlUp) {
 				 if (animation <= MOVE_LEFT) {
 					retval = image[animation];
 					if(invincible_timestamp + SHIELD_DURATION > System.currentTimeMillis()){
@@ -260,9 +277,18 @@ public class Ships {
 					}
 			}
 			
-		}
-		else {
-			if (spawnTimer+300<System.currentTimeMillis()) {
+		} else if (spawned) {
+			if (lvlUpTimer + 300 < System.currentTimeMillis()) {
+				lvlUpTimer = System.currentTimeMillis();
+				retval = image[lvlUpCnt++];
+				if (lvlUpCnt > LVLUP_7) {
+					lvlUp = true;
+				}
+			} else {
+				retval = image[lvlUpCnt];
+			}
+		} else {
+			if (spawnTimer + 300 < System.currentTimeMillis()) {
 				spawnTimer = System.currentTimeMillis();
 				retval = image[spawnCnt++];
 				if (spawnCnt > SPAWN_4) {
@@ -335,6 +361,11 @@ public class Ships {
 				}
 			}
 		}
+	}
+	
+	public void toggleLvlUpAnimation() {
+		lvlUp = false;
+		lvlUpCnt = LVLUP_0;
 	}
 }
 	
