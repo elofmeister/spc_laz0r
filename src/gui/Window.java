@@ -45,7 +45,7 @@ public class Window {
 	    setBlankCursor();
 	    Random rnd = new Random();
 	    rnd.setSeed(System.currentTimeMillis());
-	    int num = Math.abs(rnd.nextInt()%3)+1;
+	    int num = Math.abs(rnd.nextInt()%4)+1;
 	    changeImage(new ImageIcon(this.getClass().getResource("images/loading"+num+".png")).getImage());
 	}
 

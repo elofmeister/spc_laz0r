@@ -11,13 +11,13 @@ public class Level {
 	private static final int DEFAULT_WIDTH 			= 100;
 	private static final int DEFAULT_HEIGHT 		= 9;
 	private static final int PLANET_DICE 			= 16;
-	private static final int PLANET_DICE_PERCENTAGE = 30;
+	private static final int PLANET_DICE_PERCENTAGE = 50;
 
 	private static final int WAVES					= 10;		// First level starts with 10 waves
 	private static final int WAVES_OFFSET			= 0;		// Each new level
 	
 	private static final int ENEMIES_PER_WAVE		= 6;		// First level starts with 6 enemies
-	private static final int ENEMIES_OFFSET			= 1;		// Each new level 
+	private static final float ENEMIES_OFFSET		= (float) 0.5;		// Each new level 
 	
 	private int waveAmount;
 	private int waveCnt;
@@ -135,7 +135,7 @@ public class Level {
 	}
 	
 	public int getEnemyAmount() {
-		return ENEMIES_PER_WAVE + (levelCnt-1) * ENEMIES_OFFSET;
+		return ENEMIES_PER_WAVE + (int) ((levelCnt - 1) * ENEMIES_OFFSET);
 	}
 	
 	public int getWaveCnt() {

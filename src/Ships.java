@@ -6,7 +6,7 @@ public class Ships {
 	private String shipname;
 	private int shipclass;
 	
-	private int bonusslots[] = new int[4];
+	private int bonusslots[] = {1, 1, 1, 1};
 	private int life;
 	private int maxlife;
 	private int baselife;
@@ -49,7 +49,7 @@ public class Ships {
 	
 	public static final int SHIPSPEED = 15; //in pixel per move
 	public static final int CURSE_DURATION = 5000;		//duration in milliseconds
-	public static final int SHIELD_DURATION = 5000; //consume shield last 5000 milliseconds
+	public static final int SHIELD_DURATION = 20000; //consume shield last 20000 milliseconds
 	
 	public static final int GOOD_DAMAGE = 11;
 	public static final int BIG_DAMAGE = 50;

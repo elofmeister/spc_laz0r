@@ -7,7 +7,7 @@ public class ItemCalculator {
 	String weaponnames[]={"Blaster", "Dizzler", "Gun", "Biggun", "Photonbouncer", "Plasmagun", "Damager", "Projectileemitter", "LAZOR", "Phaser"};
 	String shieldnames[]={"Protector", "Quantumshield", "Forcefield", "Shizzler", "Bigshield"};	
 	
-	public static final int ITEMTIMER = 20000;	// in ms
+	public static final int ITEMTIMER = 40000;	// in ms
 	public static final int ITEMSTATS = 10;
 
 	private String name = "";
@@ -70,11 +70,11 @@ public class ItemCalculator {
 		case 2: rand = Math.abs(rnd.nextInt())%5;
 				name = name.concat(shieldnames[rand]);			
 				break;
-		default: break;
+		default: break;		
 		}	
 	}
 	
-	public Item getItem() {
+	public Item getItem() {		
 		return new Item(name, timer, stat, itemtype);
 	}
 

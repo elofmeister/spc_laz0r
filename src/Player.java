@@ -156,7 +156,7 @@ public class Player {
 		    	 oldxp = xp;
 		     	}
 		    }
-			    if(lvl >= 51 && lvl <= 100 ){ 	//high level formula
+			    if(lvl >= 51 && lvl < 100 ){ 	//high level formula
 			    	while(xp >= oldxp*1.05){
 				    	 setLvl(1);
 				    	 oldxp = xp;

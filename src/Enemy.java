@@ -77,7 +77,7 @@ public class Enemy {
 				setEnemylvl();
 				setEnemylife(12);
 				setNumberguns(0);
-				setDropchance(60);  //can drop consumables
+				setDropchance(50);  //can drop consumables
 				setEnemyxp(1);
 				setEnemycash(10);									
 				break;
@@ -88,7 +88,7 @@ public class Enemy {
 				setEnemylvl();
 				setEnemylife(20);
 				setNumberguns(1);
-				setDropchance(50);  //can drop items
+				setDropchance(45);  //can drop items
 				setEnemyxp(2);
 				setEnemycash(20);					
 				break;	
@@ -108,7 +108,7 @@ public class Enemy {
 				setEnemydmg(30);			//bozz class
 				setEnemyelement();
 				setEnemylvl();
-				setEnemylife(100);
+				setEnemylife(200);
 				setNumberguns(10);
 				setDropchance(25);  // always drop items
 				setEnemyxp(10);
@@ -235,8 +235,12 @@ public class Enemy {
 		}
 		
 		public void setEnemycash(int eVal){
-			enemycash = eVal + rnd.nextInt()%6;
+			if (enemylvl > 10){
+			enemycash = (int) (eVal * (float) enemylvl / 5) + rnd.nextInt() % 6;
+			}
+			else enemycash = eVal + rnd.nextInt()%6;
 		}
+			
 		
 		public void setEnemycurse() {
 			enemycurse_timestamp = System.currentTimeMillis();

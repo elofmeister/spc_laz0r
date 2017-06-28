@@ -114,6 +114,7 @@ public class Game implements Runnable, KeyListener {
 		    	}
 			}	    	
 	    	if ( levels.get(activeLvl).isEndReached() && 
+					enemies.isEmpty() &&
     				shp.getCoordinates().getX()>=12.5*TileSet.TILE_WIDTH && 
     				shp.getCoordinates().getX()<=13.5*TileSet.TILE_WIDTH && 
     				shp.getCoordinates().getY()>=3.5*TileSet.TILE_HEIGHT && 
@@ -129,13 +130,16 @@ public class Game implements Runnable, KeyListener {
 					rnd.setSeed(System.currentTimeMillis());
 					levels.get(activeLvl).addWave();
 					for (int i = 0; i < levels.get(activeLvl).getEnemyAmount(); i++) {
-						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));
+						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));						
 						System.out.println(enemies.get(enemies.size()-1).getEnemyelement());
 					}
+					
 					if (levels.get(activeLvl).getWaveCnt() == (int) (levels.get(activeLvl).getWaveAmount()/2)) {
 						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
+						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
+						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
 					}
-					if (levels.get(activeLvl).getWaveCnt() == levels.get(activeLvl).getWaveAmount()) {
+					if (levels.get(activeLvl).getWaveCnt() == levels.get(activeLvl).getWaveAmount()-1) {
 						enemies.add(new Enemy(Enemy.BOZZ_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
 					}
 				}
@@ -184,7 +188,7 @@ public class Game implements Runnable, KeyListener {
 								shp.toggleLvlUpAnimation();
 							}
 							explosions.add(new Explosion(enemies.get(collisionDetector.getEnemy()).getCoordinates(), bulletTileset, explosionSound));
-							chests.add(new DropCalculator(new Chest(bulletTileset, enemies.get(collisionDetector.getEnemy()).getCoordinates()), enemies.get(collisionDetector.getEnemy()).getDropchance(), activeLvl, enemies.get(collisionDetector.getEnemy()).getEnemycash()).getChest());
+							chests.add(new DropCalculator(new Chest(bulletTileset, enemies.get(collisionDetector.getEnemy()).getCoordinates()), enemies.get(collisionDetector.getEnemy()).getDropchance(), levelProgress, enemies.get(collisionDetector.getEnemy()).getEnemycash()).getChest());
 							enemies.remove(collisionDetector.getEnemy());
 							System.out.println("Level: "+player.getLvl()+" XP: "+player.getXp() + " OldXP: " + player.getoldXP() +" ("+new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage()+"%)");
 						}
@@ -237,6 +241,7 @@ public class Game implements Runnable, KeyListener {
 		if (enemies.isEmpty()) {
 			tpInf[1] = levels.get(activeLvl).getWaveCnt();
 		} else {
+			
 			tpInf[1] = levels.get(activeLvl).getWaveCnt() - 1;
 		}
 		tpInf[2] = levels.get(activeLvl).getViewPos();
@@ -448,42 +453,21 @@ public class Game implements Runnable, KeyListener {
 				break;
 			case KEY_3:
 				if (!key_3) {
-					if (shp.getbonusslots(2)>=1){
-						shp.setdmg(shp.getdmg()+player.getLvl()*100);
+					if (shp.getbonusslots(2)>=1){									
+						shp.setdmg(shp.getdmg()+player.getLvl()*100);  
 						for (int i = 0; i < enemies.size(); i++) {
 							if (enemies.get(i).isInView()) {
-								new DamageCalculator(enemies.get(i).getIdentity(), player, enemies.get(i), shp, fireSound);
-								
+								new DamageCalculator(enemies.get(i).getIdentity(), player, enemies.get(i), shp, fireSound);								
 								explosions.add(new Explosion(enemies.get(i).getCoordinates(), bulletTileset, explosionSound));
-								if(enemies.get(i).getEnemylife() <= 0){									   
-									int playerlvl = player.getLvl();
-									int xp = enemies.get(collisionDetector.getEnemy()).getEnemyxp();
-									int enemylvl = enemies.get(collisionDetector.getEnemy()).getEnemylvl();
-									if (enemylvl < playerlvl) {
-										if (enemylvl + 1 == playerlvl) {
-											xp *= 0.87;
-										} else if (enemylvl + 2 == playerlvl) {
-											xp *= 0.81;
-										} else if (enemylvl + 3 == playerlvl) {
-											xp *= 0.66;
-										} else if (enemylvl + 4 == playerlvl) {
-											xp *= 0.58;
-										} else if (enemylvl + 5 == playerlvl) {
-											xp *= 0.50;
-										} else if (enemylvl + 6 == playerlvl) {
-											xp *= 0.40;
-										} else {
-											xp *= 0.10;
-										}
-									}									
-								   player.setXp(xp);									  
-								   enemies.remove(enemies.get(i--));
+								if(enemies.get(i).getEnemylife() <= 0){																			  
+								   enemies.remove(enemies.get(i--));								  
 							   }
 							}
-						}
-						shp.setdmg(shp.getdmg()-player.getLvl()*100);						
+						}		
+						// no xp when using bombs!!!
 						shp.setbonusslots(2, shp.getbonusslots(2)-1);
 						bombSound.play();
+						shp.setdmg(shp.getdmg()-player.getLvl()*100); 
 					}
 				}
 				key_3 = true;
