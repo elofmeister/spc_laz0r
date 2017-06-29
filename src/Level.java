@@ -23,7 +23,17 @@ public class Level {
 	private int waveCnt;
 	private int levelCnt;
 	private int levelNxt;					// level needed to continue
-	private int[][] levelArray;				// defines the positioning of tiles
+	private int[][] levelArray = {
+		{31,60,51,71,71,31,63,71,71,96,63,43,71,52,71,71},
+		{31,42,94,71,43,71,97,71,71,71,51,71,71,40,63,51},
+		{63,71,00,02,02,02,02,02,02,02,01,71,42,71,63,71},
+		{30,33,03,20,21,20,22,20,23,20,13,94,71,71,71,40},
+		{71,71,03,20,20,20,20,20,20,20,13,31,71,73,71,42},
+		{61,33,03,20,20,20,20,20,20,20,13,63,71,71,71,30},
+		{51,71,03,20,20,20,20,20,20,20,13,95,52,71,42,71},
+		{71,71,10,12,12,12,12,12,12,12,11,60,41,71,71,61},
+		{52,71,60,98,43,97,71,63,62,98,71,43,33,71,60,71}
+	};										// defines the positioning of tiles
 	private int levelWdt = DEFAULT_WIDTH;	// default width of standard level
 	private int levelHgt = DEFAULT_HEIGHT;	// default height of all levels
 	
@@ -61,8 +71,31 @@ public class Level {
 	}
 	
 	private int[][] createNewLevel() {
-		int[][] bgTiles = new CSV("src/csv/background.csv").getIntegerArray();
-		int[][] planets = new CSV("src/csv/planets.csv").getIntegerArray();
+		int[][] bgTiles = {
+			{94},{95},{96},{97},{98},{99},
+			{30},{31},{32},{33},{40},{41},
+			{42},{43},{50},{51},{52},{53},
+			{60},{61},{62},{63},{70},{30},
+			{31},{32},{33},{40},{41},{42},
+			{43},{50},{51},{52},{53},{60},
+			{61},{62},{63},{70},{71},{71},
+			{71},{71},{71},{71},{71},{71},
+			{71},{71},{71},{71},{71},{71},
+			{71},{71},{71},{71},{71},{71},
+			{71},{71},{71},{71},{71},{71},
+			{71},{71},{71},{71},{71},{71},
+			{71},{71},{71},{71},{71},{71},
+			{71},{71}
+		};
+		int[][] planets = {
+			{04,03,03},
+			{07,03,03},
+			{34,03,03},
+			{37,03,03},
+			{64,03,03},
+			{67,03,03},
+			{80,04,02}
+		};
 		int[][] retval = new int[this.levelHgt][this.levelWdt]; 
 		Random rnd = new Random();
 		rnd.setSeed(System.currentTimeMillis());
@@ -95,7 +128,6 @@ public class Level {
 		levelNxt = levelCnt * CONTINUE_OFFSET;
 		this.tileset = tileset;
 		if ( levelCnt == 0 ) {
-			levelArray = new CSV("src/csv/base_level.csv").getIntegerArray();
 			levelWdt = levelArray[0].length;
 		} else {
 			waveAmount = WAVES + WAVES_OFFSET * (levelCnt - 1);
