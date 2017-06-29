@@ -49,6 +49,8 @@ public class Game implements Runnable, KeyListener {
 	private long bulletTimer = System.currentTimeMillis();
 	private int bulletStyle = 0;
 	private long enemyTimer = System.currentTimeMillis();
+	private long finalTimer;
+	private boolean bfinal = false;
 	private int[] tpInf = new int[3];
 	/*
 	 * tpInf
@@ -232,7 +234,17 @@ public class Game implements Runnable, KeyListener {
 			}
 			direction = "right";
 		} else {
-			portToBase();
+			if (!bfinal) {
+				menuManager.setActiveMenu(MenuManager.FINAL);
+				bfinal = true;
+				finalTimer = System.currentTimeMillis();
+			} else {
+				if (finalTimer + 30000 < System.currentTimeMillis()) {
+					bfinal = false;
+					portToBase();
+					menuManager.setActiveMenu(MenuManager.LEVEL);
+				}
+			}
 		}
 	}
 	

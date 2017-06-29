@@ -34,6 +34,7 @@ public class MenuManager implements KeyListener {
 	public final static int EXTRA		= 5;
 	public final static int LEVEL		= 6;
 	public final static int SKILL		= 7;
+	public final static int FINAL		= 8;
 		
 	private Game game;
 	private Window window;
@@ -510,6 +511,15 @@ public class MenuManager implements KeyListener {
 		}
 	}
 	
+	public BufferedImage getFinal() {
+		BufferedImage retval = null;
+		try {
+			retval = ImageIO.read(MenuManager.class.getResource("gui/images/final.png"));
+		} catch (IOException e) {
+		}
+		return retval; 
+	}
+	
 	public BufferedImage get() {
 		BufferedImage retval = null;
 		switch (activeMenu) {
@@ -536,6 +546,9 @@ public class MenuManager implements KeyListener {
 			break;
 		case SKILL:
 			retval = getSkill();
+			break;
+		case FINAL:
+			retval = getFinal();
 			break;
 
 		default:
