@@ -2,6 +2,7 @@ package gui;
 
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.DisplayMode;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -11,10 +12,16 @@ import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import util.ConfigReader;
+
 public class Window {
 
 	// Main-Window
 	private JFrame frame;
+	private ConfigReader config = new ConfigReader("config.json");
+	private GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+	private GraphicsDevice gs = ge.getDefaultScreenDevice();
+	private DisplayMode dispModeOld;
 	
 	// Background-Image
 	private Component comp = new Component() {
@@ -27,20 +34,40 @@ public class Window {
 	    }
 	};
 	
+	public void setWindowedMode() {
+		gs.setDisplayMode(dispModeOld);
+		frame.setVisible(false);
+		frame.dispose();
+		frame.setUndecorated(false);
+		gs.setFullScreenWindow(null);
+		frame.setSize((int)config.getWidth(), (int)config.getHeight());
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		frame.repaint();
+	}
+	
+	public void setFullscreenMode() {
+		dispModeOld = gs.getDisplayMode();
+		frame.setVisible(false);
+		frame.dispose();
+		frame.setUndecorated(true);
+		gs.setFullScreenWindow(frame);
+		frame.setVisible(true);
+		frame.repaint();
+	}
+	
 	public Window(String title) {
-		util.ConfigReader config = new util.ConfigReader("config.json");
 		frame = new JFrame(title);
 		frame.setUndecorated(config.isFullscreen());
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.add(comp);
-	    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-	    GraphicsDevice gs = ge.getDefaultScreenDevice();
-	    gs.setFullScreenWindow(frame);
 	    frame.validate();
-	    if (!config.isFullscreen()) {
-	    	frame.setResizable(false);
-		    frame.setSize((int)config.getWidth(), (int)config.getHeight());
-			frame.setLocationRelativeTo(null);
+		dispModeOld = gs.getDisplayMode();
+		gs.setFullScreenWindow(frame);
+	    if (config.isFullscreen()) {
+			setFullscreenMode();		
+		} else {
+			setWindowedMode();
 		}
 	    setBlankCursor();
 	    Random rnd = new Random();

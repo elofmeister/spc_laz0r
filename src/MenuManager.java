@@ -800,6 +800,11 @@ public class MenuManager implements KeyListener {
 							fullscreen = true;
 						}
 						new ConfigWriter(fullscreen, sound, background);
+						if (fullscreen) {
+							window.setFullscreenMode();
+						} else {
+							window.setWindowedMode();
+						}
 						game.menuSound.play();
 						break;
 					case 2:
