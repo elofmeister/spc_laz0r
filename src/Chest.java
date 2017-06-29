@@ -11,7 +11,6 @@ public class Chest {
 	public Chest(BufferedImage image, Coordinates coordinates) {
 		this.coordinates = coordinates;
 		this.image = image;
-		this.chestNumber = chestNumber;
 	}
 	
 	public BufferedImage getImage() {
@@ -70,5 +69,9 @@ public class Chest {
 	
 	public void setRarity(int rarity) {
 		chestNumber = rarity;
+	}
+	
+	public int getRarity() {
+		return chestNumber;
 	}
 }

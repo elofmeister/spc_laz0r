@@ -90,7 +90,7 @@ public class Level {
 		return retval;			
 	}
 	
-	public Level( int levelCnt, TileSet tileset ) {
+	public Level(int levelCnt, TileSet tileset) {
 		this.levelCnt = levelCnt;
 		levelNxt = levelCnt * CONTINUE_OFFSET;
 		this.tileset = tileset;
@@ -98,7 +98,7 @@ public class Level {
 			levelArray = new CSV("src/csv/base_level.csv").getIntegerArray();
 			levelWdt = levelArray[0].length;
 		} else {
-			waveAmount = WAVES + WAVES_OFFSET * (levelCnt-1);
+			waveAmount = WAVES + WAVES_OFFSET * (levelCnt - 1);
 			levelArray = createNewLevel();
 		}
 		updateImage(tileset);

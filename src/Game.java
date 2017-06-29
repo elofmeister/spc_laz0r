@@ -68,7 +68,6 @@ public class Game implements Runnable, KeyListener {
 	}
 		
 	public void run() {
-		//new init.SaveJSON("Horst", 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0).save("save");
 		long timestamp;
 	    long oldTimestamp;
 		new init.FileManager();
@@ -132,16 +131,14 @@ public class Game implements Runnable, KeyListener {
 					rnd.setSeed(System.currentTimeMillis());
 					levels.get(activeLvl).addWave();
 					for (int i = 0; i < levels.get(activeLvl).getEnemyAmount(); i++) {
-						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2)+1, levels.get(activeLvl), enemiesTileset, rnd));						
-						System.out.println(enemies.get(enemies.size()-1).getEnemyelement());
-					}
-					
-					if (levels.get(activeLvl).getWaveCnt() == (int) (levels.get(activeLvl).getWaveAmount()/2)) {
+						enemies.add(new Enemy(Math.abs(rnd.nextInt()%2) + 1, levels.get(activeLvl), enemiesTileset, rnd));						
+					}					
+					if (levels.get(activeLvl).getWaveCnt() == (int) (levels.get(activeLvl).getWaveAmount()/2) - 1) {
 						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
 						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
 						enemies.add(new Enemy(Enemy.SPECIAL_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
 					}
-					if (levels.get(activeLvl).getWaveCnt() == levels.get(activeLvl).getWaveAmount()-1) {
+					if (levels.get(activeLvl).getWaveCnt() == levels.get(activeLvl).getWaveAmount() - 1) {
 						enemies.add(new Enemy(Enemy.BOZZ_CLASS, levels.get(activeLvl), enemiesTileset, rnd));
 					}
 				}

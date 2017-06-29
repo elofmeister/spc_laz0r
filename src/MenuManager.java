@@ -301,17 +301,21 @@ public class MenuManager implements KeyListener {
 		} else if (shop.isAtShop(Shop.SHOP_3)) {
 			shop.getShopImage(Shop.SHOP_3).getRGB(0, 0, Shop.SHOP_WIDTH, Shop.SHOP_HEIGHT, rgbShop, 0, Shop.SHOP_WIDTH);
 		}
-		if (shop.isAtShop(Shop.SHOP_1) || shop.isAtShop(Shop.SHOP_2) || shop.isAtShop(Shop.SHOP_3)) {
-			for (int i = 0; i < Shop.SHOP_HEIGHT; i++) {
-				for (int j = 0; j < Shop.SHOP_WIDTH; j++) {
-					try {
+		
+		/*
+		 * RENDER SHOP
+		 */
+		try {
+			if (shop.isAtShop(Shop.SHOP_1) || shop.isAtShop(Shop.SHOP_2) || shop.isAtShop(Shop.SHOP_3)) {
+				for (int i = 0; i < Shop.SHOP_HEIGHT; i++) {
+					for (int j = 0; j < Shop.SHOP_WIDTH; j++) {
 						rgbBackground[i * Game.WINDOW_WIDTH + j + Game.WINDOW_WIDTH - Shop.SHOP_WIDTH] = rgbShop[i * Shop.SHOP_WIDTH + j];
-					} catch (Exception e) {
-						System.err.println("ShopRenderException");
 					}
 				}
 			}
-		}		
+		} catch (Exception e) {
+			System.err.println("ShopRenderException");
+		}
 		
 		guiBar.setXP(new ExperienceTest(player.getLvl(), player.getoldXP(), player.getXp()).getPercentage());
 		guiBar.setBonusslots(shp.getbonusslots(0), shp.getbonusslots(1), shp.getbonusslots(2), shp.getbonusslots(3));
@@ -322,17 +326,21 @@ public class MenuManager implements KeyListener {
 		} else {
 			guiBar.setLife((float) shp.getlife() / (float) shp.getmaxlife());
 		}
-		int[] rgbGuiBar = new int[Game.WINDOW_WIDTH * TileSet.TILE_HEIGHT];
-		guiBar.getImage().getRGB(0, 0, Game.WINDOW_WIDTH, TileSet.TILE_HEIGHT, rgbGuiBar, 0, Game.WINDOW_WIDTH);
-		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-			for (int j = 0; j < Game.WINDOW_WIDTH; j++) {
-				try {
+		
+		/*
+		 * RENDER GUI BAR
+		 */
+		try {
+			int[] rgbGuiBar = new int[Game.WINDOW_WIDTH * TileSet.TILE_HEIGHT];
+			guiBar.getImage().getRGB(0, 0, Game.WINDOW_WIDTH, TileSet.TILE_HEIGHT, rgbGuiBar, 0, Game.WINDOW_WIDTH);
+			for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+				for (int j = 0; j < Game.WINDOW_WIDTH; j++) {
 					rgbBackground[(Game.WINDOW_HEIGHT - TileSet.TILE_HEIGHT + i) * Game.WINDOW_WIDTH + j] = rgbGuiBar[i * Game.WINDOW_WIDTH + j];
-				} catch (Exception e) {
-					System.err.println("GuiBarRenderException");
-				}
+				} 
 			}
-		}
+		} catch (Exception e) {
+			System.err.println("GuiBarRenderException");
+		}		
 		
 		for (int i = 0; i < chests.size(); i++) {
 			if (chests.get(i).isInRange(shp.getCoordinates())) {
@@ -349,147 +357,177 @@ public class MenuManager implements KeyListener {
 			}
 		}
 		
-		if (!chests.isEmpty()) {
-			for (int n = 0; n < chests.size(); n++) {
-				int[] rgbChest = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
-				chests.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbChest, 0, TileSet.TILE_WIDTH);
-				if (chests.get(n).isInView()) {
-					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbChest[i * TileSet.TILE_WIDTH + j] != BLACK && chests.size() > n) {
-								try {
+		/*
+		 * RENDER CHESTS
+		 */
+		try {
+			if (!chests.isEmpty()) {
+				for (int n = 0; n < chests.size(); n++) {
+					int[] rgbChest = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+					chests.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbChest, 0, TileSet.TILE_WIDTH);
+					if (chests.get(n).isInView()) {
+						for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+							for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+								if (rgbChest[i * TileSet.TILE_WIDTH + j] != BLACK && chests.size() > n) {
 									rgbBackground[(chests.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + chests.get(n).getCoordinates().getX() + j] = rgbChest[i * TileSet.TILE_WIDTH + j];
-								} catch (Exception e) {
-									System.err.println("ChestRenderException");
 								}
 							}
 						}
 					}
 				}
 			}
+		} catch (Exception e) {
+			System.err.println("ChestRenderException");
 		}
 		
-		if (!enemies.isEmpty()) {
-			for (int n = 0; n < enemies.size(); n++) {
-				enemies.get(n).move();
-				if (enemies.get(n).isInView()) {
-					int[] rgbEnemy = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
-					enemies.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbEnemy, 0, TileSet.TILE_WIDTH);
-					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbEnemy[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY && enemies.size() > n) {
-								try {
+		/*
+		 * RENDER ENEMIES
+		 */
+		try {
+			if (!enemies.isEmpty()) {
+				for (int n = 0; n < enemies.size(); n++) {
+					enemies.get(n).move();
+					if (enemies.get(n).isInView()) {
+						int[] rgbEnemy = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+						enemies.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbEnemy, 0, TileSet.TILE_WIDTH);
+						for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+							for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+								if (rgbEnemy[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY && enemies.size() > n) {
 									rgbBackground[(enemies.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + enemies.get(n).getCoordinates().getX() + j] = rgbEnemy[i * TileSet.TILE_WIDTH + j];
-								} catch (Exception e) {
-									System.err.println("EnemyRenderException");
 								}
 							}
-						}
-					}		
+						}		
+					}
 				}
 			}
-		}		
-		if (!bullets.isEmpty()) {
-			for (int n = 0; n < bullets.size(); n++) {
-				int[] rgbBullet = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
-				bullets.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbBullet, 0, TileSet.TILE_WIDTH);
-				if (bullets.get(n).move(Bullet.DEFAULT_BULLETSPEED)) {
-					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbBullet[i * TileSet.TILE_WIDTH + j] != BLACK && bullets.size() > n) {
-								try {
+		} catch (Exception e) {
+			System.err.println("EnemyRenderException");
+		}
+				
+		/*
+		 * RENDER BULLETS
+		 */
+		try {
+			if (!bullets.isEmpty()) {
+				for (int n = 0; n < bullets.size(); n++) {
+					int[] rgbBullet = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+					bullets.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbBullet, 0, TileSet.TILE_WIDTH);
+					if (bullets.get(n).move(Bullet.DEFAULT_BULLETSPEED)) {
+						for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+							for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+								if (rgbBullet[i * TileSet.TILE_WIDTH + j] != BLACK && bullets.size() > n) {
 									rgbBackground[(bullets.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + bullets.get(n).getCoordinates().getX() + j] = rgbBullet[i * TileSet.TILE_WIDTH + j];
-								} catch (Exception e) {
-									System.err.println("BulletRenderException");
 								}
 							}
 						}
-					}
-				} else {
-					bullets.remove(n--);
-				}				
+					} else {
+						bullets.remove(n--);
+					}				
+				}
 			}
+		} catch (Exception e) {
+			System.err.println("BulletRenderException");
 		}
-		if (!explosions.isEmpty()) {
-			for (int n = 0; n < explosions.size(); n++) {
-				int[] rgbExplosion = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
-				explosions.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbExplosion, 0, TileSet.TILE_WIDTH);
-				if (!explosions.get(n).isFinished()) {
+		
+		/*
+		 * RENDER EXPLOSIONS
+		 */
+		try {
+			if (!explosions.isEmpty()) {
+				for (int n = 0; n < explosions.size(); n++) {
+					int[] rgbExplosion = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+					explosions.get(n).getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbExplosion, 0, TileSet.TILE_WIDTH);
+					if (!explosions.get(n).isFinished()) {
+						for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+							for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+								if (rgbExplosion[i * TileSet.TILE_WIDTH + j] != BLACK && explosions.size() > n) {
+									rgbBackground[(explosions.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + explosions.get(n).getCoordinates().getX() + j] = rgbExplosion[i * TileSet.TILE_WIDTH + j];
+								}
+							}
+						}
+					} else {
+						explosions.remove(n--);
+					}				
+				}
+			}
+		}  catch (Exception e) {
+			System.err.println("ExplosionRenderException");
+		}		
+		
+		/*
+		 * RENDER CRIT
+		 */
+		try {
+			if (shp.getCrit().isCrit()) {
+				if (shp.getCrit().getCritTimestamp() + 200 > System.currentTimeMillis()) {
+					int[] rgbCrit = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+					font.getCrit(shp.getCrit().getCritCnt()).getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbCrit, 0, TileSet.TILE_WIDTH);
 					for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
 						for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-							if (rgbExplosion[i * TileSet.TILE_WIDTH + j] != BLACK && explosions.size() > n) {
-								try {
-									rgbBackground[(explosions.get(n).getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + explosions.get(n).getCoordinates().getX() + j] = rgbExplosion[i * TileSet.TILE_WIDTH + j];
-								} catch (Exception e) {
-									System.err.println("ExplosionRenderException");
-								}
+							if (rgbCrit[i * TileSet.TILE_WIDTH + j] != BLACK) {
+								rgbBackground[(i + shp.getCrit().getCoordinates().getY()) * Game.WINDOW_WIDTH + j + shp.getCrit().getCoordinates().getX()] = rgbCrit[i * TileSet.TILE_WIDTH + j];							
 							}
 						}
 					}
 				} else {
-					explosions.remove(n--);
-				}				
-			}
-		}
-		if (shp.getCrit().isCrit()) {
-			if (shp.getCrit().getCritTimestamp() + 200 > System.currentTimeMillis()) {
-				int[] rgbCrit = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
-				font.getCrit(shp.getCrit().getCritCnt()).getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbCrit, 0, TileSet.TILE_WIDTH);
-				for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-					for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-						if (rgbCrit[i * TileSet.TILE_WIDTH + j] != BLACK) {
-							rgbBackground[(i + shp.getCrit().getCoordinates().getY()) * Game.WINDOW_WIDTH + j + shp.getCrit().getCoordinates().getX()] = rgbCrit[i * TileSet.TILE_WIDTH + j];							
-						}
-					}
+					if (shp.getCrit().getCritCnt() >= 3) {
+						shp.getCrit().disableCrit();
+					} else {
+						shp.getCrit().setCritTimestamp();
+						shp.getCrit().setCritCnt();
+					}				
 				}
-			} else {
-				if (shp.getCrit().getCritCnt() >= 3) {
-					shp.getCrit().disableCrit();
-				} else {
-					shp.getCrit().setCritTimestamp();
-					shp.getCrit().setCritCnt();
-				}				
 			}
+		} catch (Exception e) {
+			System.err.println("CritRenderException");
 		}
-		int[] rgbShip = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
-		shp.getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbShip, 0, TileSet.TILE_WIDTH);
-		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
-			for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
-				if (rgbShip[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY) {
-					try {
+		
+		/*
+		 * RENDER SHIP
+		 */
+		try {
+			int[] rgbShip = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+			shp.getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbShip, 0, TileSet.TILE_WIDTH);
+			for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+				for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+					if (rgbShip[i * TileSet.TILE_WIDTH + j] != TRANSPARANCY) {
 						rgbBackground[(shp.getCoordinates().getY() + i) * Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH + shp.getCoordinates().getX() + j] = rgbShip[i * TileSet.TILE_WIDTH + j];
-					} catch (Exception e) {
-						System.err.println("ShipRenderException");
 					}
 				}
 			}
+		} catch (Exception e) {
+			System.err.println("ShipRenderException");
 		}
-		if (waveIncomming) {
-			if (waveIncommingCnt > 7) {
-				waveIncommingCnt = 0;
-				waveIncomming = false;
-			} else {
-				BufferedImage img = font.getWaveIncomming(waveIncommingCnt);
-				int height = img.getHeight();
-				int width = img.getWidth();
-				int[] rgbWaveIncomming = new int[width * height];
-				img.getRGB(0, 0, width, height, rgbWaveIncomming, 0, width);
-				for (int i = 0; i < height; i++) {
-					for (int j = 0; j < width; j++) {
-						if (rgbWaveIncomming[i * width + j] != BLACK) {
-							try {
+		
+		/*
+		 * RENDER WAVE INCOMMING
+		 */
+		try {
+			if (waveIncomming) {
+				if (waveIncommingCnt > 7) {
+					waveIncommingCnt = 0;
+					waveIncomming = false;
+				} else {
+					BufferedImage img = font.getWaveIncomming(waveIncommingCnt);
+					int height = img.getHeight();
+					int width = img.getWidth();
+					int[] rgbWaveIncomming = new int[width * height];
+					img.getRGB(0, 0, width, height, rgbWaveIncomming, 0, width);
+					for (int i = 0; i < height; i++) {
+						for (int j = 0; j < width; j++) {
+							if (rgbWaveIncomming[i * width + j] != BLACK) {
 								rgbBackground[(3 * height + i) * Game.WINDOW_WIDTH + 6 * TileSet.TILE_WIDTH + j] = rgbWaveIncomming[i * width + j];
-							} catch (Exception e) {
-								System.err.println("WaveIncommingRenderException");
 							}
 						}
 					}
-				}
-				if (waveIncommingTimestamp + 400 < System.currentTimeMillis()) {
-					waveIncommingTimestamp = System.currentTimeMillis();
-					waveIncommingCnt++;
+					if (waveIncommingTimestamp + 400 < System.currentTimeMillis()) {
+						waveIncommingTimestamp = System.currentTimeMillis();
+						waveIncommingCnt++;
+					}
 				}
 			}
+		} catch (Exception e) {
+			System.err.println("WaveIncommingRenderException");
 		}
 		
 		BufferedImage subimg = new BufferedImage(Game.WINDOW_WIDTH_TILE_NUM * TileSet.TILE_WIDTH, Game.WINDOW_HEIGHT_TILE_NUM * TileSet.TILE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
