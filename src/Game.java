@@ -74,10 +74,12 @@ public class Game implements Runnable, KeyListener {
 		player.setCash(300);
 		readSoundConfig();
 		mainWindow = new Window(GAME_TITLE);
+		timestamp = System.currentTimeMillis();
 		for (int i = 0; i <= 10; i++) {
 			levels.add(new Level(levelCnt++, new TileSet("tiles/tileset"+(int)new ConfigReader("config.json").getBackground()+".png",10,10)));
 		}
 		menuManager = new MenuManager(this, mainWindow, player, shp, bullets, levels, enemies, explosions, chests);
+		while(timestamp + 5000 > System.currentTimeMillis());
 		menuManager.setActiveMenu(MenuManager.MENU);
 		mainWindow.getFrame().addKeyListener(this);
 		while(true) {
