@@ -156,105 +156,149 @@ public class MenuManager implements KeyListener {
 		retval.getRGB(0, 0, Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH);
 		
 		// SMALL
-		int number;
+		BufferedImage img;
+		int number, width, height;
 		int size = FontManager.SMALL;
+		int[] rgbNum;
 		int[] skills = {player.getAgl(), player.getCritdmg(), player.getCritprb(), player.getLaser(), player.getIce(), player.getAcid(), player.getEmp()};
-		// LAST NUMBER
-		for (int n = 0; n < 7; n++) {
-			number = skills[n]%10;
-			int[] rgbNum = new int[font.getNumber(size, number).getWidth() * font.getNumber(size, number).getHeight()];
-			font.getNumber(size, number).getRGB(0, 0, font.getNumber(size, number).getWidth(), font.getNumber(size, number).getHeight(), rgbNum, 0, font.getNumber(size, number).getWidth());
-			for (int i = 0; i < font.getNumber(size, number).getHeight(); i++) {
-				for (int j = 0; j < font.getNumber(size, number).getWidth(); j++) {
-					rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576] = rgbNum[i * font.getNumber(size, number).getWidth() + j];
-				}
-			}
-		}
-		// MIDDLE NUMBER
-		for (int n = 0; n < 7; n++) {
-			if (skills[n] > 9) {
-				number = (skills[n]-skills[n]%10)/10%10;
-				int[] rgbNum = new int[font.getNumber(size, number).getWidth() * font.getNumber(size, number).getHeight()];
-				font.getNumber(size, number).getRGB(0, 0, font.getNumber(size, number).getWidth(), font.getNumber(size, number).getHeight(), rgbNum, 0, font.getNumber(size, number).getWidth());
-				for (int i = 0; i < font.getNumber(size, number).getHeight(); i++) {
-					for (int j = 0; j < font.getNumber(size, number).getWidth(); j++) {
-						rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576 - font.getNumber(size, number).getWidth()] = rgbNum[i * font.getNumber(size, number).getWidth() + j];
-					}
-				}		
-			}			
-		}
-		// LAST NUMBER
-		for (int n = 0; n < 7; n++) {
-			if (skills[n] > 99) {
-				number = (skills[n]-10*(skills[n]-skills[n]%10)/10%10-skills[n]%10)/100;
-				int[] rgbNum = new int[font.getNumber(size, number).getWidth() * font.getNumber(size, number).getHeight()];
-				font.getNumber(size, number).getRGB(0, 0, font.getNumber(size, number).getWidth(), font.getNumber(size, number).getHeight(), rgbNum, 0, font.getNumber(size, number).getWidth());
-				for (int i = 0; i < font.getNumber(size, number).getHeight(); i++) {
-					for (int j = 0; j < font.getNumber(size, number).getWidth(); j++) {
-						rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576 - 2 * font.getNumber(size, number).getWidth()] = rgbNum[i * font.getNumber(size, number).getWidth() + j];
+		try {
+			// LAST NUMBER
+			for (int n = 0; n < 7; n++) {
+				number = skills[n]%10;
+				img = font.getNumber(size, number);
+				width = img.getWidth();
+				height = img.getHeight();
+				rgbNum = new int[width * height];
+				img.getRGB(0, 0, width, height, rgbNum, 0, width);
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576] = rgbNum[i * width + j];
 					}
 				}
-			}					
-		}
-		// CASH
-		number = player.getCash();
-		if (number > 999999999) {
-			number = 999999999;
-		}
-		for (int n = 0; n < 9; n++) {
-			if (n > 0 && number == 0) {
-				break;
 			}
-			int[] rgbNum = new int[font.getNumber(size, number%10).getWidth() * font.getNumber(size, number%10).getHeight()];
-			font.getNumber(size, number%10).getRGB(0, 0, font.getNumber(size, number%10).getWidth(), font.getNumber(size, number%10).getHeight(), rgbNum, 0, font.getNumber(size, number%10).getWidth());
-			for (int i = 0; i < font.getNumber(size, number%10).getHeight(); i++) {
-				for (int j = 0; j < font.getNumber(size, number%10).getWidth(); j++) {
-					rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 912 - n * font.getNumber(size, number%10).getWidth()] = rgbNum[i * font.getNumber(size, number%10).getWidth() + j];
+			// MIDDLE NUMBER
+			for (int n = 0; n < 7; n++) {
+				if (skills[n] > 9) {
+					number = (skills[n]-skills[n]%10)/10%10;
+					img = font.getNumber(size, number);
+					width = img.getWidth();
+					height = img.getHeight();
+					rgbNum = new int[width * height];
+					img.getRGB(0, 0, width, height, rgbNum, 0, width);
+					for (int i = 0; i < height; i++) {
+						for (int j = 0; j < width; j++) {
+							rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576 - width] = rgbNum[i * width + j];
+						}
+					}		
+				}			
+			}
+			// LAST NUMBER
+			for (int n = 0; n < 7; n++) {
+				if (skills[n] > 99) {
+					number = (skills[n]-10*(skills[n]-skills[n]%10)/10%10-skills[n]%10)/100;
+					img = font.getNumber(size, number);
+					width = img.getWidth();
+					height = img.getHeight();
+					rgbNum = new int[width * height];
+					img.getRGB(0, 0, width, height, rgbNum, 0, width);
+					for (int i = 0; i < height; i++) {
+						for (int j = 0; j < width; j++) {
+							rgbBackground[(i + 231 + (int) (n * 28.5)) * Game.WINDOW_WIDTH + j + 576 - 2 * width] = rgbNum[i * width + j];
+						}
+					}
+				}					
+			}
+		} catch (Exception e) {
+			System.err.println("SkillPrintException");
+		}
+		
+		try {
+			// CASH
+			number = player.getCash();
+			if (number > 999999999) {
+				number = 999999999;
+			}
+			for (int n = 0; n < 9; n++) {
+				if (n > 0 && number == 0) {
+					break;
+				}
+				img = font.getNumber(size, number%10);
+				width = img.getWidth();
+				height = img.getHeight();
+				rgbNum = new int[width * height];
+				img.getRGB(0, 0, width, height, rgbNum, 0, width);
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 912 - n * width] = rgbNum[i * width + j];
+					}
+				}
+				number-=number%10;
+				number/=10;
+			}
+		} catch (Exception e) {
+			System.err.println("CashPrintException");
+		}
+		try {
+			// LVL
+			number = player.getLvl();
+			for (int n = 0; n < 3; n++) {
+				if (n > 0 && number == 0) {
+					break;
+				}
+				img = font.getNumber(size, number%10);
+				width = img.getWidth();
+				height = img.getHeight();
+				rgbNum = new int[width * height];
+				img.getRGB(0, 0, width, height, rgbNum, 0, width);
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 647 - n * width] = rgbNum[i * width + j];
+					}
+				}
+				number-=number%10;
+				number/=10;
+			}
+		} catch (Exception e) {
+			System.err.println("LevelPrintException");
+		}
+		try {
+			// SKILLPTS
+			number = player.getSkillpts();
+			size = FontManager.BIG;
+			for (int n = 0; n < 3; n++) {
+				if (n > 0 && number == 0) {
+					break;
+				}
+				img = font.getNumber(size, number%10);
+				width = img.getWidth();
+				height = img.getHeight();
+				rgbNum = new int[width * height];
+				img.getRGB(0, 0, width, height, rgbNum, 0, width);
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						rgbBackground[(i + 288) * Game.WINDOW_WIDTH + j + 190 - n * width] = rgbNum[i * width + j];
+					}
+				}
+				number-=number%10;
+				number/=10;
+			}
+		} catch (Exception e) {
+			System.err.println("SkillpointsPrintException");
+		}
+		try {
+			// PLAYER NAME
+			img = font.getPlayer(game.getPlayerNumber());
+			width = img.getWidth();
+			height = img.getHeight();
+			rgbNum = new int[width * height];
+			img.getRGB(0, 0, width, height, rgbNum, 0, width);
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
+					rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 194] = rgbNum[i * width + j];
 				}
 			}
-			number-=number%10;
-			number/=10;
-		}
-		// CASH
-		number = player.getLvl();
-		for (int n = 0; n < 3; n++) {
-			if (n > 0 && number == 0) {
-				break;
-			}
-			int[] rgbNum = new int[font.getNumber(size, number%10).getWidth() * font.getNumber(size, number%10).getHeight()];
-			font.getNumber(size, number%10).getRGB(0, 0, font.getNumber(size, number%10).getWidth(), font.getNumber(size, number%10).getHeight(), rgbNum, 0, font.getNumber(size, number%10).getWidth());
-			for (int i = 0; i < font.getNumber(size, number%10).getHeight(); i++) {
-				for (int j = 0; j < font.getNumber(size, number%10).getWidth(); j++) {
-					rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 647 - n * font.getNumber(size, number%10).getWidth()] = rgbNum[i * font.getNumber(size, number%10).getWidth() + j];
-				}
-			}
-			number-=number%10;
-			number/=10;
-		}
-		// SKILLPTS
-		number = player.getSkillpts();
-		size = FontManager.BIG;
-		for (int n = 0; n < 3; n++) {
-			if (n > 0 && number == 0) {
-				break;
-			}
-			int[] rgbNum = new int[font.getNumber(size, number%10).getWidth() * font.getNumber(size, number%10).getHeight()];
-			font.getNumber(size, number%10).getRGB(0, 0, font.getNumber(size, number%10).getWidth(), font.getNumber(size, number%10).getHeight(), rgbNum, 0, font.getNumber(size, number%10).getWidth());
-			for (int i = 0; i < font.getNumber(size, number%10).getHeight(); i++) {
-				for (int j = 0; j < font.getNumber(size, number%10).getWidth(); j++) {
-					rgbBackground[(i + 288) * Game.WINDOW_WIDTH + j + 190 - n * font.getNumber(size, number%10).getWidth()] = rgbNum[i * font.getNumber(size, number%10).getWidth() + j];
-				}
-			}
-			number-=number%10;
-			number/=10;
-		}
-		// PLAYER NAME
-		int[] rgbNum = new int[font.getPlayer(game.getPlayerNumber()).getWidth() * font.getPlayer(game.getPlayerNumber()).getHeight()];
-		font.getPlayer(game.getPlayerNumber()).getRGB(0, 0, font.getPlayer(game.getPlayerNumber()).getWidth(), font.getPlayer(game.getPlayerNumber()).getHeight(), rgbNum, 0, font.getPlayer(game.getPlayerNumber()).getWidth());
-		for (int i = 0; i < font.getPlayer(game.getPlayerNumber()).getHeight(); i++) {
-			for (int j = 0; j < font.getPlayer(game.getPlayerNumber()).getWidth(); j++) {
-				rgbBackground[(i + 145) * Game.WINDOW_WIDTH + j + 194] = rgbNum[i * font.getPlayer(game.getPlayerNumber()).getWidth() + j];
-			}
+		} catch (Exception e) {
+			System.err.println("PlayerPrintException");
 		}
 	
 		retval.setRGB(0, 0, Game.WINDOW_WIDTH, Game.WINDOW_HEIGHT, rgbBackground, 0, Game.WINDOW_WIDTH);

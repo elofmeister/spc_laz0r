@@ -49,7 +49,7 @@ public class Ships {
 	
 	public static final int SHIPSPEED = 15; //in pixel per move
 	public static final int CURSE_DURATION = 5000;		//duration in milliseconds
-	public static final int SHIELD_DURATION = 20000; //consume shield last 20000 milliseconds
+	public static final int SHIELD_DURATION = 10000; //consume shield last 20000 milliseconds
 	
 	public static final int GOOD_DAMAGE = 11;
 	public static final int BIG_DAMAGE = 50;

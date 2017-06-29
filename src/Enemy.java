@@ -77,7 +77,7 @@ public class Enemy {
 				setEnemylvl();
 				setEnemylife(12);
 				setNumberguns(0);
-				setDropchance(50);  //can drop consumables
+				setDropchance(55);  //can drop consumables
 				setEnemyxp(1);
 				setEnemycash(10);									
 				break;
@@ -88,7 +88,7 @@ public class Enemy {
 				setEnemylvl();
 				setEnemylife(20);
 				setNumberguns(1);
-				setDropchance(45);  //can drop items
+				setDropchance(50);  //can drop items
 				setEnemyxp(2);
 				setEnemycash(20);					
 				break;	
