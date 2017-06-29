@@ -89,10 +89,11 @@ public class DamageCalculator {
 		case ENEMY_IS_TARGET:
 			enemy.setEnemylife(-shp.getdmg());
 			
-			crtitchance = Math.abs(rnd.nextInt());
-			if (crtitchance<=player.getCritprb()){
+			crtitchance = Math.abs(rnd.nextInt()) % 100;
+			if (crtitchance < player.getCritprb()){
 				damage = shp.getdmg()*player.getCritdmg();
 				enemy.setEnemylife(-damage);
+				shp.toggleCritAnimation(enemy.getCoordinates());
 			}	
 			
 			switch(enemy.getEnemyelement()){

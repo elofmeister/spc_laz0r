@@ -18,6 +18,10 @@ public class FontManager {
 	public BufferedImage getPlayer(int num) {
 		return image.getSubimage((num - 1) * 2 * TileSet.TILE_WIDTH, 3 * TileSet.TILE_HEIGHT + 20, 2 * TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT - 40);
 	}
+	
+	public BufferedImage getCrit(int num) {
+		return image.getSubimage(num * TileSet.TILE_WIDTH, 4 * TileSet.TILE_HEIGHT, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT);
+	}
 
 	public BufferedImage getWaveIncomming(int status) {
 		BufferedImage retval = null;

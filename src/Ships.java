@@ -69,8 +69,10 @@ public class Ships {
 	private long lvlUpTimer = System.currentTimeMillis();
 	
 	private Coordinates coor = new Coordinates(256, 256);
+	private Crit crit = new Crit(coor);
 		
 	public Ships(int shipclass) {
+		crit.disableCrit();
 		setshipclass(shipclass);
 	}  
 	
@@ -123,6 +125,10 @@ public class Ships {
 				image[i] = tileset.getTileset().getSubimage((i - LVLUP_4 + 6) * 64, (this.shipclass-STANDARDO) * 3 * 64 + 64, 64, 64);
 			}
 		}
+		bonusslots[0] = 1;
+		bonusslots[1] = 1;
+		bonusslots[2] = 1;
+		bonusslots[3] = 1;
 	}
 	
 	public void respawn() {
@@ -366,6 +372,14 @@ public class Ships {
 	public void toggleLvlUpAnimation() {
 		lvlUp = false;
 		lvlUpCnt = LVLUP_0;
+	}
+	
+	public void toggleCritAnimation(Coordinates coordinates) {
+		crit = new Crit(coordinates);
+	}
+	
+	public Crit getCrit() {
+		return crit;
 	}
 }
 	

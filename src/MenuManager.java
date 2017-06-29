@@ -430,6 +430,26 @@ public class MenuManager implements KeyListener {
 				}				
 			}
 		}
+		if (shp.getCrit().isCrit()) {
+			if (shp.getCrit().getCritTimestamp() + 200 > System.currentTimeMillis()) {
+				int[] rgbCrit = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
+				font.getCrit(shp.getCrit().getCritCnt()).getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbCrit, 0, TileSet.TILE_WIDTH);
+				for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
+					for (int j = 0; j < TileSet.TILE_WIDTH; j++) {
+						if (rgbCrit[i * TileSet.TILE_WIDTH + j] != BLACK) {
+							rgbBackground[(i + shp.getCrit().getCoordinates().getY()) * Game.WINDOW_WIDTH + j + shp.getCrit().getCoordinates().getX()] = rgbCrit[i * TileSet.TILE_WIDTH + j];							
+						}
+					}
+				}
+			} else {
+				if (shp.getCrit().getCritCnt() >= 3) {
+					shp.getCrit().disableCrit();
+				} else {
+					shp.getCrit().setCritTimestamp();
+					shp.getCrit().setCritCnt();
+				}				
+			}
+		}
 		int[] rgbShip = new int[TileSet.TILE_HEIGHT * TileSet.TILE_WIDTH];
 		shp.getImage().getRGB(0, 0, TileSet.TILE_WIDTH, TileSet.TILE_HEIGHT, rgbShip, 0, TileSet.TILE_WIDTH);
 		for (int i = 0; i < TileSet.TILE_HEIGHT; i++) {
